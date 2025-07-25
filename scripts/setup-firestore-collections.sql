@@ -1,0 +1,62 @@
+-- This is a reference for the Firestore collections structure
+-- Firestore is NoSQL, so this is just for documentation
+
+-- Collection: admins
+-- Document ID: user_uid
+-- Fields:
+--   - email: string
+--   - role: string (admin, super_admin)
+--   - createdAt: timestamp
+--   - lastLogin: timestamp
+
+-- Collection: courses
+-- Document ID: auto-generated
+-- Fields:
+--   - title: string
+--   - description: string
+--   - duration: string
+--   - level: string (Beginner, Intermediate, Advanced)
+--   - price: string
+--   - features: array of strings
+--   - category: string
+--   - status: string (active, inactive, draft)
+--   - createdAt: timestamp
+--   - updatedAt: timestamp
+
+-- Collection: portfolio
+-- Document ID: auto-generated
+-- Fields:
+--   - title: string
+--   - description: string
+--   - image: string (URL)
+--   - technologies: array of strings
+--   - category: string
+--   - client: string
+--   - year: string
+--   - status: string (completed, in-progress, draft)
+--   - projectUrl: string (optional)
+--   - githubUrl: string (optional)
+--   - createdAt: timestamp
+--   - updatedAt: timestamp
+
+-- Collection: students
+-- Document ID: user_uid
+-- Fields:
+--   - uid: string
+--   - fullName: string
+--   - email: string
+--   - phone: string
+--   - enrolledCourses: array of course IDs
+--   - status: string (active, inactive, suspended)
+--   - createdAt: timestamp
+--   - updatedAt: timestamp
+
+-- Collection: enrollments
+-- Document ID: auto-generated
+-- Fields:
+--   - studentId: string (reference to student document)
+--   - courseId: string (reference to course document)
+--   - enrolledAt: timestamp
+--   - status: string (active, completed, dropped)
+--   - progress: number (0-100)
+--   - completedAt: timestamp (optional)
