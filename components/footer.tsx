@@ -1,5 +1,6 @@
 import Link from "next/link"
 import { Code, GraduationCap, Mail, Phone, MapPin } from "lucide-react"
+import Image from "next/image"
 
 export default function Footer() {
   return (
@@ -66,6 +67,24 @@ export default function Footer() {
                 </Link>
               </li>
             </ul>
+            {/* Social Media */}
+          <div className="mt-8">
+            <h3 className="font-semibold text-lg mb-4">Follow Us</h3>
+            <div className="flex space-x-4">
+              <Link href="https://www.facebook.com/procotechnologies" target="_blank" className="text-gray-300 hover:text-white transition-colors">
+                <Image src="/icons/facebook.svg" alt="Facebook" width={24} height={24} />
+              </Link>
+              <Link href="https://www.instagram.com/proco_technologies" target="_blank" className="text-gray-300 hover:text-white transition-colors">
+                <Image src="/icons/instagram.svg" alt="Instagram" width={24} height={24} />
+              </Link>
+              <Link href="https://www.linkedin.com/company/procotechnologies" target="_blank" className="text-gray-300 hover:text-white transition-colors">
+                <Image src="/icons/linkedin.svg" alt="LinkedIn" width={24} height={24} />
+              </Link>
+              <Link href="https://www.youtube.com/@procotechnologies" target="_blank" className="text-gray-300 hover:text-white transition-colors">
+                <Image src="/icons/youtube.svg" alt="YouTube" width={24} height={24} />
+              </Link>
+              </div>
+              </div>
           </div>
 
           {/* Services */}
@@ -77,7 +96,9 @@ export default function Footer() {
               <li className="text-gray-300">Software Training</li>
               <li className="text-gray-300">IT Consulting</li>
             </ul>
+             <Image src={"/msme.png"} alt="Proco Technologies Logo" width={150} height={50} className="bg-white text-right mt-4" />
           </div>
+          
         </div>
 
         <div className="border-t border-gray-800 mt-8 pt-8 text-center">

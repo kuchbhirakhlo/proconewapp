@@ -113,7 +113,7 @@ export default function ContactPage() {
                     <div className="bg-green-100 p-3 rounded-lg">
                       <Phone className="h-6 w-6 text-green-600" />
                     </div>
-                    <div className="flex space-x-[12rem]">
+                    <div className="flex space-x-[11rem]">
                     <div>
                       <h3 className="font-semibold text-gray-900">Phone</h3>
                       <p className="text-gray-600">+91 8383811977</p>

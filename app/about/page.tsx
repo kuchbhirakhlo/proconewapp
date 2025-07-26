@@ -82,10 +82,7 @@ export default function AboutPage() {
               <h2 className="text-3xl font-bold text-gray-900 mb-6">Our Story</h2>
               <div className="space-y-4 text-gray-600">
                 <p>
-                  Proco Technologies was born from a simple vision: to bridge the gap between traditional education and the
-                  rapidly evolving technology industry. Our founder, John Smith, recognized that many talented
-                  individuals were struggling to break into tech due to outdated curricula and lack of practical
-                  experience.
+                  At Proco Technologies, our journey began in 2019 with a clear vision: to empower youth with future-ready technical skills through practical, industry-focused training. Headquartered in Lucknow and Jaipur, we specialize in software development and IT education, offering courses like Full Stack Development, Web & Mobile App Development, ADCA, DCA, and more.
                 </p>
                 <p>
                   Starting with just 10 students in a small classroom, we've grown into a leading institution that has
@@ -93,9 +90,13 @@ export default function AboutPage() {
                   approach of education and real-world application sets us apart in the industry.
                 </p>
                 <p>
-                  Today, we continue to evolve our programs based on industry demands, ensuring our students graduate
-                  with the skills employers actually need. Our software development arm allows us to stay current with
-                  the latest technologies and best practices.
+                  We recognized early on that traditional education often lacks the real-world exposure needed to succeed in today’s competitive tech environment. That’s why our curriculum blends theory with hands-on project experience, allowing students to not only learn but build. Over the years, we’ve successfully trained more than 500 students and completed 50+ live projects for clients across India.
+                </p>
+                <p>
+                  Our unique model prioritizes skill-building, career support, and innovation. With a focus on placement assistance and up-to-date tech practices, we ensure every learner is ready to step confidently into the IT industry.
+                </p>
+                <p>
+                  At Proco, we believe in transforming potential into performance. Whether you're a beginner or someone looking to upgrade your career, our goal is to guide you at every step of your tech journey.
                 </p>
               </div>
             </div>
