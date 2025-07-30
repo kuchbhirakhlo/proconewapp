@@ -11,8 +11,8 @@ export default function Footer() {
           <div className="col-span-1 md:col-span-2">
             <Link href="/" className="flex items-center space-x-2 mb-4">
               <div className="flex items-center space-x-1">
-                <Code className="h-8 w-8 text-red-400" />
-                <GraduationCap className="h-8 w-8 text-green-400" />
+                <Code className="h-9 w-9 text-red-400" />
+                <GraduationCap className="h-9 w-9 text-green-400" />
               </div>
               <span className="font-bold text-xl">Proco Technologies</span>
             </Link>
