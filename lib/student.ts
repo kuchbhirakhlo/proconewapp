@@ -1,9 +1,30 @@
 // Toggle this to `true` if you want to auto-provision missing student docs
 const AUTO_CREATE_STUDENT_DOC = true
 
-import { collection, doc, getDocs, getDoc, query, where, orderBy, setDoc, Timestamp } from "firebase/firestore"
+import { collection, doc, getDocs, getDoc, query, where, orderBy, setDoc, addDoc, updateDoc, Timestamp } from "firebase/firestore"
 import { signInWithEmailAndPassword, signOut } from "firebase/auth"
 import { auth, db } from "./firebase"
+
+interface StudentData {
+  id: string
+  uid: string
+  fullName: string
+  email: string
+  phone: string
+  enrolledCourses: string[]
+  status: string
+  createdAt: any
+  updatedAt: any
+}
+
+interface EnrollmentData {
+  id: string
+  studentId: string
+  courseId: string
+  enrolledAt: any
+  status: string
+  progress: number
+}
 
 // Student Authentication
 export const signInStudent = async (email: string, password: string) => {
@@ -25,6 +46,7 @@ export const signInStudent = async (email: string, password: string) => {
           email: userCredential.user.email,
           phone: "",
           enrolledCourses: [],
+          assignedCourses: [],
           status: "active",
           createdAt: Timestamp.now(),
           updatedAt: Timestamp.now(),
@@ -49,7 +71,7 @@ export const signInStudent = async (email: string, password: string) => {
 
     return {
       user: userCredential.user,
-      studentData: { id: finalSnap.id, ...data },
+      studentData: { id: finalSnap.id, ...data } as StudentData,
     }
   } catch (error: any) {
     // Map Firebase auth errors to nicer copy
@@ -82,12 +104,12 @@ export const getStudentData = async (uid: string) => {
 }
 
 // Get student enrollments
-export const getStudentEnrollments = async (studentId: string) => {
+export const getStudentEnrollments = async (studentId: string): Promise<EnrollmentData[]> => {
   try {
     const enrollmentsRef = collection(db, "enrollments")
     const q = query(enrollmentsRef, where("studentId", "==", studentId), orderBy("enrolledAt", "desc"))
     const snapshot = await getDocs(q)
-    return snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }))
+    return snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() } as EnrollmentData))
   } catch (error) {
     console.error("Error fetching enrollments:", error)
     return []
@@ -125,6 +147,39 @@ export const signOutStudent = async () => {
   try {
     await signOut(auth)
   } catch (error) {
+    throw error
+  }
+}
+
+// Enroll student in a course
+export const enrollInCourse = async (studentId: string, courseId: string) => {
+  try {
+    const enrollmentsRef = collection(db, "enrollments")
+    const enrollmentDoc = await addDoc(enrollmentsRef, {
+      studentId,
+      courseId,
+      enrolledAt: Timestamp.now(),
+      status: "active",
+      progress: 0,
+    })
+
+    // Update student's enrolled courses list
+    const studentRef = doc(db, "students", studentId)
+    const studentDoc = await getDoc(studentRef)
+    if (studentDoc.exists()) {
+      const studentData = studentDoc.data()
+      const currentEnrolledCourses = studentData.enrolledCourses || []
+      const updatedEnrolledCourses = [...new Set([...currentEnrolledCourses, courseId])]
+
+      await updateDoc(studentRef, {
+        enrolledCourses: updatedEnrolledCourses,
+        updatedAt: Timestamp.now(),
+      })
+    }
+
+    return enrollmentDoc
+  } catch (error) {
+    console.error("Error enrolling in course:", error)
     throw error
   }
 }

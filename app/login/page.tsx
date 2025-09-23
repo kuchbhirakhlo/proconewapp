@@ -39,7 +39,7 @@ export default function LoginPage() {
 
     try {
       const result = await signInStudent(email, password)
-      console.log("Student login successful:", result.studentData.fullName)
+      console.log("Student login successful:", result.studentData.fullName || result.studentData.email)
 
       // Use router.replace instead of router.push to prevent back navigation issues
       // Also use window.location.href as backup for redirect issues
@@ -78,7 +78,7 @@ export default function LoginPage() {
             <GraduationCap className="h-12 w-12 text-blue-600" />
           </div>
           <Badge className="mb-4" variant="secondary">
-            Student Portal
+            Proco Student Portal
           </Badge>
           <h2 className="text-3xl font-bold text-gray-900">Welcome Back</h2>
           <p className="mt-2 text-gray-600">Sign in to access your courses and progress</p>

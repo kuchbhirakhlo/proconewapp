@@ -19,8 +19,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
-import { Plus, Edit, Trash2, AlertCircle, CheckCircle, BookOpen } from "lucide-react"
-import { getCourses, addCourse, updateCourse, deleteCourse } from "@/lib/admin"
+import { Plus, Edit, Trash2, AlertCircle, CheckCircle, BookOpen, Upload, FileText, X } from "lucide-react"
+import { getCourses, addCourse, updateCourse, deleteCourse, uploadCoursePDF, removeCoursePDF } from "@/lib/admin"
 
 interface Course {
   id: string
@@ -32,6 +32,9 @@ interface Course {
   features: string[]
   category: string
   status: string
+  pdfUrls?: string[]
+  createdAt?: any
+  updatedAt?: any
 }
 
 export default function CoursesManagement() {
@@ -50,6 +53,8 @@ export default function CoursesManagement() {
     status: "active",
   })
   const [message, setMessage] = useState({ type: "", text: "" })
+  const [uploadingPdfs, setUploadingPdfs] = useState(false)
+  const [pdfFiles, setPdfFiles] = useState<File[]>([])
 
   useEffect(() => {
     fetchCourses()
@@ -77,17 +82,38 @@ export default function CoursesManagement() {
         features: formData.features.split("\n").filter((f) => f.trim() !== ""),
       }
 
+      let courseId: string
+
       if (editingCourse) {
         await updateCourse(editingCourse.id, courseData)
+        courseId = editingCourse.id
         setMessage({ type: "success", text: "Course updated successfully!" })
       } else {
-        await addCourse(courseData)
+        const newCourse = await addCourse(courseData)
+        courseId = newCourse.id
         setMessage({ type: "success", text: "Course added successfully!" })
+      }
+
+      // Upload PDFs if any
+      if (pdfFiles.length > 0) {
+        setUploadingPdfs(true)
+        try {
+          for (const file of pdfFiles) {
+            await uploadCoursePDF(courseId, file)
+          }
+          setMessage({ type: "success", text: `${pdfFiles.length} PDF(s) uploaded successfully!` })
+        } catch (pdfError) {
+          console.error("Error uploading PDFs:", pdfError)
+          setMessage({ type: "error", text: "Course saved but failed to upload some PDFs" })
+        } finally {
+          setUploadingPdfs(false)
+        }
       }
 
       setIsDialogOpen(false)
       setEditingCourse(null)
       resetForm()
+      setPdfFiles([])
       fetchCourses()
     } catch (error) {
       console.error("Error saving course:", error)
@@ -136,6 +162,30 @@ export default function CoursesManagement() {
       category: "Programming",
       status: "active",
     })
+    setPdfFiles([])
+  }
+
+  const handlePdfUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || [])
+    const pdfFiles = files.filter(file => file.type === 'application/pdf')
+    setPdfFiles(prev => [...prev, ...pdfFiles])
+  }
+
+  const removePdfFile = (index: number) => {
+    setPdfFiles(prev => prev.filter((_, i) => i !== index))
+  }
+
+  const handleRemoveCoursePdf = async (courseId: string, pdfUrl: string) => {
+    if (!confirm("Are you sure you want to remove this PDF?")) return
+
+    try {
+      await removeCoursePDF(courseId, pdfUrl)
+      setMessage({ type: "success", text: "PDF removed successfully!" })
+      fetchCourses()
+    } catch (error) {
+      console.error("Error removing PDF:", error)
+      setMessage({ type: "error", text: "Failed to remove PDF" })
+    }
   }
 
   const openAddDialog = () => {
@@ -254,6 +304,45 @@ export default function CoursesManagement() {
                 </div>
 
                 <div className="space-y-2">
+                  <Label htmlFor="pdfs">Course PDFs</Label>
+                  <div className="space-y-2">
+                    <Input
+                      id="pdfs"
+                      type="file"
+                      accept=".pdf"
+                      multiple
+                      onChange={handlePdfUpload}
+                      disabled={uploadingPdfs}
+                    />
+                    {pdfFiles.length > 0 && (
+                      <div className="space-y-2">
+                        <p className="text-sm text-gray-600">Selected files:</p>
+                        {pdfFiles.map((file, index) => (
+                          <div key={index} className="flex items-center justify-between p-2 bg-gray-50 rounded">
+                            <div className="flex items-center">
+                              <FileText className="h-4 w-4 mr-2" />
+                              <span className="text-sm">{file.name}</span>
+                            </div>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => removePdfFile(index)}
+                              disabled={uploadingPdfs}
+                            >
+                              <X className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                    {uploadingPdfs && (
+                      <p className="text-sm text-blue-600">Uploading PDFs...</p>
+                    )}
+                  </div>
+                </div>
+
+                <div className="space-y-2">
                   <Label htmlFor="status">Status</Label>
                   <select
                     id="status"
@@ -341,6 +430,38 @@ export default function CoursesManagement() {
                       <span className="text-gray-600">Price:</span>
                       <span className="font-semibold text-blue-600">{course.price}</span>
                     </div>
+                    {course.pdfUrls && course.pdfUrls.length > 0 && (
+                      <div className="pt-2 border-t">
+                        <div className="flex justify-between text-sm mb-2">
+                          <span className="text-gray-600">PDFs:</span>
+                          <span>{course.pdfUrls.length}</span>
+                        </div>
+                        <div className="space-y-1">
+                          {course.pdfUrls.slice(0, 2).map((pdfUrl, index) => (
+                            <div key={index} className="flex items-center justify-between text-xs">
+                              <div className="flex items-center">
+                                <FileText className="h-3 w-3 mr-1" />
+                                <span className="truncate max-w-32">{pdfUrl.split('/').pop()}</span>
+                              </div>
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => handleRemoveCoursePdf(course.id, pdfUrl)}
+                                className="h-6 w-6 p-0 text-red-500 hover:text-red-700"
+                              >
+                                <X className="h-3 w-3" />
+                              </Button>
+                            </div>
+                          ))}
+                          {course.pdfUrls.length > 2 && (
+                            <div className="text-xs text-gray-500">
+                              +{course.pdfUrls.length - 2} more
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    )}
                   </div>
 
                   <div className="flex space-x-2">

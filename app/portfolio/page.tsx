@@ -1,77 +1,86 @@
+"use client"
+
+import { useState, useEffect } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { ExternalLink, Github } from "lucide-react"
+import { ExternalLink, Github, Loader2, AlertCircle } from "lucide-react"
+import { getPortfolioItems } from "@/lib/admin"
+
+interface PortfolioItem {
+  id: string
+  title: string
+  description: string
+  image: string
+  technologies: string[]
+  category: string
+  client: string
+  year: string
+  status?: string
+}
 
 export default function PortfolioPage() {
-  const projects = [
-    {
-      id: 1,
-      title: "E-Commerce Platform",
-      description:
-        "Full-stack e-commerce solution with payment integration, inventory management, and admin dashboard.",
-      image: "https://repository-images.githubusercontent.com/456963513/82528385-a73f-488f-9003-513321283a6b",
-      technologies: ["React", "Node.js", "MongoDB", "Stripe"],
-      category: "Web Development",
-      client: "RetailCorp",
-      year: "2024",
-    },
-    {
-      id: 2,
-      title: "Healthcare Management System",
-      description:
-        "Comprehensive healthcare management system for hospitals with patient records, appointments, and billing.",
-      image: "https://media.licdn.com/dms/image/v2/D5605AQF88I6JqZJlcg/videocover-low/videocover-low/0/1716833727464?e=2147483647&v=beta&t=-xS0aF4PXtLhcrBN8B7sh0fuXhX4tP3sJB9dAtx7Is8",
-      technologies: ["Next.js", "PostgreSQL", "TypeScript", "Tailwind"],
-      category: "Web Development",
-      client: "MediCare Hospital",
-      year: "2024",
-    },
-    {
-      id: 3,
-      title: "Food Delivery Mobile App",
-      description: "Cross-platform mobile app for food delivery with real-time tracking and payment integration.",
-      image: "https://i.ytimg.com/vi/6hUSNDGkg1c/maxresdefault.jpg",
-      technologies: ["React Native", "Firebase", "Google Maps", "PayPal"],
-      category: "Mobile Development",
-      client: "QuickEats",
-      year: "2023",
-    },
-    {
-      id: 4,
-      title: "Learning Management System",
-      description: "Educational platform with course management, video streaming, and progress tracking.",
-      image: "https://repository-images.githubusercontent.com/651920455/4b54fa0e-0f63-4dfe-8af2-6f60ab0925ec",
-      technologies: ["Vue.js", "Laravel", "MySQL", "AWS"],
-      category: "Web Development",
-      client: "EduTech Solutions",
-      year: "2023",
-    },
-    {
-      id: 5,
-      title: "Real Estate Portal",
-      description: "Property listing and management platform with advanced search and virtual tours.",
-      image: "https://camo.githubusercontent.com/3c9e386cbd96b82db1a66ef87fc26e71a569a70c09341970b6561f1003a955f9/68747470733a2f2f692e6962622e636f2f67566753574a632f6167656e742d64617368626f6172642e706e67",
-      technologies: ["Angular", "Spring Boot", "PostgreSQL", "Docker"],
-      category: "Web Development",
-      client: "PropertyPro",
-      year: "2023",
-    },
-    {
-      id: 6,
-      title: "Fitness Tracking App",
-      description: "Mobile fitness app with workout tracking, nutrition planning, and social features.",
-      image: "https://raw.githubusercontent.com/avigael/react-native-fitness-app/main/screenshot/screenshot.png",
-      technologies: ["Flutter", "Dart", "Firebase", "HealthKit"],
-      category: "Mobile Development",
-      client: "FitLife",
-      year: "2022",
-    },
-  ]
+  const [projects, setProjects] = useState<PortfolioItem[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState("")
 
-  const categories = ["All", "Web Development", "Mobile Development", "Data Analytics"]
+  useEffect(() => {
+    const fetchPortfolio = async () => {
+      try {
+        const portfolioData = await getPortfolioItems()
+        setProjects(portfolioData as PortfolioItem[])
+      } catch (error) {
+        console.error("Error fetching portfolio:", error)
+        setError("Failed to load portfolio items")
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchPortfolio()
+  }, [])
+
+  if (loading) {
+    return (
+      <div className="flex flex-col">
+        <section className="bg-gradient-to-br from-red-50 to-green-50 py-20">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <Badge className="mb-4" variant="secondary">
+              Our Portfolio
+            </Badge>
+            <h1 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-6">Showcasing Our Best Work</h1>
+            <div className="flex justify-center items-center py-20">
+              <Loader2 className="h-8 w-8 animate-spin text-red-600" />
+              <span className="ml-2 text-gray-600">Loading portfolio...</span>
+            </div>
+          </div>
+        </section>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="flex flex-col">
+        <section className="bg-gradient-to-br from-red-50 to-green-50 py-20">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <Badge className="mb-4" variant="secondary">
+              Our Portfolio
+            </Badge>
+            <h1 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-6">Showcasing Our Best Work</h1>
+            <div className="flex justify-center items-center py-20">
+              <AlertCircle className="h-8 w-8 text-red-600" />
+              <span className="ml-2 text-gray-600">{error}</span>
+            </div>
+          </div>
+        </section>
+      </div>
+    )
+  }
+
+  const categories = ["All", ...Array.from(new Set(projects.map(p => p.category)))]
 
   return (
     <div className="flex flex-col">
@@ -105,51 +114,58 @@ export default function PortfolioPage() {
       {/* Projects Grid */}
       <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {projects.map((project) => (
-              <Card key={project.id} className="hover:shadow-lg transition-shadow overflow-hidden">
-                <div className="relative">
-                  <Image
-                    src={project.image || "/placeholder.svg"}
-                    alt={project.title}
-                    width={400}
-                    height={300}
-                    className="w-full h-48 object-cover"
-                  />
-                  <div className="absolute top-4 left-4">
-                    <Badge>{project.category}</Badge>
+          {projects.length === 0 ? (
+            <div className="text-center py-20">
+              <p className="text-gray-600 text-lg">No portfolio items available yet.</p>
+              <p className="text-gray-500 mt-2">Check back later for our latest projects!</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {projects.map((project) => (
+                <Card key={project.id} className="hover:shadow-lg transition-shadow overflow-hidden">
+                  <div className="relative">
+                    <Image
+                      src={project.image || "/placeholder.svg"}
+                      alt={project.title}
+                      width={400}
+                      height={300}
+                      className="w-full h-48 object-cover"
+                    />
+                    <div className="absolute top-4 left-4">
+                      <Badge>{project.category}</Badge>
+                    </div>
                   </div>
-                </div>
-                <CardHeader>
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm text-gray-500">
-                      {project.client} • {project.year}
-                    </span>
-                  </div>
-                  <CardTitle className="text-xl">{project.title}</CardTitle>
-                  <CardDescription>{project.description}</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex flex-wrap gap-2 mb-4">
-                    {project.technologies.map((tech) => (
-                      <Badge key={tech} variant="secondary" className="text-xs">
-                        {tech}
-                      </Badge>
-                    ))}
-                  </div>
-                  <div className="flex gap-2">
-                    <Button size="sm" variant="outline" className="flex-1 bg-transparent">
-                      <ExternalLink className="h-4 w-4 mr-2" />
-                      View Live
-                    </Button>
-                    <Button size="sm" variant="outline">
-                      <Github className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+                  <CardHeader>
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-sm text-gray-500">
+                        {project.client} • {project.year}
+                      </span>
+                    </div>
+                    <CardTitle className="text-xl">{project.title}</CardTitle>
+                    <CardDescription>{project.description}</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="flex flex-wrap gap-2 mb-4">
+                      {project.technologies.map((tech) => (
+                        <Badge key={tech} variant="secondary" className="text-xs">
+                          {tech}
+                        </Badge>
+                      ))}
+                    </div>
+                    <div className="flex gap-2">
+                      <Button size="sm" variant="outline" className="flex-1 bg-transparent">
+                        <ExternalLink className="h-4 w-4 mr-2" />
+                        View Live
+                      </Button>
+                      <Button size="sm" variant="outline">
+                        <Github className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 

@@ -83,7 +83,6 @@ export default function StudentLayout({ children, title }: StudentLayoutProps) {
     { name: "Dashboard", href: "/student/dashboard", icon: Home },
     { name: "My Courses", href: "/student/courses", icon: BookOpen },
     { name: "Certificates", href: "/student/certificates", icon: Award },
-    { name: "Profile", href: "/student/profile", icon: User },
     { name: "Settings", href: "/student/settings", icon: Settings },
   ]
 
@@ -93,7 +92,7 @@ export default function StudentLayout({ children, title }: StudentLayoutProps) {
       <div className="fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-lg">
         <div className="flex flex-col h-full">
           <div className="flex items-center justify-center h-16 px-4 bg-blue-600 text-white">
-            <h1 className="text-xl font-bold">Student Portal</h1>
+            <h1 className="text-xl font-bold">Proco Student Portal</h1>
           </div>
 
           <nav className="flex-1 px-4 py-6 space-y-2">
@@ -104,9 +103,8 @@ export default function StudentLayout({ children, title }: StudentLayoutProps) {
                 <Link
                   key={item.name}
                   href={item.href}
-                  className={`flex items-center px-4 py-2 rounded-lg transition-colors ${
-                    isActive ? "bg-blue-100 text-blue-700" : "text-gray-700 hover:bg-gray-100"
-                  }`}
+                  className={`flex items-center px-4 py-2 rounded-lg transition-colors ${isActive ? "bg-blue-100 text-blue-700" : "text-gray-700 hover:bg-gray-100"
+                    }`}
                 >
                   <Icon className="h-5 w-5 mr-3" />
                   {item.name}

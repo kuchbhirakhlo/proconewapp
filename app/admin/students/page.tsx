@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/dialog"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Plus, Edit, Trash2, AlertCircle, CheckCircle, Users, Mail, Phone } from "lucide-react"
-import { getStudents, createStudent, updateStudent, deleteStudent, getCourses, enrollStudent } from "@/lib/admin"
+import { getStudents, createStudent, updateStudent, deleteStudent, getCourses, enrollStudent, assignCoursesToStudent } from "@/lib/admin"
 
 interface Student {
   id: string
@@ -46,14 +46,25 @@ export default function StudentsManagement() {
   const [isEnrollDialogOpen, setIsEnrollDialogOpen] = useState(false)
   const [editingStudent, setEditingStudent] = useState<Student | null>(null)
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null)
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<{
+    fullName: string
+    email: string
+    phone: string
+    password: string
+    status: string
+    assignedCourses: string[]
+    autoAssignCourses: boolean
+  }>({
     fullName: "",
     email: "",
     phone: "",
     password: "",
     status: "active",
+    assignedCourses: [],
+    autoAssignCourses: false,
   })
   const [selectedCourse, setSelectedCourse] = useState("")
+  const [selectedCourses, setSelectedCourses] = useState<string[]>([])
   const [message, setMessage] = useState({ type: "", text: "" })
 
   useEffect(() => {
@@ -83,10 +94,20 @@ export default function StudentsManagement() {
           fullName: formData.fullName,
           phone: formData.phone,
           status: formData.status,
+          assignedCourses: formData.assignedCourses,
         })
         setMessage({ type: "success", text: "Student updated successfully!" })
       } else {
-        await createStudent(formData)
+        const studentData = {
+          fullName: formData.fullName,
+          email: formData.email,
+          phone: formData.phone,
+          password: formData.password,
+          status: formData.status,
+          assignedCourses: formData.assignedCourses,
+          autoAssignCourses: formData.autoAssignCourses,
+        }
+        await createStudent(studentData)
         setMessage({ type: "success", text: "Student created successfully!" })
       }
 
@@ -96,7 +117,18 @@ export default function StudentsManagement() {
       fetchData()
     } catch (error: any) {
       console.error("Error saving student:", error)
-      setMessage({ type: "error", text: error.message || "Failed to save student" })
+      const errorMessage = error.message || "Failed to save student"
+
+      // Handle specific validation errors
+      if (errorMessage.includes("Validation failed")) {
+        setMessage({ type: "error", text: errorMessage })
+      } else if (errorMessage.includes("already exists")) {
+        setMessage({ type: "error", text: errorMessage })
+      } else if (errorMessage.includes("not active")) {
+        setMessage({ type: "error", text: errorMessage })
+      } else {
+        setMessage({ type: "error", text: errorMessage })
+      }
     } finally {
       setLoading(false)
     }
@@ -113,9 +145,26 @@ export default function StudentsManagement() {
       setSelectedStudent(null)
       setSelectedCourse("")
       fetchData()
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error enrolling student:", error)
-      setMessage({ type: "error", text: "Failed to enroll student" })
+      setMessage({ type: "error", text: error.message || "Failed to enroll student" })
+    }
+  }
+
+  const handleBulkAssignment = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!selectedStudent || selectedCourses.length === 0) return
+
+    try {
+      const result = await assignCoursesToStudent(selectedStudent.id, selectedCourses)
+      setMessage({ type: "success", text: result.message || "Courses assigned successfully!" })
+      setIsEnrollDialogOpen(false)
+      setSelectedStudent(null)
+      setSelectedCourses([])
+      fetchData()
+    } catch (error: any) {
+      console.error("Error assigning courses:", error)
+      setMessage({ type: "error", text: error.message || "Failed to assign courses" })
     }
   }
 
@@ -127,6 +176,8 @@ export default function StudentsManagement() {
       phone: student.phone,
       password: "",
       status: student.status,
+      assignedCourses: student.enrolledCourses || [],
+      autoAssignCourses: false,
     })
     setIsDialogOpen(true)
   }
@@ -151,6 +202,8 @@ export default function StudentsManagement() {
       phone: "",
       password: "",
       status: "active",
+      assignedCourses: [],
+      autoAssignCourses: false,
     })
   }
 
@@ -250,6 +303,67 @@ export default function StudentsManagement() {
                       <option value="inactive">Inactive</option>
                       <option value="suspended">Suspended</option>
                     </select>
+                  </div>
+
+                  {/* Course Assignment Section */}
+                  <div className="space-y-4 border-t pt-4">
+                    <div className="flex items-center justify-between">
+                      <Label className="text-base font-medium">Course Assignment</Label>
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="autoAssign"
+                          checked={formData.autoAssignCourses}
+                          onChange={(e) => setFormData({ ...formData, autoAssignCourses: e.target.checked })}
+                        />
+                        <Label htmlFor="autoAssign" className="text-sm">Auto-assign courses</Label>
+                      </div>
+                    </div>
+
+                    {!formData.autoAssignCourses && (
+                      <div className="space-y-2">
+                        <Label htmlFor="courses">Select Courses to Assign</Label>
+                        <div className="max-h-40 overflow-y-auto border rounded-md p-2">
+                          {courses.map((course) => (
+                            <div key={course.id} className="flex items-center space-x-2 py-1">
+                              <input
+                                type="checkbox"
+                                id={`course-${course.id}`}
+                                checked={formData.assignedCourses.includes(course.id)}
+                                onChange={(e) => {
+                                  if (e.target.checked) {
+                                    setFormData({
+                                      ...formData,
+                                      assignedCourses: [...formData.assignedCourses, course.id]
+                                    })
+                                  } else {
+                                    setFormData({
+                                      ...formData,
+                                      assignedCourses: formData.assignedCourses.filter(id => id !== course.id)
+                                    })
+                                  }
+                                }}
+                              />
+                              <Label htmlFor={`course-${course.id}`} className="text-sm">
+                                {course.title}
+                              </Label>
+                            </div>
+                          ))}
+                        </div>
+                        <p className="text-xs text-gray-500">
+                          {formData.assignedCourses.length} course(s) selected
+                        </p>
+                      </div>
+                    )}
+
+                    {formData.autoAssignCourses && (
+                      <div className="bg-blue-50 border border-blue-200 rounded-md p-3">
+                        <p className="text-sm text-blue-800">
+                          <strong>Auto-assignment:</strong> Student will be automatically enrolled in all active courses.
+                          This is recommended for new students to ensure they have access to all available content.
+                        </p>
+                      </div>
+                    )}
                   </div>
 
                   <div className="flex justify-end space-x-2 pt-4">
