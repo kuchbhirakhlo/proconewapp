@@ -8,7 +8,7 @@ export default function Gallery() {
 
   const galleryImages = [
     {
-      src: "https://scontent.fvns1-1.fna.fbcdn.net/v/t39.30808-6/515184052_122112195590920787_4690477494707656984_n.jpg?_nc_cat=102&ccb=1-7&_nc_sid=cc71e4&_nc_ohc=IrTteCSybeoQ7kNvwE83Rii&_nc_oc=AdkaUyL5QHQqw9DZ5ETkQ1Hq-ltALcYAHCpDqJeKaKyIyo7f0DrFsuaBo_y6ufh9P_IkzDnzfALkKyZa6GHdVYkT&_nc_zt=23&_nc_ht=scontent.fvns1-1.fna&_nc_gid=BR1Mk_EaX3oPWfLMS0Xfaw&oh=00_AfR8bmEi8ZIYPGQBf1MYUSYlAIfiBWRIHG-4X2dcSAhdmw&oe=6886609F",
+      src: "https://res.cloudinary.com/dwfctknuj/image/upload/v1758626171/epltb4gqswsa3amn0urv.jpg",
       alt: "Students collaborating on coding project",
       title: "Collaborative Learning",
     },
@@ -43,7 +43,7 @@ export default function Gallery() {
       title: "Programming Excellence",
     },
     {
-      src: "https://scontent.fvns1-2.fna.fbcdn.net/v/t39.30808-6/514280805_122108336570920787_5079695977105795382_n.jpg?_nc_cat=109&ccb=1-7&_nc_sid=127cfc&_nc_ohc=3hc5E7ltLaYQ7kNvwH9AXxG&_nc_oc=Adm8hLCJMigWgFTgaNWY0CoP7lD6Q8FEELxBfOm3001pCrW33wgyiiYdwZdTqF-M2T7XbFHQrIMaMQW9YiR1YNk0&_nc_zt=23&_nc_ht=scontent.fvns1-2.fna&_nc_gid=aHjZn8wjyiSF5xnSZz4ATw&oh=00_AfSAKXCyPouW8ukdOU0wRDVw5QuijW8Fk1gdmjwZZQI25w&oe=688671B1",
+      src: "https://res.cloudinary.com/dwfctknuj/image/upload/v1758626170/isfypmgilmw21sdlitea.jpg",
       alt: "Students in computer class",
       title: "Interactive Classes",
     },
