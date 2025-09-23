@@ -22,9 +22,9 @@ service cloud.firestore {
       allow read, write: if isAdmin() && isOwner(adminId);
     }
 
-    // Courses collection - admins can read/write, authenticated users can read active courses
+    // Courses collection - admins can read/write, public can read active courses
     match / courses / { courseId } {
-      allow read: if isAdmin() || isStudent();
+      allow read: if isAdmin() || isStudent() || (request.auth == null && resource.data.status == 'active');
       allow write: if isAdmin();
     }
 
