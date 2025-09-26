@@ -58,5 +58,12 @@ service cloud.firestore {
     match / analytics / { analyticsId } {
       allow read, write: if isAdmin();
     }
+
+    // Course PDFs collection - admins can read/write, authenticated students can read PDFs for their enrolled courses
+    match / course_pdfs / { pdfId } {
+      allow read: if isAdmin() || (isStudent() && exists(/databases/$(database)/documents/students/$(request.auth.uid))) || request.auth != null;
+      allow write: if isAdmin();
+      allow create, update, delete: if isAdmin();
+    }
   }
 }

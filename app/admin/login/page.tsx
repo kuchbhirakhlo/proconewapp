@@ -29,7 +29,7 @@ export default function AdminLoginPage() {
       await signInAdmin(email, password)
       router.push("/admin/dashboard")
     } catch (error: any) {
-      setError(error.message)
+      setError("Please contact to Admin")
     } finally {
       setLoading(false)
     }

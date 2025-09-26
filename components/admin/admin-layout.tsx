@@ -2,14 +2,14 @@
 
 import type React from "react"
 
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { useAdmin } from "@/hooks/useAdmin"
 import { signOut } from "firebase/auth"
 import { auth } from "@/lib/firebase"
-import { LayoutDashboard, BookOpen, Briefcase, Users, LogOut, Settings } from "lucide-react"
+import { LayoutDashboard, BookOpen, Briefcase, Users, LogOut, Settings, Menu, X, FileText } from "lucide-react"
 
 interface AdminLayoutProps {
   children: React.ReactNode
@@ -19,6 +19,7 @@ interface AdminLayoutProps {
 export default function AdminLayout({ children, title }: AdminLayoutProps) {
   const { user, isAdmin, loading } = useAdmin()
   const router = useRouter()
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   useEffect(() => {
     if (!loading && (!user || !isAdmin)) {
@@ -53,15 +54,40 @@ export default function AdminLayout({ children, title }: AdminLayoutProps) {
   const navigation = [
     { name: "Dashboard", href: "/admin/dashboard", icon: LayoutDashboard },
     { name: "Courses", href: "/admin/courses", icon: BookOpen },
+    { name: "Course PDFs", href: "/admin/course-pdfs", icon: FileText },
     { name: "Portfolio", href: "/admin/portfolio", icon: Briefcase },
     { name: "Students", href: "/admin/students", icon: Users },
     { name: "Settings", href: "/admin/settings", icon: Settings },
   ]
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 flex">
+      {/* Mobile menu button */}
+      <div className="lg:hidden fixed top-4 left-4 z-50">
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          className="bg-white shadow-md"
+        >
+          {mobileMenuOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
+        </Button>
+      </div>
+
+      {/* Mobile overlay */}
+      {mobileMenuOpen && (
+        <div
+          className="lg:hidden fixed inset-0 bg-black bg-opacity-50 z-40"
+          onClick={() => setMobileMenuOpen(false)}
+        />
+      )}
+
       {/* Sidebar */}
-      <div className="fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-lg">
+      <div className={`
+        fixed lg:static inset-y-0 left-0 z-50 w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out flex flex-col
+        ${mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}
+        lg:translate-x-0
+      `}>
         <div className="flex flex-col h-full">
           <div className="flex items-center justify-center h-16 px-4 bg-blue-600 text-white">
             <h1 className="text-xl font-bold">ProcoTech Admin</h1>
@@ -74,6 +100,7 @@ export default function AdminLayout({ children, title }: AdminLayoutProps) {
                 <Link
                   key={item.name}
                   href={item.href}
+                  onClick={() => setMobileMenuOpen(false)}
                   className="flex items-center px-4 py-2 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors"
                 >
                   <Icon className="h-5 w-5 mr-3" />
@@ -102,8 +129,8 @@ export default function AdminLayout({ children, title }: AdminLayoutProps) {
       </div>
 
       {/* Main Content */}
-      <div className="ml-64">
-        <main className="p-6">{children}</main>
+      <div className="flex-1 lg:ml-0 min-h-screen">
+        <main className="p-4 lg:p-6">{children}</main>
       </div>
     </div>
   )

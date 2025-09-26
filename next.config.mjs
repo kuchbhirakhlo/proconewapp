@@ -2,7 +2,7 @@
 const nextConfig = {
   // Ensure proper routing
   trailingSlash: false,
-  
+
   // Security headers
   async headers() {
     return [
@@ -16,6 +16,18 @@ const nextConfig = {
           {
             key: 'X-Content-Type-Options',
             value: 'nosniff',
+          },
+          {
+            key: 'Access-Control-Allow-Origin',
+            value: '*',
+          },
+          {
+            key: 'Access-Control-Allow-Methods',
+            value: 'GET, POST, PUT, DELETE, OPTIONS',
+          },
+          {
+            key: 'Access-Control-Allow-Headers',
+            value: 'X-Requested-With, Content-Type, Accept, Authorization',
           },
         ],
       },
