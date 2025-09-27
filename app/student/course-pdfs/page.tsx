@@ -11,13 +11,14 @@ import { useStudent } from "@/hooks/useStudent"
 import { collection, getDocs, query, where } from "firebase/firestore"
 import { db } from "@/lib/firebase"
 import PDFViewer from "@/components/pdf/pdf-viewer"
+import GoogleAds from "@/components/google-ads"
 
 interface CoursePDF {
     id: string
     title: string
     description: string
-    courseId: string
-    courseTitle: string
+    courseIds: string[]
+    courseTitles: string[]
     pdfUrl: string
     uploadedBy: string
     createdAt: any
@@ -54,14 +55,19 @@ export default function CoursePDFsPage() {
                 try {
                     // Fetch all PDFs
                     const pdfsSnapshot = await getDocs(collection(db, "course_pdfs"))
-                    const allPdfs = pdfsSnapshot.docs.map(doc => ({
-                        id: doc.id,
-                        ...doc.data()
-                    } as CoursePDF))
+                    const allPdfs = pdfsSnapshot.docs.map(doc => {
+                        const data = doc.data()
+                        const courseIds = data.courseIds || [data.courseId] // Support both old single courseId and new courseIds array
+                        return {
+                            id: doc.id,
+                            ...data,
+                            courseIds
+                        } as CoursePDF
+                    })
 
                     // Filter PDFs for enrolled courses
                     const enrolledPdfs = allPdfs.filter(pdf =>
-                        studentData.enrolledCourses.includes(pdf.courseId)
+                        pdf.courseIds.some((courseId: string) => studentData.enrolledCourses.includes(courseId))
                     )
 
                     // Get course details for the PDFs
@@ -72,10 +78,15 @@ export default function CoursePDFsPage() {
                     } as Course))
 
                     // Add course titles to PDFs
-                    const pdfsWithCourseTitles = enrolledPdfs.map(pdf => ({
-                        ...pdf,
-                        courseTitle: coursesData.find(c => c.id === pdf.courseId)?.title || "Unknown Course"
-                    }))
+                    const pdfsWithCourseTitles = enrolledPdfs.map(pdf => {
+                        const courseTitles = pdf.courseIds.map((courseId: string) =>
+                            coursesData.find(c => c.id === courseId)?.title || "Unknown Course"
+                        )
+                        return {
+                            ...pdf,
+                            courseTitles
+                        }
+                    })
 
                     setPdfs(pdfsWithCourseTitles)
                     setCourses(coursesData.filter(course =>
@@ -95,8 +106,8 @@ export default function CoursePDFsPage() {
     const filteredPdfs = pdfs.filter(pdf => {
         const matchesSearch = pdf.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
             pdf.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            pdf.courseTitle.toLowerCase().includes(searchTerm.toLowerCase())
-        const matchesCourse = selectedCourse === "all" || pdf.courseId === selectedCourse
+            pdf.courseTitles.some(title => title.toLowerCase().includes(searchTerm.toLowerCase()))
+        const matchesCourse = selectedCourse === "all" || pdf.courseIds.includes(selectedCourse)
         return matchesSearch && matchesCourse
     })
 
@@ -130,16 +141,16 @@ export default function CoursePDFsPage() {
     return (
         <StudentLayout title="Course PDFs">
             <div className="space-y-6">
-                <div className="flex justify-between items-center">
+                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
                     <div>
-                        <h1 className="text-2xl font-bold">Course PDFs</h1>
-                        <p className="text-gray-600">Access course materials and study resources</p>
+                        <h1 className="text-xl sm:text-2xl font-bold">Course PDFs</h1>
+                        <p className="text-sm sm:text-base text-gray-600">Access course materials and study resources</p>
                     </div>
-                    <div className="flex gap-2">
-                        <Badge variant="outline" className="px-3 py-1">
+                    <div className="flex flex-wrap gap-2">
+                        <Badge variant="outline" className="px-2 sm:px-3 py-1 text-xs sm:text-sm">
                             {pdfs.length} Total PDFs
                         </Badge>
-                        <Badge variant="secondary" className="px-3 py-1">
+                        <Badge variant="secondary" className="px-2 sm:px-3 py-1 text-xs sm:text-sm">
                             {courses.length} Courses
                         </Badge>
                     </div>
@@ -148,24 +159,22 @@ export default function CoursePDFsPage() {
                 {/* Search and Filter Section */}
                 <Card>
                     <CardContent className="pt-6">
-                        <div className="flex flex-col md:flex-row gap-4">
-                            <div className="flex-1">
-                                <div className="relative">
-                                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-                                    <Input
-                                        placeholder="Search PDFs by title, description, or course..."
-                                        value={searchTerm}
-                                        onChange={(e) => setSearchTerm(e.target.value)}
-                                        className="pl-10"
-                                    />
-                                </div>
+                        <div className="flex flex-col gap-4">
+                            <div className="relative">
+                                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                                <Input
+                                    placeholder="Search PDFs by title, description, or course..."
+                                    value={searchTerm}
+                                    onChange={(e) => setSearchTerm(e.target.value)}
+                                    className="pl-10 text-sm sm:text-base"
+                                />
                             </div>
                             <div className="flex items-center gap-2">
-                                <Filter className="h-4 w-4 text-gray-400" />
+                                <Filter className="h-4 w-4 text-gray-400 flex-shrink-0" />
                                 <select
                                     value={selectedCourse}
                                     onChange={(e) => setSelectedCourse(e.target.value)}
-                                    className="px-3 py-2 border rounded-md bg-white"
+                                    className="flex-1 px-2 sm:px-3 py-2 border rounded-md bg-white text-sm sm:text-base"
                                 >
                                     <option value="all">All Courses</option>
                                     {courses.map((course) => (
@@ -179,16 +188,26 @@ export default function CoursePDFsPage() {
                     </CardContent>
                 </Card>
 
+                {/* Ad Block */}
+                <div className="w-full">
+                    <GoogleAds
+                        slot="1234567890"
+                        format="horizontal"
+                        className="mx-auto max-w-4xl"
+                        responsive={true}
+                    />
+                </div>
+
                 {/* PDFs Grid */}
                 {loading ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                         {[1, 2, 3, 4, 5, 6].map((i) => (
                             <Card key={i} className="animate-pulse">
-                                <CardHeader>
+                                <CardHeader className="pb-3">
                                     <div className="h-4 bg-gray-200 rounded w-3/4"></div>
                                     <div className="h-3 bg-gray-200 rounded w-1/2"></div>
                                 </CardHeader>
-                                <CardContent>
+                                <CardContent className="pt-0">
                                     <div className="h-20 bg-gray-200 rounded mb-4"></div>
                                     <div className="h-8 bg-gray-200 rounded"></div>
                                 </CardContent>
@@ -222,61 +241,66 @@ export default function CoursePDFsPage() {
                         </CardContent>
                     </Card>
                 ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                         {filteredPdfs.map((pdf) => (
                             <Card key={pdf.id} className="hover:shadow-lg transition-shadow">
-                                <CardHeader>
-                                    <div className="flex justify-between items-start">
-                                        <div className="flex-1">
-                                            <CardTitle className="text-lg line-clamp-2">{pdf.title}</CardTitle>
-                                            <CardDescription className="mt-1 line-clamp-2">
+                                <CardHeader className="pb-3">
+                                    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2">
+                                        <div className="flex-1 min-w-0">
+                                            <CardTitle className="text-base sm:text-lg line-clamp-2 leading-tight">{pdf.title}</CardTitle>
+                                            <CardDescription className="mt-1 line-clamp-2 text-sm">
                                                 {pdf.description}
                                             </CardDescription>
                                         </div>
-                                        <Badge variant="outline" className="ml-2">
+                                        <Badge variant="outline" className="self-start sm:ml-2 text-xs">
                                             <FileText className="h-3 w-3 mr-1" />
                                             PDF
                                         </Badge>
                                     </div>
                                 </CardHeader>
-                                <CardContent>
-                                    <div className="space-y-3 mb-4">
-                                        <div className="flex justify-between text-sm">
+                                <CardContent className="pt-0">
+                                    <div className="space-y-2 sm:space-y-3 mb-4">
+                                        <div className="flex flex-col sm:flex-row sm:justify-between text-xs sm:text-sm gap-1">
                                             <span className="text-gray-600">Course:</span>
-                                            <span className="font-medium truncate max-w-32" title={pdf.courseTitle}>
-                                                {pdf.courseTitle}
-                                            </span>
+                                            <div className="font-medium text-right sm:max-w-32 sm:truncate">
+                                                {pdf.courseTitles.map((title, index) => (
+                                                    <div key={index} title={title} className="truncate">
+                                                        {title}
+                                                        {index < pdf.courseTitles.length - 1 && <br />}
+                                                    </div>
+                                                ))}
+                                            </div>
                                         </div>
-                                        <div className="flex justify-between text-sm">
+                                        <div className="flex flex-col sm:flex-row sm:justify-between text-xs sm:text-sm gap-1">
                                             <span className="text-gray-600">Uploaded:</span>
-                                            <span className="flex items-center">
+                                            <span className="flex items-center justify-start sm:justify-end">
                                                 <Calendar className="h-3 w-3 mr-1" />
-                                                {formatDate(pdf.createdAt)}
+                                                <span className="truncate">{formatDate(pdf.createdAt)}</span>
                                             </span>
                                         </div>
-                                        <div className="flex justify-between text-sm">
+                                        <div className="flex flex-col sm:flex-row sm:justify-between text-xs sm:text-sm gap-1">
                                             <span className="text-gray-600">Size:</span>
-                                            <span>PDF Document</span>
+                                            <span className="text-right sm:text-left">PDF Document</span>
                                         </div>
                                     </div>
 
-                                    <div className="flex space-x-2">
+                                    <div className="flex flex-col sm:flex-row gap-2">
                                         <Button
                                             size="sm"
                                             variant="outline"
                                             onClick={() => handleViewPDF(pdf)}
-                                            className="flex-1 bg-transparent"
+                                            className="flex-1 bg-transparent text-xs sm:text-sm"
                                         >
-                                            <Eye className="h-4 w-4 mr-1" />
+                                            <Eye className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
                                             View
                                         </Button>
                                         <Button
                                             size="sm"
                                             variant="outline"
                                             onClick={() => handleDownloadPDF(pdf.pdfUrl, pdf.title)}
-                                            className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 bg-transparent"
+                                            className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 bg-transparent text-xs sm:text-sm"
                                         >
-                                            <Download className="h-4 w-4" />
+                                            <Download className="h-3 w-3 sm:h-4 sm:w-4" />
                                         </Button>
                                     </div>
                                 </CardContent>
@@ -285,31 +309,41 @@ export default function CoursePDFsPage() {
                     </div>
                 )}
 
+                {/* Ad Block */}
+                <div className="w-full">
+                    <GoogleAds
+                        slot="2345678901"
+                        format="rectangle"
+                        className="mx-auto max-w-sm sm:max-w-md"
+                        responsive={true}
+                    />
+                </div>
+
                 {/* Course-wise PDF Summary */}
                 {courses.length > 0 && (
                     <Card>
-                        <CardHeader>
-                            <CardTitle className="flex items-center">
-                                <BookOpen className="h-5 w-5 mr-2" />
+                        <CardHeader className="pb-4">
+                            <CardTitle className="flex items-center text-lg sm:text-xl">
+                                <BookOpen className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
                                 Course-wise PDF Summary
                             </CardTitle>
-                            <CardDescription>
+                            <CardDescription className="text-sm">
                                 Overview of PDFs available for each course
                             </CardDescription>
                         </CardHeader>
-                        <CardContent>
-                            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                        <CardContent className="pt-0">
+                            <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
                                 {courses.map((course) => {
-                                    const coursePdfs = pdfs.filter(pdf => pdf.courseId === course.id)
+                                    const coursePdfs = pdfs.filter(pdf => pdf.courseIds.includes(course.id))
                                     return (
-                                        <div key={course.id} className="border rounded-lg p-4">
-                                            <div className="flex items-center justify-between mb-2">
-                                                <h3 className="font-semibold">{course.title}</h3>
-                                                <Badge variant="secondary">
+                                        <div key={course.id} className="border rounded-lg p-3 sm:p-4">
+                                            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-2 gap-2">
+                                                <h3 className="font-semibold text-sm sm:text-base leading-tight line-clamp-1">{course.title}</h3>
+                                                <Badge variant="secondary" className="self-start sm:self-center text-xs">
                                                     {coursePdfs.length} PDF{coursePdfs.length !== 1 ? 's' : ''}
                                                 </Badge>
                                             </div>
-                                            <p className="text-sm text-gray-600 mb-3 line-clamp-2">
+                                            <p className="text-xs sm:text-sm text-gray-600 mb-3 line-clamp-2 leading-relaxed">
                                                 {course.description}
                                             </p>
                                             {coursePdfs.length > 0 && (
@@ -336,13 +370,13 @@ export default function CoursePDFsPage() {
 
                 {/* PDF Viewer Modal */}
                 {showPdfViewer && selectedPdf && (
-                    <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-                        <div className="bg-white rounded-lg w-full max-w-6xl h-[90vh] max-h-[90vh]">
+                    <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-2 sm:p-4">
+                        <div className="bg-white rounded-lg w-full h-full sm:h-[90vh] sm:max-h-[90vh] sm:max-w-6xl">
                             <PDFViewer
                                 pdfUrl={selectedPdf.pdfUrl}
                                 title={selectedPdf.title}
                                 onClose={handleClosePdfViewer}
-                                className="h-full"
+                                className="h-full rounded-lg"
                             />
                         </div>
                     </div>

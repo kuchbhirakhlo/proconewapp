@@ -1,0 +1,41 @@
+v
+rules_version = '2';
+
+// Firebase Storage Security Rules
+service firebase.storage {
+  match /b/{bucket}/o {
+    // Helper function to check if user is admin
+    function isAdmin() {
+      return request.auth != null &&
+        firestore.exists(/databases/(default)/documents/admins/$(request.auth.uid));
+    }
+
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // Allow authenticated users to read all files
+    match /{allPaths=**} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin() && isAuthenticated();
+    }
+
+    // Specific rules for course PDFs folder
+    match /course_pdfs/{fileName} {
+      // Allow admins to upload PDFs
+      allow write: if isAdmin() && isAuthenticated() &&
+        request.resource.contentType.matches('application/pdf');
+
+      // Allow admins to delete PDFs
+      allow delete: if isAdmin() && isAuthenticated();
+
+      // Allow authenticated users to read PDFs
+      allow read: if isAuthenticated();
+    }
+
+    // Default bucket rules
+    match /{allPaths=**} {
+      allow read, write: if false; // Deny by default
+    }
+  }
+}

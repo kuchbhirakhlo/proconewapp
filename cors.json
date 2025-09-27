@@ -2,7 +2,8 @@
     {
         "origin": [
             "http://localhost:3000",
-            "https://procotech.in"
+            "https://procotech.in",
+            "https://www.procotech.in"
         ],
         "method": [
             "GET",

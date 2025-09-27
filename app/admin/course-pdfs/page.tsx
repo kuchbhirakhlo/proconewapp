@@ -12,6 +12,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Badge } from "@/components/ui/badge"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Checkbox } from "@/components/ui/checkbox"
 import {
     Dialog,
     DialogContent,
@@ -26,6 +27,7 @@ import { collection, addDoc, updateDoc, deleteDoc, doc, getDocs, serverTimestamp
 import { ref, uploadBytes, getDownloadURL, deleteObject } from "firebase/storage"
 import { db, auth } from "@/lib/firebase"
 import { storage } from "@/lib/firebase"
+import GoogleAds from "@/components/google-ads"
 
 interface Course {
     id: string
@@ -45,8 +47,8 @@ interface CoursePDF {
     id: string
     title: string
     description: string
-    courseId: string
-    courseTitle: string
+    courseIds: string[]
+    courseTitles: string[]
     pdfUrl: string
     uploadedBy: string
     createdAt: any
@@ -62,7 +64,7 @@ export default function CoursePDFsManagement() {
     const [formData, setFormData] = useState({
         title: "",
         description: "",
-        courseId: "",
+        courseIds: [] as string[],
     })
     const [message, setMessage] = useState({ type: "", text: "" })
     const [uploadingPdf, setUploadingPdf] = useState(false)
@@ -81,10 +83,14 @@ export default function CoursePDFsManagement() {
 
             const pdfsData = pdfsSnapshot.docs.map((doc) => {
                 const data = doc.data()
+                const courseIds = data.courseIds || [data.courseId] // Support both old single courseId and new courseIds array
+                const courseTitles = courseIds.map((id: string) => coursesMap.get(id) || "Unknown Course")
+
                 return {
                     id: doc.id,
                     ...data,
-                    courseTitle: coursesMap.get(data.courseId) || "Unknown Course"
+                    courseIds,
+                    courseTitles
                 } as CoursePDF
             })
             setPdfs(pdfsData)
@@ -113,6 +119,11 @@ export default function CoursePDFsManagement() {
         e.preventDefault()
         if (!pdfFile) {
             setMessage({ type: "error", text: "Please select a PDF file" })
+            return
+        }
+
+        if (formData.courseIds.length === 0) {
+            setMessage({ type: "error", text: "Please select at least one course" })
             return
         }
 
@@ -151,7 +162,7 @@ export default function CoursePDFsManagement() {
             const pdfData = {
                 title: formData.title,
                 description: formData.description,
-                courseId: formData.courseId,
+                courseIds: formData.courseIds,
                 pdfUrl,
                 uploadedBy: auth.currentUser?.uid || "system",
                 createdAt: serverTimestamp(),
@@ -184,7 +195,7 @@ export default function CoursePDFsManagement() {
         setFormData({
             title: pdf.title,
             description: pdf.description,
-            courseId: pdf.courseId,
+            courseIds: pdf.courseIds,
         })
         setIsDialogOpen(true)
     }
@@ -214,7 +225,7 @@ export default function CoursePDFsManagement() {
         setFormData({
             title: "",
             description: "",
-            courseId: "",
+            courseIds: [],
         })
         setPdfFile(null)
     }
@@ -296,19 +307,41 @@ export default function CoursePDFsManagement() {
                                 </div>
 
                                 <div className="space-y-2">
-                                    <Label htmlFor="course">Associated Course</Label>
-                                    <Select value={formData.courseId} onValueChange={(value) => setFormData({ ...formData, courseId: value })}>
-                                        <SelectTrigger>
-                                            <SelectValue placeholder="Select a course" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            {courses.map((course) => (
-                                                <SelectItem key={course.id} value={course.id}>
+                                    <Label>Associated Courses</Label>
+                                    <div className="space-y-2 max-h-40 overflow-y-auto border rounded-md p-3">
+                                        {courses.map((course) => (
+                                            <div key={course.id} className="flex items-center space-x-2">
+                                                <input
+                                                    type="checkbox"
+                                                    id={`course-${course.id}`}
+                                                    checked={formData.courseIds.includes(course.id)}
+                                                    onChange={(e) => {
+                                                        if (e.target.checked) {
+                                                            setFormData({
+                                                                ...formData,
+                                                                courseIds: [...formData.courseIds, course.id]
+                                                            })
+                                                        } else {
+                                                            setFormData({
+                                                                ...formData,
+                                                                courseIds: formData.courseIds.filter(id => id !== course.id)
+                                                            })
+                                                        }
+                                                    }}
+                                                    className="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded"
+                                                />
+                                                <Label
+                                                    htmlFor={`course-${course.id}`}
+                                                    className="text-sm font-normal cursor-pointer"
+                                                >
                                                     {course.title}
-                                                </SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
+                                                </Label>
+                                            </div>
+                                        ))}
+                                    </div>
+                                    {formData.courseIds.length === 0 && (
+                                        <p className="text-sm text-red-500">Please select at least one course</p>
+                                    )}
                                 </div>
 
                                 <div className="space-y-2">
@@ -372,6 +405,16 @@ export default function CoursePDFsManagement() {
                     </Alert>
                 )}
 
+                {/* Ad Block */}
+                <div className="w-full">
+                    <GoogleAds
+                        slot="3456789012"
+                        format="horizontal"
+                        className="mx-auto max-w-4xl"
+                        responsive={true}
+                    />
+                </div>
+
                 {/* PDFs Grid */}
                 {loading ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -407,8 +450,15 @@ export default function CoursePDFsManagement() {
                                 <CardContent>
                                     <div className="space-y-2 mb-4">
                                         <div className="flex justify-between text-sm">
-                                            <span className="text-gray-600">Course:</span>
-                                            <span className="font-medium">{pdf.courseTitle}</span>
+                                            <span className="text-gray-600">Courses:</span>
+                                            <div className="text-right">
+                                                {pdf.courseTitles.map((title, index) => (
+                                                    <div key={index} className="font-medium">
+                                                        {title}
+                                                        {index < pdf.courseTitles.length - 1 && <br />}
+                                                    </div>
+                                                ))}
+                                            </div>
                                         </div>
                                         <div className="flex justify-between text-sm">
                                             <span className="text-gray-600">Uploaded:</span>
