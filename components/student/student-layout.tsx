@@ -85,7 +85,6 @@ export default function StudentLayout({ children, title }: StudentLayoutProps) {
     { name: "My Courses", href: "/student/courses", icon: BookOpen },
     { name: "Learning", href: "/student/course-pdfs", icon: FileText },
     { name: "Certificates", href: "/student/certificates", icon: Award },
-    { name: "Settings", href: "/student/settings", icon: Settings },
   ]
 
   return (
