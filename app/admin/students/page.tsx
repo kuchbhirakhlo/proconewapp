@@ -33,6 +33,7 @@ interface Student {
   email: string
   phone: string
   enrolledCourses: string[]
+  assignedCourses?: string[]
   status: string
   createdAt: any
 }
@@ -183,7 +184,7 @@ export default function StudentsManagement() {
       phone: student.phone,
       password: "",
       status: student.status,
-      assignedCourses: student.enrolledCourses || [],
+      assignedCourses: student.assignedCourses || [],
       autoAssignCourses: false,
     })
     setIsDialogOpen(true)

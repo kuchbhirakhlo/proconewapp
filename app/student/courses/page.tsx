@@ -12,20 +12,25 @@ import { getEnrolledCourses, getStudentData, enrollInCourse } from "@/lib/studen
 import { doc, getDoc } from "firebase/firestore"
 import { db } from "@/lib/firebase"
 
+interface CourseData {
+    id: string
+    title: string
+    description: string
+    duration?: string
+    status?: string
+    pdfUrls?: string[]
+    level?: string
+}
+
 interface CourseWithEnrollment {
     id: string
-    course: {
-        id: string
-        title: string
-        description: string
-        duration?: string
-        status?: string
-        pdfUrls?: string[]
-    } | null
+    course: CourseData | null
     status: string
     progress: number
     enrolledAt: any
     courseId: string
+    studentId: string
+    approvedForCertificate?: boolean
 }
 
 export default function CoursesPage() {
@@ -45,7 +50,7 @@ export default function CoursesPage() {
 
                     // Get assigned courses from student data
                     const student = await getStudentData(studentData.uid)
-                    setAssignedCourses((student as any).assignedCourses || [])
+                    setAssignedCourses(student.assignedCourses || [])
                 } catch (error) {
                     console.error("Error fetching courses data:", error)
                 } finally {
@@ -58,8 +63,12 @@ export default function CoursesPage() {
     }, [studentData])
 
     const getCourseStatus = (enrollment: CourseWithEnrollment) => {
-        if (enrollment.status === "completed") {
-            return { label: "Completed", variant: "default" as const, icon: CheckCircle, color: "text-green-600" }
+        const isCompleted = isCourseCompleted(enrollment.enrolledAt, enrollment.course?.duration || "")
+
+        if (isCompleted && enrollment.approvedForCertificate) {
+            return { label: "Approved", variant: "default" as const, icon: CheckCircle, color: "text-green-600" }
+        } else if (isCompleted) {
+            return { label: "Pending Approval", variant: "secondary" as const, icon: Clock, color: "text-yellow-600" }
         } else if (enrollment.status === "active") {
             return { label: "In Progress", variant: "secondary" as const, icon: Clock, color: "text-blue-600" }
         } else {
@@ -73,41 +82,53 @@ export default function CoursesPage() {
 
     // Helper function to calculate course end date
     const calculateCourseEndDate = (enrolledAt: any, duration: string) => {
-        if (!enrolledAt) return null
+        if (!enrolledAt || !duration) return null
 
-        const startDate = enrolledAt.toDate ? enrolledAt.toDate() : new Date(enrolledAt)
-        let endDate = new Date(startDate)
+        try {
+            const startDate = enrolledAt.toDate ? enrolledAt.toDate() : new Date(enrolledAt)
+            if (isNaN(startDate.getTime())) return null
 
-        // Parse duration (e.g., "6 months", "3 weeks", "1 year")
-        const durationMatch = duration.match(/(\d+)\s*(month|week|year|day)/i)
-        if (durationMatch) {
-            const value = parseInt(durationMatch[1])
-            const unit = durationMatch[2].toLowerCase()
+            let endDate = new Date(startDate)
 
-            switch (unit) {
-                case 'month':
-                    endDate.setMonth(endDate.getMonth() + value)
-                    break
-                case 'week':
-                    endDate.setDate(endDate.getDate() + (value * 7))
-                    break
-                case 'year':
-                    endDate.setFullYear(endDate.getFullYear() + value)
-                    break
-                case 'day':
-                    endDate.setDate(endDate.getDate() + value)
-                    break
+            // Parse duration (e.g., "6 months", "3 weeks", "1 year")
+            const durationMatch = duration.match(/(\d+)\s*(month|week|year|day)/i)
+            if (durationMatch) {
+                const value = parseInt(durationMatch[1])
+                const unit = durationMatch[2].toLowerCase()
+
+                switch (unit) {
+                    case 'month':
+                        endDate.setMonth(endDate.getMonth() + value)
+                        break
+                    case 'week':
+                        endDate.setDate(endDate.getDate() + (value * 7))
+                        break
+                    case 'year':
+                        endDate.setFullYear(endDate.getFullYear() + value)
+                        break
+                    case 'day':
+                        endDate.setDate(endDate.getDate() + value)
+                        break
+                }
             }
-        }
 
-        return endDate
+            return endDate
+        } catch (error) {
+            console.error("Error calculating course end date:", error)
+            return null
+        }
     }
 
     // Helper function to check if course is completed
     const isCourseCompleted = (enrolledAt: any, duration: string) => {
         const endDate = calculateCourseEndDate(enrolledAt, duration)
         if (!endDate) return false
-        return new Date() >= endDate
+        try {
+            return new Date() >= endDate
+        } catch (error) {
+            console.error("Error checking if course is completed:", error)
+            return false
+        }
     }
 
     // Handle start course
@@ -119,7 +140,7 @@ export default function CoursesPage() {
             await enrollInCourse(studentData.uid, courseId)
             // Refresh enrolled courses
             const courses = await getEnrolledCourses(studentData.uid)
-            setEnrolledCourses(courses as any)
+            setEnrolledCourses(courses as CourseWithEnrollment[])
         } catch (error) {
             console.error("Error enrolling in course:", error)
             alert("Failed to enroll in course. Please try again.")
@@ -129,7 +150,7 @@ export default function CoursesPage() {
     }
 
     // Get course details for available courses
-    const [availableCourseDetails, setAvailableCourseDetails] = useState<any[]>([])
+    const [availableCourseDetails, setAvailableCourseDetails] = useState<CourseData[]>([])
 
     useEffect(() => {
         const fetchAvailableCourseDetails = async () => {
@@ -140,7 +161,8 @@ export default function CoursesPage() {
                         return courseDoc.exists() ? { id: courseDoc.id, ...courseDoc.data() } : null
                     })
                     const courses = await Promise.all(coursePromises)
-                    setAvailableCourseDetails(courses.filter(course => course !== null))
+                    const validCourses = courses.filter((course): course is CourseData => course !== null)
+                    setAvailableCourseDetails(validCourses)
                 } catch (error) {
                     console.error("Error fetching available course details:", error)
                 }
@@ -271,7 +293,7 @@ export default function CoursesPage() {
                                     const StatusIcon = statusInfo.icon
 
                                     return (
-                                        <div key={enrollment.id} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
+                                        <div key={enrollment.id} className={`border rounded-lg p-4 hover:shadow-md transition-shadow ${isCourseCompleted(enrollment.enrolledAt, enrollment.course?.duration || "") ? 'bg-green-50 border-green-200' : ''}`}>
                                             <div className="flex items-center justify-between mb-3">
                                                 <h3 className="font-semibold text-lg">
                                                     {enrollment.course?.title || "Course Title"}
@@ -286,15 +308,20 @@ export default function CoursesPage() {
                                                 {enrollment.course?.description || "Course description"}
                                             </p>
 
-                                            {enrollment.status === "active" && (
-                                                <div className="space-y-3 mb-4">
-                                                    <div className="flex justify-between text-sm">
-                                                        <span className="font-medium">Progress</span>
-                                                        <span className="text-gray-600">{enrollment.progress || 0}%</span>
+                                            {(() => {
+                                                const isCompleted = isCourseCompleted(enrollment.enrolledAt, enrollment.course?.duration || "")
+                                                const progressValue = isCompleted ? 100 : (enrollment.progress || 0)
+
+                                                return (
+                                                    <div className="space-y-3 mb-4">
+                                                        <div className="flex justify-between text-sm">
+                                                            <span className="font-medium">Progress</span>
+                                                            <span className="text-gray-600">{progressValue}%</span>
+                                                        </div>
+                                                        <Progress value={progressValue} className="h-2" />
                                                     </div>
-                                                    <Progress value={enrollment.progress || 0} className="h-2" />
-                                                </div>
-                                            )}
+                                                )
+                                            })()}
 
                                             <div className="flex justify-between text-sm text-gray-500 pt-3 border-t">
                                                 <div className="flex flex-col space-y-1">
@@ -337,19 +364,25 @@ export default function CoursesPage() {
                                                 {(() => {
                                                     const isCompleted = isCourseCompleted(enrollment.enrolledAt, enrollment.course?.duration || "")
                                                     const endDate = calculateCourseEndDate(enrollment.enrolledAt, enrollment.course?.duration || "")
+                                                    const isApproved = enrollment.approvedForCertificate
 
-                                                    if (isCompleted) {
+                                                    if (isCompleted && isApproved) {
                                                         return (
                                                             <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
                                                                 <div className="flex items-center text-green-700">
                                                                     <CheckCircle className="h-5 w-5 mr-2" />
-                                                                    <span className="font-medium">Course Completed!</span>
+                                                                    <span className="font-medium">Certificate Approved!</span>
                                                                 </div>
                                                                 <p className="text-sm text-green-600 mt-1">
-                                                                    Your certificate is now available. You can download it from your dashboard.
+                                                                    Your certificate has been approved and is ready for download.
                                                                 </p>
                                                                 <div className="flex gap-2 mt-2">
-                                                                    <Button className="flex-1" size="sm">
+                                                                    <Button
+                                                                        className="flex-1"
+                                                                        size="sm"
+                                                                        onClick={() => window.location.href = '/student/certificates'}
+                                                                    >
+                                                                        <Award className="h-4 w-4 mr-2" />
                                                                         Download Certificate
                                                                     </Button>
                                                                     <Button
@@ -362,16 +395,29 @@ export default function CoursesPage() {
                                                                 </div>
                                                             </div>
                                                         )
-                                                    } else {
+                                                    } else if (isCompleted && !isApproved) {
                                                         return (
                                                             <div className="p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
                                                                 <div className="flex items-center text-yellow-700">
                                                                     <Clock className="h-5 w-5 mr-2" />
-                                                                    <span className="font-medium">Course In Progress</span>
+                                                                    <span className="font-medium">Pending Admin Approval</span>
                                                                 </div>
                                                                 <p className="text-sm text-yellow-600 mt-1">
+                                                                    Your course is completed but awaiting admin approval for certification.
+                                                                    You'll be notified once approved.
+                                                                </p>
+                                                            </div>
+                                                        )
+                                                    } else {
+                                                        return (
+                                                            <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                                                                <div className="flex items-center text-blue-700">
+                                                                    <Clock className="h-5 w-5 mr-2" />
+                                                                    <span className="font-medium">Course In Progress</span>
+                                                                </div>
+                                                                <p className="text-sm text-blue-600 mt-1">
                                                                     Your course will be completed on {endDate?.toLocaleDateString()}.
-                                                                    Certificate will be available after completion.
+                                                                    Certificate will be available after completion and admin approval.
                                                                 </p>
                                                             </div>
                                                         )
@@ -380,14 +426,14 @@ export default function CoursesPage() {
                                             </div>
 
                                             {/* Course PDFs Section */}
-                                            {(enrollment.course as any)?.pdfUrls && (enrollment.course as any).pdfUrls.length > 0 && (
+                                            {enrollment.course?.pdfUrls && enrollment.course.pdfUrls.length > 0 && (
                                                 <div className="pt-3 border-t">
                                                     <h4 className="font-medium text-sm mb-2 flex items-center">
                                                         <FileText className="h-4 w-4 mr-1" />
-                                                        Course Materials ({(enrollment.course as any)?.pdfUrls?.length || 0})
+                                                        Course Materials ({enrollment.course.pdfUrls.length})
                                                     </h4>
                                                     <div className="space-y-2">
-                                                        {(enrollment.course as any)?.pdfUrls?.map((pdfUrl: string, index: number) => (
+                                                        {enrollment.course.pdfUrls.map((pdfUrl: string, index: number) => (
                                                             <div key={index} className="flex items-center justify-between p-2 bg-gray-50 rounded">
                                                                 <div className="flex items-center">
                                                                     <FileText className="h-4 w-4 mr-2 text-blue-600" />

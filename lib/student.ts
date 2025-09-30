@@ -12,6 +12,7 @@ interface StudentData {
   email: string
   phone: string
   enrolledCourses: string[]
+  assignedCourses?: string[]
   status: string
   createdAt: any
   updatedAt: any
@@ -91,13 +92,13 @@ export const signInStudent = async (email: string, password: string) => {
 }
 
 // Get student data
-export const getStudentData = async (uid: string) => {
+export const getStudentData = async (uid: string): Promise<StudentData> => {
   try {
     const studentDoc = await getDoc(doc(db, "students", uid))
     if (!studentDoc.exists()) {
       throw new Error("Student data not found")
     }
-    return { id: studentDoc.id, ...studentDoc.data() }
+    return { id: studentDoc.id, ...studentDoc.data() } as StudentData
   } catch (error) {
     throw error
   }

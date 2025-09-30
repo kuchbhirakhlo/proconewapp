@@ -5,9 +5,11 @@ import StudentLayout from "@/components/student/student-layout"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Award, Download, Calendar, Clock, BookOpen, AlertCircle } from "lucide-react"
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { Award, Download, Calendar, Clock, BookOpen, Eye, AlertCircle } from "lucide-react"
 import { useStudent } from "@/hooks/useStudent"
 import { getEnrolledCourses } from "@/lib/student"
+import { generateCertificatePDF, previewCertificate, CertificateData, generateCertificateId } from "@/lib/certificate-generator"
 
 interface CourseWithEnrollment {
     id: string
@@ -23,6 +25,91 @@ interface CourseWithEnrollment {
     progress: number
     enrolledAt: any
     courseId: string
+    approvedForCertificate?: boolean
+}
+
+interface CertificatePreviewProps {
+    studentName: string
+    courseTitle: string
+    courseDescription: string
+    completionDate: string
+    certificateId: string
+    courseDuration?: string
+}
+
+const CertificatePreview = ({
+    studentName,
+    courseTitle,
+    courseDescription,
+    completionDate,
+    certificateId,
+    courseDuration
+}: CertificatePreviewProps) => {
+    return (
+        <div className="certificate-preview bg-white border-4 border-gray-800 p-8 max-w-4xl mx-auto">
+            <div className="text-center">
+                {/* Header */}
+                <h1 className="text-4xl font-bold text-gray-800 mb-2 tracking-wider uppercase">
+                    Certificate of Completion
+                </h1>
+                <div className="w-24 h-1 bg-blue-500 mx-auto mb-8"></div>
+
+                {/* Content */}
+                <div className="my-12">
+                    <p className="text-xl text-gray-700 mb-6">This is to certify that</p>
+                    <h2 className="text-3xl font-bold text-gray-800 mb-6 uppercase tracking-wide">
+                        {studentName}
+                    </h2>
+                    <p className="text-lg text-gray-700 mb-6">has successfully completed the course</p>
+                    <h3 className="text-2xl font-bold text-blue-600 mb-6 italic">
+                        "{courseTitle}"
+                    </h3>
+                    <p className="text-gray-600 max-w-2xl mx-auto leading-relaxed">
+                        {courseDescription}
+                    </p>
+                </div>
+
+                {/* Details */}
+                <div className="flex justify-center space-x-16 my-12">
+                    <div className="text-center">
+                        <p className="text-sm text-gray-500 mb-1">Completion Date</p>
+                        <p className="text-lg font-bold text-gray-800">{completionDate}</p>
+                    </div>
+                    <div className="text-center">
+                        <p className="text-sm text-gray-500 mb-1">Certificate ID</p>
+                        <p className="text-lg font-bold text-gray-800">{certificateId}</p>
+                    </div>
+                </div>
+
+                {/* Course Duration */}
+                {courseDuration && (
+                    <div className="text-center mb-8">
+                        <p className="text-sm text-gray-500 mb-1">Course Duration</p>
+                        <p className="text-lg font-bold text-gray-800">{courseDuration}</p>
+                    </div>
+                )}
+
+                {/* Logo */}
+                <div className="mt-12 text-center">
+                    <div className="inline-block text-center mx-10">
+                        <img
+                            src="/logo.png"
+                            alt="Organization Logo"
+                            className="h-16 w-auto mx-auto mb-4 object-contain"
+                        />
+                        <p className="text-sm text-gray-500">Certified by</p>
+                        <p className="text-lg font-bold text-gray-800">ProCo Tech</p>
+                    </div>
+                </div>
+
+                {/* Footer */}
+                <div className="mt-12 text-center">
+                    <p className="text-xs text-gray-500 mb-1">This certificate is officially recognized and verified</p>
+                    <p className="text-xs text-gray-500">Issued on {new Date().toLocaleDateString()}</p>
+                </div>
+            </div>
+        </div>
+    )
 }
 
 export default function CertificatesPage() {
@@ -91,11 +178,61 @@ export default function CertificatesPage() {
         return new Date() >= endDate
     }
 
-    // Generate certificate (placeholder function)
-    const generateCertificate = (course: CourseWithEnrollment) => {
-        // This would typically generate a PDF certificate
-        // For now, we'll just show an alert
-        alert(`Certificate for "${course.course?.title}" is being generated. This would normally download a PDF certificate.`)
+    // Generate certificate function
+    const generateCertificate = async (course: CourseWithEnrollment) => {
+        if (!course.course?.title || !studentData?.fullName) {
+            alert("Unable to generate certificate: Missing course or student information.");
+            return;
+        }
+
+        // Check if course is approved for certification
+        if (!course.approvedForCertificate) {
+            alert("Certificate not yet approved by admin. Please contact administration.");
+            return;
+        }
+
+        try {
+            const endDate = calculateCourseEndDate(course.enrolledAt, course.course?.duration || "")
+            const certificateData: CertificateData = {
+                studentName: studentData.fullName,
+                courseTitle: course.course.title,
+                courseDescription: course.course.description || "Course completion certificate",
+                completionDate: endDate?.toLocaleDateString() || new Date().toLocaleDateString(),
+                certificateId: generateCertificateId(),
+                courseDuration: course.course.duration
+            };
+
+            await generateCertificatePDF(certificateData);
+        } catch (error) {
+            console.error("Error generating certificate:", error);
+            alert("Failed to generate certificate. Please try again.");
+        }
+    }
+
+    // Preview certificate function
+    const previewCertificateHandler = (course: CourseWithEnrollment) => {
+        if (!course.course?.title || !studentData?.fullName) {
+            alert("Unable to preview certificate: Missing course or student information.");
+            return;
+        }
+
+        // Check if course is approved for certification
+        if (!course.approvedForCertificate) {
+            alert("Certificate not yet approved by admin. Please contact administration.");
+            return;
+        }
+
+        const endDate = calculateCourseEndDate(course.enrolledAt, course.course?.duration || "")
+        const certificateData: CertificateData = {
+            studentName: studentData.fullName,
+            courseTitle: course.course.title,
+            courseDescription: course.course.description || "Course completion certificate",
+            completionDate: endDate?.toLocaleDateString() || new Date().toLocaleDateString(),
+            certificateId: generateCertificateId(),
+            courseDuration: course.course.duration
+        };
+
+        previewCertificate(certificateData);
     }
 
     return (
@@ -183,13 +320,44 @@ export default function CertificatesPage() {
                                                         <Award className="h-3 w-3 mr-1" />
                                                         Completed
                                                     </Badge>
-                                                    <Button
-                                                        onClick={() => generateCertificate(course)}
-                                                        className="bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-white"
-                                                    >
-                                                        <Download className="h-4 w-4 mr-2" />
-                                                        Download Certificate
-                                                    </Button>
+                                                    <div className="flex space-x-2">
+                                                        <Dialog>
+                                                            <DialogTrigger asChild>
+                                                                <Button
+                                                                    variant="outline"
+                                                                    className="bg-white border-blue-300 text-blue-700 hover:bg-blue-50"
+                                                                >
+                                                                    <Eye className="h-4 w-4 mr-2" />
+                                                                    Preview
+                                                                </Button>
+                                                            </DialogTrigger>
+                                                            <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+                                                                <DialogHeader>
+                                                                    <DialogTitle>Certificate Preview</DialogTitle>
+                                                                    <DialogDescription>
+                                                                        Preview of your certificate for "{course.course?.title}"
+                                                                    </DialogDescription>
+                                                                </DialogHeader>
+                                                                <div className="mt-4">
+                                                                    <CertificatePreview
+                                                                        studentName={studentData?.fullName || ""}
+                                                                        courseTitle={course.course?.title || ""}
+                                                                        courseDescription={course.course?.description || ""}
+                                                                        completionDate={endDate?.toLocaleDateString() || ""}
+                                                                        certificateId={generateCertificateId()}
+                                                                        courseDuration={course.course?.duration}
+                                                                    />
+                                                                </div>
+                                                            </DialogContent>
+                                                        </Dialog>
+                                                        <Button
+                                                            onClick={() => generateCertificate(course)}
+                                                            className="bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-white"
+                                                        >
+                                                            <Download className="h-4 w-4 mr-2" />
+                                                            Download Certificate
+                                                        </Button>
+                                                    </div>
                                                 </div>
                                             </div>
 
