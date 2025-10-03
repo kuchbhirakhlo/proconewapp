@@ -8,24 +8,24 @@ export default function Gallery() {
 
   const galleryImages = [
     {
-      src: "https://res.cloudinary.com/dwfctknuj/image/upload/v1758626171/epltb4gqswsa3amn0urv.jpg",
-      alt: "Students collaborating on coding project",
-      title: "Collaborative Learning",
+      src: "https://res.cloudinary.com/dwfctknuj/image/upload/v1759487605/adxvn7xfexbixgabvmlu.jpg",
+      alt: "",
+      title: "",
     },
     {
-      src: "https://images.unsplash.com/photo-1531482615713-2afd69097998?w=400&h=300&fit=crop",
-      alt: "Modern computer lab with students",
-      title: "State-of-the-art Lab",
+      src: "https://res.cloudinary.com/dwfctknuj/image/upload/v1759487605/rk4xwynkdwwnejvjdru5.jpg",
+      alt: "",
+      title: "",
     },
     {
       src: "https://res.cloudinary.com/dwfctknuj/image/upload/v1758625647/crutuhrxrrtlvl3tnrnu.jpg",
-      alt: "Certification Distribution",
-      title: "Certification Distribution",
+      alt: "",
+      title: "",
     },
     {
       src: "https://res.cloudinary.com/dwfctknuj/image/upload/v1758625647/eltsahfjzjvln6hwvhzn.jpg",
-      alt: "Function at showing",
-      title: "Function at showing",
+      alt: "",
+      title: "",
     },
     {
       src: "https://res.cloudinary.com/dwfctknuj/image/upload/v1758625646/g4edzbyhtr1m6d8tusji.jpg",
@@ -34,28 +34,28 @@ export default function Gallery() {
     },
     {
       src: "https://res.cloudinary.com/dwfctknuj/image/upload/v1758625646/rupsgw1czthbk67buxkw.jpg",
-      alt: "Team working on software project",
-      title: "Team Projects",
+      alt: "",
+      title: "",
     },
     {
       src: "https://res.cloudinary.com/dwfctknuj/image/upload/v1758625646/i7udig67eoujmtfmfkvb.jpg",
-      alt: "Code on computer screen",
-      title: "Programming Excellence",
+      alt: "",
+      title: "",
     },
     {
-      src: "https://res.cloudinary.com/dwfctknuj/image/upload/v1758626170/isfypmgilmw21sdlitea.jpg",
-      alt: "Students in computer class",
-      title: "Interactive Classes",
+      src: "https://res.cloudinary.com/dwfctknuj/image/upload/v1759487621/rzlmvi8qui7mgtlpci4t.jpg",
+      alt: "",
+      title: "",
     },
     {
       src: "https://res.cloudinary.com/dwfctknuj/image/upload/v1758626171/epltb4gqswsa3amn0urv.jpg",
-      alt: "AI and machine learning",
-      title: "AI & ML Training",
+      alt: "",
+      title: "",
     },
     {
       src: "https://res.cloudinary.com/dwfctknuj/image/upload/v1758626170/isfypmgilmw21sdlitea.jpg",
-      alt: "Graduation ceremony",
-      title: "Success Stories",
+      alt: "",
+      title: "",
     },
   ]
 
