@@ -176,7 +176,7 @@ export default function CertificatesPage() {
 
     // Helper function to calculate course end date
     const calculateCourseEndDate = (enrolledAt: any, duration: string) => {
-        if (!enrolledAt) return null
+        if (!enrolledAt || !duration) return null
 
         const startDate = enrolledAt.toDate ? enrolledAt.toDate() : new Date(enrolledAt)
         let endDate = new Date(startDate)
@@ -208,6 +208,7 @@ export default function CertificatesPage() {
 
     // Helper function to check if course is completed
     const isCourseCompleted = (enrolledAt: any, duration: string) => {
+        if (!enrolledAt || !duration) return false
         const endDate = calculateCourseEndDate(enrolledAt, duration)
         if (!endDate) return false
         return new Date() >= endDate
@@ -233,7 +234,7 @@ export default function CertificatesPage() {
                 courseTitle: enrollment.course.title,
                 courseDescription: enrollment.course.description || "Course completion certificate",
                 completionDate: endDate?.toLocaleDateString() || new Date().toLocaleDateString(),
-                certificateId: enrollment.certificateId || generateCertificateId(),
+                certificateId: generateCertificateId(),
                 courseDuration: enrollment.course.duration
             };
 
@@ -263,7 +264,7 @@ export default function CertificatesPage() {
             courseTitle: enrollment.course.title,
             courseDescription: enrollment.course.description || "Course completion certificate",
             completionDate: endDate?.toLocaleDateString() || new Date().toLocaleDateString(),
-            certificateId: enrollment.certificateId || generateCertificateId(),
+            certificateId: generateCertificateId(),
             courseDuration: enrollment.course.duration
         };
 
@@ -386,7 +387,7 @@ export default function CertificatesPage() {
                                                                         courseTitle={enrollment.course?.title || ""}
                                                                         courseDescription={enrollment.course?.description || ""}
                                                                         completionDate={endDate?.toLocaleDateString() || ""}
-                                                                        certificateId={enrollment.certificateId || generateCertificateId()}
+                                                                        certificateId={generateCertificateId()}
                                                                         courseDuration={enrollment.course?.duration}
                                                                     />
                                                                 </div>
