@@ -15,6 +15,7 @@ import {
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "firebase/auth"
 import { auth, db } from "./firebase"
 import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from "firebase/storage"
+import { generateCertificateId } from "./certificate-generator"
 
 // Course interface
 export interface Course {
@@ -116,7 +117,7 @@ export const uploadCoursePDF = async (courseId: string, file: File) => {
     }
 
     const courseData = courseDoc.data()
-    const currentPdfs = courseData.pdfUrls || []
+    const currentPdfs = courseData?.pdfUrls || []
 
     // Update course with new PDF URL
     await updateDoc(courseRef, {
@@ -152,7 +153,7 @@ export const removeCoursePDF = async (courseId: string, pdfUrl: string) => {
     }
 
     const courseData = courseDoc.data()
-    const currentPdfs = courseData.pdfUrls || []
+    const currentPdfs = courseData?.pdfUrls || []
     const updatedPdfs = currentPdfs.filter((url: string) => url !== pdfUrl)
 
     await updateDoc(courseRef, {
@@ -424,6 +425,119 @@ export const getEnrollments = async () => {
   const q = query(enrollmentsRef, orderBy("createdAt", "desc"))
   const snapshot = await getDocs(q)
   return snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }))
+}
+
+// Certificate Approval Management
+export const approveStudentCertificate = async (studentId: string, courseId: string) => {
+  try {
+    // Find the enrollment record for this student and course
+    const enrollmentsRef = collection(db, "enrollments")
+    const q = query(
+      enrollmentsRef,
+      where("studentId", "==", studentId),
+      where("courseId", "==", courseId)
+    )
+    const snapshot = await getDocs(q)
+
+    if (snapshot.empty) {
+      throw new Error("Enrollment record not found")
+    }
+
+    // Update the enrollment record to mark certificate as approved
+    const enrollmentDoc = snapshot.docs[0]
+    const certificateId = generateCertificateId() // Generate unique certificate ID
+
+    await updateDoc(enrollmentDoc.ref, {
+      approvedForCertificate: true,
+      certificateId: certificateId,
+      certificateApprovedAt: Timestamp.now(),
+      certificateApprovedBy: "admin", // You might want to track which admin approved it
+      updatedAt: Timestamp.now(),
+    })
+
+    return {
+      success: true,
+      message: "Certificate approved successfully"
+    }
+  } catch (error) {
+    console.error("Error approving certificate:", error)
+    if (error instanceof Error) {
+      throw error
+    }
+    throw new Error("Failed to approve certificate")
+  }
+}
+
+export const revokeStudentCertificate = async (studentId: string, courseId: string) => {
+  try {
+    // Find the enrollment record for this student and course
+    const enrollmentsRef = collection(db, "enrollments")
+    const q = query(
+      enrollmentsRef,
+      where("studentId", "==", studentId),
+      where("courseId", "==", courseId)
+    )
+    const snapshot = await getDocs(q)
+
+    if (snapshot.empty) {
+      throw new Error("Enrollment record not found")
+    }
+
+    // Update the enrollment record to revoke certificate approval
+    const enrollmentDoc = snapshot.docs[0]
+    await updateDoc(enrollmentDoc.ref, {
+      approvedForCertificate: false,
+      certificateId: null,
+      certificateApprovedAt: null,
+      certificateApprovedBy: null,
+      updatedAt: Timestamp.now(),
+    })
+
+    return {
+      success: true,
+      message: "Certificate approval revoked"
+    }
+  } catch (error) {
+    console.error("Error revoking certificate approval:", error)
+    if (error instanceof Error) {
+      throw error
+    }
+    throw new Error("Failed to revoke certificate approval")
+  }
+}
+
+export const getStudentEnrollmentsWithApproval = async (studentId: string) => {
+  try {
+    const enrollmentsRef = collection(db, "enrollments")
+    const q = query(
+      enrollmentsRef,
+      where("studentId", "==", studentId),
+      orderBy("enrolledAt", "desc")
+    )
+    const snapshot = await getDocs(q)
+
+    const enrollments = await Promise.all(
+      snapshot.docs.map(async (enrollmentDoc) => {
+        const enrollmentData = enrollmentDoc.data()
+
+        // Get course details
+        const courseRef = doc(db, "courses", enrollmentData.courseId)
+        const courseDoc = await getDoc(courseRef)
+        const courseData = courseDoc.exists() ? { id: courseDoc.id, ...(courseDoc.data() || {}) } : null
+
+        return {
+          id: enrollmentDoc.id,
+          ...enrollmentData,
+          course: courseData,
+        }
+      })
+    )
+
+    return enrollments
+  } catch (error) {
+    console.error("Error fetching student enrollments:", error)
+    throw new Error("Failed to fetch student enrollments")
+  }
 }
 
 export const enrollStudent = async (studentId: string, courseId: string) => {

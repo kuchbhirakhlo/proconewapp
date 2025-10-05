@@ -23,8 +23,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Progress } from "@/components/ui/progress"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Plus, Edit, Trash2, AlertCircle, CheckCircle, Users, Mail, Phone, Search, Filter, UserCheck, UserPlus, GraduationCap, Activity, TrendingUp, UserX, BookOpen, Calendar, MoreHorizontal, Eye, Settings, Sparkles, X, Check } from "lucide-react"
-import { getStudents, createStudent, updateStudent, deleteStudent, getCourses, enrollStudent, assignCoursesToStudent } from "@/lib/admin"
+import { Plus, Edit, Trash2, AlertCircle, CheckCircle, Users, Mail, Phone, Search, Filter, UserCheck, UserPlus, GraduationCap, Activity, TrendingUp, UserX, BookOpen, Calendar, MoreHorizontal, Eye, Settings, Sparkles, X, Check, Award, Shield, ShieldCheck } from "lucide-react"
+import { getStudents, createStudent, updateStudent, deleteStudent, getCourses, enrollStudent, assignCoursesToStudent, getStudentEnrollmentsWithApproval, approveStudentCertificate, revokeStudentCertificate } from "@/lib/admin"
 
 interface Student {
   id: string
@@ -41,6 +41,18 @@ interface Student {
 interface Course {
   id: string
   title: string
+}
+
+interface EnrollmentWithCourse {
+  id: string
+  studentId: string
+  courseId: string
+  status: string
+  progress: number
+  enrolledAt: any
+  approvedForCertificate?: boolean
+  certificateApprovedAt?: any
+  course: Course | null
 }
 
 export default function StudentsManagement() {
@@ -74,6 +86,9 @@ export default function StudentsManagement() {
   const [searchTerm, setSearchTerm] = useState("")
   const [statusFilter, setStatusFilter] = useState("all")
   const [selectedStudents, setSelectedStudents] = useState<string[]>([])
+  const [selectedStudentEnrollments, setSelectedStudentEnrollments] = useState<EnrollmentWithCourse[]>([])
+  const [isCertificateDialogOpen, setIsCertificateDialogOpen] = useState(false)
+  const [loadingCertificates, setLoadingCertificates] = useState(false)
 
   useEffect(() => {
     fetchData()
@@ -225,6 +240,53 @@ export default function StudentsManagement() {
     setSelectedStudent(student)
     setSelectedCourse("")
     setIsEnrollDialogOpen(true)
+  }
+
+  const openCertificateDialog = (student: Student) => {
+    setSelectedStudent(student)
+    fetchStudentEnrollments(student.id)
+    setIsCertificateDialogOpen(true)
+  }
+
+  const fetchStudentEnrollments = async (studentId: string) => {
+    setLoadingCertificates(true)
+    try {
+      const enrollments = await getStudentEnrollmentsWithApproval(studentId)
+      setSelectedStudentEnrollments(enrollments as EnrollmentWithCourse[])
+    } catch (error) {
+      console.error("Error fetching student enrollments:", error)
+      setMessage({ type: "error", text: "Failed to fetch student enrollments" })
+    } finally {
+      setLoadingCertificates(false)
+    }
+  }
+
+  const handleApproveCertificate = async (enrollmentId: string, courseId: string) => {
+    if (!selectedStudent) return
+
+    try {
+      await approveStudentCertificate(selectedStudent.id, courseId)
+      setMessage({ type: "success", text: "Certificate approved successfully!" })
+      // Refresh the enrollments list
+      fetchStudentEnrollments(selectedStudent.id)
+    } catch (error: any) {
+      console.error("Error approving certificate:", error)
+      setMessage({ type: "error", text: error.message || "Failed to approve certificate" })
+    }
+  }
+
+  const handleRevokeCertificate = async (enrollmentId: string, courseId: string) => {
+    if (!selectedStudent) return
+
+    try {
+      await revokeStudentCertificate(selectedStudent.id, courseId)
+      setMessage({ type: "success", text: "Certificate approval revoked!" })
+      // Refresh the enrollments list
+      fetchStudentEnrollments(selectedStudent.id)
+    } catch (error: any) {
+      console.error("Error revoking certificate:", error)
+      setMessage({ type: "error", text: error.message || "Failed to revoke certificate approval" })
+    }
   }
 
   // Filter students based on search and status
@@ -566,6 +628,129 @@ export default function StudentsManagement() {
                     </form>
                   </DialogContent>
                 </Dialog>
+
+                {/* Certificate Approval Dialog */}
+                <Dialog open={isCertificateDialogOpen} onOpenChange={setIsCertificateDialogOpen}>
+                  <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+                    <DialogHeader className="space-y-4 pb-6">
+                      <div className="flex items-center space-x-3">
+                        <div className="p-2 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-lg">
+                          <Award className="h-6 w-6 text-white" />
+                        </div>
+                        <div>
+                          <DialogTitle className="text-2xl">Certificate Management</DialogTitle>
+                          <DialogDescription className="text-base">
+                            Manage certificate approvals for {selectedStudent?.fullName}
+                          </DialogDescription>
+                        </div>
+                      </div>
+                    </DialogHeader>
+
+                    <div className="space-y-4">
+                      {loadingCertificates ? (
+                        <div className="space-y-4">
+                          {[1, 2, 3].map((i) => (
+                            <div key={i} className="animate-pulse">
+                              <div className="h-20 bg-gray-200 rounded-lg"></div>
+                            </div>
+                          ))}
+                        </div>
+                      ) : selectedStudentEnrollments.length === 0 ? (
+                        <div className="text-center py-8">
+                          <Award className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                          <h3 className="text-lg font-medium text-gray-900 mb-2">No enrollments found</h3>
+                          <p className="text-gray-600">This student doesn't have any course enrollments yet.</p>
+                        </div>
+                      ) : (
+                        <div className="space-y-3">
+                          {selectedStudentEnrollments.map((enrollment) => (
+                            <Card key={enrollment.id} className="border-0 shadow-sm">
+                              <CardContent className="p-4">
+                                <div className="flex items-center justify-between">
+                                  <div className="flex-1">
+                                    <div className="flex items-center space-x-3 mb-2">
+                                      <h4 className="font-semibold text-lg">
+                                        {enrollment.course?.title || "Unknown Course"}
+                                      </h4>
+                                      <Badge
+                                        className={
+                                          enrollment.approvedForCertificate
+                                            ? "bg-green-100 text-green-800 border-green-300"
+                                            : "bg-yellow-100 text-yellow-800 border-yellow-300"
+                                        }
+                                      >
+                                        {enrollment.approvedForCertificate ? (
+                                          <>
+                                            <ShieldCheck className="h-3 w-3 mr-1" />
+                                            Approved
+                                          </>
+                                        ) : (
+                                          <>
+                                            <Shield className="h-3 w-3 mr-1" />
+                                            Pending
+                                          </>
+                                        )}
+                                      </Badge>
+                                    </div>
+                                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm text-gray-600">
+                                      <div>
+                                        <span className="font-medium">Enrollment ID:</span>
+                                        <div className="font-mono text-xs">{enrollment.id.slice(0, 8)}...</div>
+                                      </div>
+                                      <div>
+                                        <span className="font-medium">Progress:</span>
+                                        <div>{enrollment.progress || 0}%</div>
+                                      </div>
+                                      <div>
+                                        <span className="font-medium">Enrolled:</span>
+                                        <div>{enrollment.enrolledAt?.toDate?.()?.toLocaleDateString() || "N/A"}</div>
+                                      </div>
+                                      {enrollment.certificateApprovedAt && (
+                                        <div>
+                                          <span className="font-medium">Approved:</span>
+                                          <div>{enrollment.certificateApprovedAt?.toDate?.()?.toLocaleDateString() || "N/A"}</div>
+                                        </div>
+                                      )}
+                                    </div>
+                                  </div>
+
+                                  <div className="flex space-x-2 ml-4">
+                                    {enrollment.approvedForCertificate ? (
+                                      <Button
+                                        size="sm"
+                                        variant="outline"
+                                        onClick={() => handleRevokeCertificate(enrollment.id, enrollment.courseId)}
+                                        className="text-orange-600 hover:text-orange-700 hover:bg-orange-50 border-orange-300"
+                                      >
+                                        <X className="h-4 w-4 mr-1" />
+                                        Revoke
+                                      </Button>
+                                    ) : (
+                                      <Button
+                                        size="sm"
+                                        onClick={() => handleApproveCertificate(enrollment.id, enrollment.courseId)}
+                                        className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white"
+                                      >
+                                        <Check className="h-4 w-4 mr-1" />
+                                        Approve
+                                      </Button>
+                                    )}
+                                  </div>
+                                </div>
+                              </CardContent>
+                            </Card>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="flex justify-end space-x-2 pt-4">
+                      <Button variant="outline" onClick={() => setIsCertificateDialogOpen(false)}>
+                        Close
+                      </Button>
+                    </div>
+                  </DialogContent>
+                </Dialog>
               </div>
             </div>
           </CardContent>
@@ -754,6 +939,14 @@ export default function StudentsManagement() {
                               <Button
                                 size="sm"
                                 variant="outline"
+                                onClick={() => openCertificateDialog(student)}
+                                className="bg-transparent hover:bg-purple-50 hover:border-purple-300"
+                              >
+                                <Award className="h-4 w-4" />
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="outline"
                                 onClick={() => handleDelete(student.id)}
                                 className="text-red-600 hover:text-red-700 hover:bg-red-50 bg-transparent"
                               >
@@ -848,6 +1041,15 @@ export default function StudentsManagement() {
                           >
                             <Plus className="h-4 w-4 mr-1" />
                             Enroll
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => openCertificateDialog(student)}
+                            className="flex-1 bg-transparent hover:bg-purple-50 hover:border-purple-300"
+                          >
+                            <Award className="h-4 w-4 mr-1" />
+                            Certificates
                           </Button>
                           <Button
                             size="sm"

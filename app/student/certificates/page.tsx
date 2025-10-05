@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Award, Download, Calendar, Clock, BookOpen, Eye, AlertCircle } from "lucide-react"
 import { useStudent } from "@/hooks/useStudent"
-import { getEnrolledCourses } from "@/lib/student"
+import { getEnrolledCourses, getEnrolledCoursesWithApproval } from "@/lib/student"
 import { generateCertificatePDF, previewCertificate, CertificateData, generateCertificateId } from "@/lib/certificate-generator"
 
 interface CourseWithEnrollment {
@@ -26,6 +26,7 @@ interface CourseWithEnrollment {
     enrolledAt: any
     courseId: string
     approvedForCertificate?: boolean
+    certificateApprovedAt?: any
 }
 
 interface CertificatePreviewProps {
@@ -121,18 +122,52 @@ export default function CertificatesPage() {
         const fetchCompletedCourses = async () => {
             if (studentData?.uid) {
                 try {
-                    const courses = await getEnrolledCourses(studentData.uid) as CourseWithEnrollment[]
+                    console.log("Starting to fetch enrollments for student:", studentData.uid)
+
+                    // Try the new function first
+                    let enrollments
+                    try {
+                        enrollments = await getEnrolledCoursesWithApproval(studentData.uid)
+                        console.log("New function succeeded, received enrollments:", enrollments?.length || 0)
+                    } catch (newFunctionError) {
+                        console.log("New function failed, falling back to original function:", newFunctionError)
+                        // Fallback to original function if new one fails
+                        enrollments = await getEnrolledCourses(studentData.uid)
+                        console.log("Fallback function succeeded, received enrollments:", enrollments?.length || 0)
+
+                        // Add default approval status for fallback
+                        enrollments = enrollments.map((enrollment: any) => ({
+                            ...enrollment,
+                            approvedForCertificate: false,
+                            certificateApprovedAt: null
+                        }))
+                    }
+
+                    if (!Array.isArray(enrollments)) {
+                        throw new Error("Invalid response format - expected array")
+                    }
+
                     // Filter only completed courses
-                    const completed = courses.filter(course => {
-                        const isCompleted = isCourseCompleted(course.enrolledAt, course.course?.duration || "")
+                    const completed = enrollments.filter(enrollment => {
+                        const isCompleted = isCourseCompleted(enrollment.enrolledAt, enrollment.course?.duration || "")
                         return isCompleted
                     })
+                    console.log("Filtered completed courses:", completed.length)
                     setCompletedCourses(completed)
                 } catch (error) {
                     console.error("Error fetching completed courses:", error)
+                    console.error("Error details:", {
+                        message: error instanceof Error ? error.message : 'Unknown error',
+                        stack: error instanceof Error ? error.stack : 'No stack trace',
+                        type: typeof error
+                    })
+                    setCompletedCourses([])
                 } finally {
                     setLoading(false)
                 }
+            } else {
+                console.log("No student data available")
+                setLoading(false)
             }
         }
 
@@ -179,27 +214,27 @@ export default function CertificatesPage() {
     }
 
     // Generate certificate function
-    const generateCertificate = async (course: CourseWithEnrollment) => {
-        if (!course.course?.title || !studentData?.fullName) {
+    const generateCertificate = async (enrollment: CourseWithEnrollment) => {
+        if (!enrollment.course?.title || !studentData?.fullName) {
             alert("Unable to generate certificate: Missing course or student information.");
             return;
         }
 
         // Check if course is approved for certification
-        if (!course.approvedForCertificate) {
+        if (!enrollment.approvedForCertificate) {
             alert("Certificate not yet approved by admin. Please contact administration.");
             return;
         }
 
         try {
-            const endDate = calculateCourseEndDate(course.enrolledAt, course.course?.duration || "")
+            const endDate = calculateCourseEndDate(enrollment.enrolledAt, enrollment.course?.duration || "")
             const certificateData: CertificateData = {
                 studentName: studentData.fullName,
-                courseTitle: course.course.title,
-                courseDescription: course.course.description || "Course completion certificate",
+                courseTitle: enrollment.course.title,
+                courseDescription: enrollment.course.description || "Course completion certificate",
                 completionDate: endDate?.toLocaleDateString() || new Date().toLocaleDateString(),
-                certificateId: generateCertificateId(),
-                courseDuration: course.course.duration
+                certificateId: enrollment.certificateId || generateCertificateId(),
+                courseDuration: enrollment.course.duration
             };
 
             await generateCertificatePDF(certificateData);
@@ -210,26 +245,26 @@ export default function CertificatesPage() {
     }
 
     // Preview certificate function
-    const previewCertificateHandler = (course: CourseWithEnrollment) => {
-        if (!course.course?.title || !studentData?.fullName) {
+    const previewCertificateHandler = (enrollment: CourseWithEnrollment) => {
+        if (!enrollment.course?.title || !studentData?.fullName) {
             alert("Unable to preview certificate: Missing course or student information.");
             return;
         }
 
         // Check if course is approved for certification
-        if (!course.approvedForCertificate) {
+        if (!enrollment.approvedForCertificate) {
             alert("Certificate not yet approved by admin. Please contact administration.");
             return;
         }
 
-        const endDate = calculateCourseEndDate(course.enrolledAt, course.course?.duration || "")
+        const endDate = calculateCourseEndDate(enrollment.enrolledAt, enrollment.course?.duration || "")
         const certificateData: CertificateData = {
             studentName: studentData.fullName,
-            courseTitle: course.course.title,
-            courseDescription: course.course.description || "Course completion certificate",
+            courseTitle: enrollment.course.title,
+            courseDescription: enrollment.course.description || "Course completion certificate",
             completionDate: endDate?.toLocaleDateString() || new Date().toLocaleDateString(),
-            certificateId: generateCertificateId(),
-            courseDuration: course.course.duration
+            certificateId: enrollment.certificateId || generateCertificateId(),
+            courseDuration: enrollment.course.duration
         };
 
         previewCertificate(certificateData);
@@ -285,19 +320,19 @@ export default function CertificatesPage() {
                             </div>
                         ) : (
                             <div className="space-y-4">
-                                {completedCourses.map((course) => {
-                                    const endDate = calculateCourseEndDate(course.enrolledAt, course.course?.duration || "")
-                                    const startDate = course.enrolledAt?.toDate ? course.enrolledAt.toDate() : new Date(course.enrolledAt)
+                                {completedCourses.map((enrollment) => {
+                                    const endDate = calculateCourseEndDate(enrollment.enrolledAt, enrollment.course?.duration || "")
+                                    const startDate = enrollment.enrolledAt?.toDate ? enrollment.enrolledAt.toDate() : new Date(enrollment.enrolledAt)
 
                                     return (
-                                        <div key={course.id} className="border rounded-lg p-6 hover:shadow-md transition-shadow bg-gradient-to-r from-green-50 to-blue-50">
+                                        <div key={enrollment.id} className="border rounded-lg p-6 hover:shadow-md transition-shadow bg-gradient-to-r from-green-50 to-blue-50">
                                             <div className="flex items-start justify-between mb-4">
                                                 <div className="flex-1">
                                                     <h3 className="font-semibold text-xl text-gray-900 mb-2">
-                                                        {course.course?.title || "Course Title"}
+                                                        {enrollment.course?.title || "Course Title"}
                                                     </h3>
                                                     <p className="text-gray-600 mb-3 line-clamp-2">
-                                                        {course.course?.description || "Course description"}
+                                                        {enrollment.course?.description || "Course description"}
                                                     </p>
 
                                                     <div className="flex flex-wrap gap-4 text-sm text-gray-500">
@@ -310,7 +345,7 @@ export default function CertificatesPage() {
                                                             Completed: {endDate?.toLocaleDateString()}
                                                         </span>
                                                         <span className="flex items-center">
-                                                            Duration: {course.course?.duration || "N/A"}
+                                                            Duration: {enrollment.course?.duration || "N/A"}
                                                         </span>
                                                     </div>
                                                 </div>
@@ -320,12 +355,19 @@ export default function CertificatesPage() {
                                                         <Award className="h-3 w-3 mr-1" />
                                                         Completed
                                                     </Badge>
+                                                    {!enrollment.approvedForCertificate && (
+                                                        <Badge className="bg-yellow-100 text-yellow-800 border-yellow-300">
+                                                            <AlertCircle className="h-3 w-3 mr-1" />
+                                                            Pending Approval
+                                                        </Badge>
+                                                    )}
                                                     <div className="flex space-x-2">
                                                         <Dialog>
                                                             <DialogTrigger asChild>
                                                                 <Button
                                                                     variant="outline"
                                                                     className="bg-white border-blue-300 text-blue-700 hover:bg-blue-50"
+                                                                    disabled={!enrollment.approvedForCertificate}
                                                                 >
                                                                     <Eye className="h-4 w-4 mr-2" />
                                                                     Preview
@@ -335,27 +377,28 @@ export default function CertificatesPage() {
                                                                 <DialogHeader>
                                                                     <DialogTitle>Certificate Preview</DialogTitle>
                                                                     <DialogDescription>
-                                                                        Preview of your certificate for "{course.course?.title}"
+                                                                        Preview of your certificate for "{enrollment.course?.title}"
                                                                     </DialogDescription>
                                                                 </DialogHeader>
                                                                 <div className="mt-4">
                                                                     <CertificatePreview
                                                                         studentName={studentData?.fullName || ""}
-                                                                        courseTitle={course.course?.title || ""}
-                                                                        courseDescription={course.course?.description || ""}
+                                                                        courseTitle={enrollment.course?.title || ""}
+                                                                        courseDescription={enrollment.course?.description || ""}
                                                                         completionDate={endDate?.toLocaleDateString() || ""}
-                                                                        certificateId={generateCertificateId()}
-                                                                        courseDuration={course.course?.duration}
+                                                                        certificateId={enrollment.certificateId || generateCertificateId()}
+                                                                        courseDuration={enrollment.course?.duration}
                                                                     />
                                                                 </div>
                                                             </DialogContent>
                                                         </Dialog>
                                                         <Button
-                                                            onClick={() => generateCertificate(course)}
-                                                            className="bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-white"
+                                                            onClick={() => generateCertificate(enrollment)}
+                                                            disabled={!enrollment.approvedForCertificate}
+                                                            className="bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-white disabled:opacity-50 disabled:cursor-not-allowed"
                                                         >
                                                             <Download className="h-4 w-4 mr-2" />
-                                                            Download Certificate
+                                                            {enrollment.approvedForCertificate ? "Download Certificate" : "Pending Approval"}
                                                         </Button>
                                                     </div>
                                                 </div>
@@ -367,19 +410,22 @@ export default function CertificatesPage() {
                                                     <div>
                                                         <h4 className="font-medium text-sm mb-2">Course Information</h4>
                                                         <div className="space-y-1 text-sm text-gray-600">
-                                                            <div>Course ID: {course.course?.id}</div>
-                                                            <div>Enrollment ID: {course.id}</div>
-                                                            <div>Progress: {course.progress || 0}%</div>
+                                                            <div>Course ID: {enrollment.course?.id}</div>
+                                                            <div>Enrollment ID: {enrollment.id}</div>
+                                                            <div>Progress: {enrollment.progress || 0}%</div>
                                                         </div>
                                                     </div>
 
-                                                    {course.course && (
+                                                    {enrollment.course && (
                                                         <div>
                                                             <h4 className="font-medium text-sm mb-2">Certificate Details</h4>
                                                             <div className="space-y-1 text-sm text-gray-600">
                                                                 <div>Certificate Type: Course Completion</div>
                                                                 <div>Issue Date: {endDate?.toLocaleDateString()}</div>
-                                                                <div>Status: Valid</div>
+                                                                <div>Approval Status: {enrollment.approvedForCertificate ? "Approved" : "Pending"}</div>
+                                                                {enrollment.certificateApprovedAt && (
+                                                                    <div>Approved On: {enrollment.certificateApprovedAt?.toDate?.()?.toLocaleDateString()}</div>
+                                                                )}
                                                             </div>
                                                         </div>
                                                     )}

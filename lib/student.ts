@@ -25,6 +25,8 @@ interface EnrollmentData {
   enrolledAt: any
   status: string
   progress: number
+  approvedForCertificate?: boolean
+  certificateApprovedAt?: any
 }
 
 // Student Authentication
@@ -182,6 +184,57 @@ export const enrollInCourse = async (studentId: string, courseId: string) => {
   } catch (error) {
     console.error("Error enrolling in course:", error)
     throw error
+  }
+}
+
+// Get enrolled courses with certificate approval status
+export const getEnrolledCoursesWithApproval = async (studentId: string) => {
+  try {
+    console.log("Fetching enrollments for student:", studentId)
+    const enrollments = await getStudentEnrollments(studentId)
+    console.log("Found enrollments:", enrollments.length)
+
+    if (!enrollments || enrollments.length === 0) {
+      return []
+    }
+
+    const coursePromises = enrollments.map(async (enrollment) => {
+      try {
+        const courseDoc = await getDoc(doc(db, "courses", enrollment.courseId))
+        const courseData = courseDoc.exists() ? { id: courseDoc.id, ...courseDoc.data() } : null
+
+        return {
+          id: enrollment.id,
+          studentId: enrollment.studentId,
+          courseId: enrollment.courseId,
+          enrolledAt: enrollment.enrolledAt,
+          status: enrollment.status,
+          progress: enrollment.progress,
+          approvedForCertificate: enrollment.approvedForCertificate || false,
+          certificateApprovedAt: enrollment.certificateApprovedAt,
+          course: courseData,
+        }
+      } catch (error) {
+        console.error("Error fetching course:", error)
+        return {
+          id: enrollment.id,
+          studentId: enrollment.studentId,
+          courseId: enrollment.courseId,
+          enrolledAt: enrollment.enrolledAt,
+          status: enrollment.status,
+          progress: enrollment.progress,
+          approvedForCertificate: false,
+          course: null,
+        }
+      }
+    })
+
+    const result = await Promise.all(coursePromises)
+    console.log("Returning enrollments with courses:", result.length)
+    return result
+  } catch (error) {
+    console.error("Error fetching enrolled courses with approval:", error)
+    throw new Error("Failed to fetch student enrollments")
   }
 }
 
