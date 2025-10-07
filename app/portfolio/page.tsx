@@ -154,7 +154,7 @@ export default function PortfolioPage() {
                     </div>
                     <div className="flex gap-2">
                       <Button size="sm" variant="outline" className="flex-1 bg-transparent">
-                        <Link className="h-4 w-4 mr-2" />
+                        <ExternalLink className="h-4 w-4 mr-2" />
                         View Live
                       </Button>
                       <Button size="sm" variant="outline">
