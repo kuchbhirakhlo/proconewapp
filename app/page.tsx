@@ -365,8 +365,17 @@ export default function HomePage() {
               <Link href="/contact">Get In Touch</Link>
             </Button>
           </div>
+            <Button
+              size="lg"
+              variant="outline"
+              className="text-white border-white hover:bg-white hover:text-gray-900 bg-transparent"
+              asChild
+            >
+              <Link href="https://hostinger.in?REFERRALCODE=HTXAVISR0NWD">Make Your Free Website</Link>
+            </Button>
         </div>
       </section>
+      
     </div>
   )
 }
