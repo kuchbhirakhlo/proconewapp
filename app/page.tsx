@@ -364,7 +364,6 @@ export default function HomePage() {
             >
               <Link href="/contact">Get In Touch</Link>
             </Button>
-          </div>
             <Button
               size="lg"
               variant="outline"
@@ -373,6 +372,7 @@ export default function HomePage() {
             >
               <Link href="https://hostinger.in?REFERRALCODE=HTXAVISR0NWD">Make Your Free Website</Link>
             </Button>
+          </div>
         </div>
       </section>
       
