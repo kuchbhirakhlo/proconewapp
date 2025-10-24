@@ -10,6 +10,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 import { useStudent } from "@/hooks/useStudent"
 import { signOutStudent } from "@/lib/student"
 import { BookOpen, User, Award, Settings, LogOut, Home, AlertCircle, Menu, X, FileText } from "lucide-react"
+import Image from "next/image"
 
 interface StudentLayoutProps {
   children: React.ReactNode
@@ -116,8 +117,15 @@ export default function StudentLayout({ children, title }: StudentLayoutProps) {
         lg:translate-x-0
       `}>
         <div className="flex flex-col h-full">
-          <div className="flex items-center justify-center h-16 px-4 bg-blue-600 text-white">
-            <h1 className="text-xl font-bold">Proco Student Portal</h1>
+          <div className="flex  items-center justify-center h-8 px-4  text-white">
+            <Image
+              src="/logo.png"
+              alt=""
+              width={68}
+              height={68}
+              className="w-1/2 h-auto"
+            />
+            <h1 className="text-1xl text-blue-400 font-bold">Student Portal</h1>
           </div>
 
           <nav className="flex-1 px-4 py-6 space-y-2">

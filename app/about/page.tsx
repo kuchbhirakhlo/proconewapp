@@ -12,18 +12,6 @@ export default function AboutPage() {
       bio: "10+ years in software development and education",
     },
     {
-      name: "Abhay Tiwari",
-      role: "Manager",
-      image: "https://cdn-icons-png.flaticon.com/512/8815/8815077.png",
-      bio: "Former Mahindra Trainer with passion for teaching",
-    },
-    {
-      name: "Prachi Verma",
-      role: "Marketing",
-      image: "https://cdn-icons-png.flaticon.com/512/4975/4975693.png",
-      bio: "Full-stack expert specializing in modern web technologies",
-    },
-    {
       name: "Rakesh Dey",
       role: "Senior Software Engineer",
       image: "https://cdn-icons-png.flaticon.com/512/8815/8815077.png",
@@ -67,7 +55,7 @@ export default function AboutPage() {
               Empowering the Next Generation of Tech Professionals
             </h1>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Founded in 2019, <span  className="text-blue-400">Proco Technologies</span> has been at the forefront of technology education and software development,
+              Founded in 2019, <span className="text-blue-400">Proco Technologies</span> has been at the forefront of technology education and software development,
               helping individuals and businesses thrive in the digital age.
             </p>
           </div>

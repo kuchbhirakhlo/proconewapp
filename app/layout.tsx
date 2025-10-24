@@ -58,7 +58,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-        <head>
+      <head>
         {/* ✅ Google AdSense Script */}
         <Script
           id="google-adsense-script"
@@ -67,14 +67,13 @@ export default function RootLayout({
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8434537394521880"
           crossOrigin="anonymous"
         />
-      </head>
-      <head>
         <Script
           async
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8434537394521880"
           crossOrigin="anonymous"
           strategy="beforeInteractive"
         />
+        <script type='text/javascript' src='//pl27915847.effectivegatecpm.com/db/c3/c1/dbc3c11b2e3c7ef2c364a8eb6bdace39.js'></script>
       </head>
       <body className={inter.className}>
         <ClientLayout>{children}</ClientLayout>

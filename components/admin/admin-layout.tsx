@@ -10,6 +10,7 @@ import { useAdmin } from "@/hooks/useAdmin"
 import { signOut } from "firebase/auth"
 import { auth } from "@/lib/firebase"
 import { LayoutDashboard, BookOpen, Briefcase, Users, LogOut, Settings, Menu, X, FileText } from "lucide-react"
+import Image from "next/image"
 
 interface AdminLayoutProps {
   children: React.ReactNode
@@ -89,6 +90,13 @@ export default function AdminLayout({ children, title }: AdminLayoutProps) {
       `}>
         <div className="flex flex-col h-full">
           <div className="flex items-center justify-center h-16 px-4 bg-blue-600 text-white">
+            <Image
+              src="/logo.png"
+              alt=""
+              width={24}
+              height={24}
+              className=""
+            />
             <h1 className="text-xl font-bold">ProcoTech Admin</h1>
           </div>
 
