@@ -1,9 +1,11 @@
+"use client"
+
 import Link from "next/link"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Code, GraduationCap, Users, Award, Smartphone, Database, Cloud, ArrowRight, CheckCircle } from "lucide-react"
+import { Code, GraduationCap, Users, Award, Smartphone, Database, Cloud, ArrowRight, CheckCircle, Download } from "lucide-react"
 import AnimatedBackground from "@/components/animated-background"
 
 export default function HomePage() {
@@ -177,6 +179,22 @@ export default function HomePage() {
                   className="group hover:scale-105 transition-all duration-300 backdrop-blur-sm bg-white/80 hover:bg-white/90"
                 >
                   <Link href="/portfolio">View Our Work</Link>
+                </Button>
+                <Button
+                  size="lg"
+                  onClick={() => {
+                    // Trigger PWA install prompt or fallback to add to home screen instructions
+                    if ('serviceWorker' in navigator && 'BeforeInstallPromptEvent' in window) {
+                      // PWA install logic would go here, but for now we'll show a message
+                      alert('To install the app, click the "Add to Home Screen" option in your browser menu or use the install button if available.');
+                    } else {
+                      alert('To install the app: On mobile, tap the share button and select "Add to Home Screen". On desktop, click the install icon in the address bar.');
+                    }
+                  }}
+                  className="group hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl bg-green-600 hover:bg-green-700"
+                >
+                  <Download className="mr-2 h-4 w-4" />
+                  Download App
                 </Button>
               </div>
             </div>
@@ -375,7 +393,7 @@ export default function HomePage() {
           </div>
         </div>
       </section>
-      
+
     </div>
   )
 }

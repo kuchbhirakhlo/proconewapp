@@ -1,0 +1,32 @@
+{
+    "name": "ProcoTech Portal",
+    "short_name": "ProcoTech",
+    "description": "ProcoTech - Your gateway to technology education and software solutions",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#ffffff",
+    "theme_color": "#dc2626",
+    "orientation": "portrait-primary",
+    "scope": "/",
+    "icons": [
+        {
+            "src": "/logo.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "any maskable"
+        },
+        {
+            "src": "/logo.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any maskable"
+        }
+    ],
+    "categories": [
+        "education",
+        "business",
+        "productivity"
+    ],
+    "lang": "en",
+    "dir": "ltr"
+}

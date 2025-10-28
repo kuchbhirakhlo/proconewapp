@@ -1,3 +1,4 @@
+"use client"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -5,8 +6,30 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Badge } from "@/components/ui/badge"
 import { MapPin, Phone, Mail, Clock } from "lucide-react"
+import { useState } from "react"
 
 export default function ContactPage() {
+  const [formData, setFormData] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    phone: '',
+    subject: '',
+    message: ''
+  })
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { id, value } = e.target
+    setFormData(prev => ({ ...prev, [id]: value }))
+  }
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    const { firstName, lastName, email, phone, subject, message } = formData
+    const whatsappMessage = `*Contact Inquiry*%0A%0A*Name:* ${firstName} ${lastName}%0A*Email:* ${email}%0A*Phone:* ${phone}%0A*Subject:* ${subject}%0A*Message:* ${message}`
+    const whatsappUrl = `https://wa.me/918383811977?text=${whatsappMessage}`
+    window.open(whatsappUrl, '_blank')
+  }
   return (
     <div className="flex flex-col">
       {/* Hero Section */}
@@ -34,31 +57,31 @@ export default function ContactPage() {
                 <CardDescription>Fill out the form below and we'll get back to you within 24 hours.</CardDescription>
               </CardHeader>
               <CardContent>
-                <form className="space-y-6">
+                <form onSubmit={handleSubmit} className="space-y-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label htmlFor="firstName">First Name</Label>
-                      <Input id="firstName" placeholder="Your First Name" required />
+                      <Input id="firstName" placeholder="Your First Name" value={formData.firstName} onChange={handleInputChange} required />
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="lastName">Last Name</Label>
-                      <Input id="lastName" placeholder="Your Last Name" required />
+                      <Input id="lastName" placeholder="Your Last Name" value={formData.lastName} onChange={handleInputChange} required />
                     </div>
                   </div>
 
                   <div className="space-y-2">
                     <Label htmlFor="email">Email</Label>
-                    <Input id="email" type="email" placeholder="john@example.com" required />
+                    <Input id="email" type="email" placeholder="john@example.com" value={formData.email} onChange={handleInputChange} required />
                   </div>
 
                   <div className="space-y-2">
                     <Label htmlFor="phone">Phone Number</Label>
-                    <Input id="phone" type="tel" placeholder="Mobile Number" />
+                    <Input id="phone" type="tel" placeholder="Mobile Number" value={formData.phone} onChange={handleInputChange} />
                   </div>
 
                   <div className="space-y-2">
                     <Label htmlFor="subject">Subject</Label>
-                    <Input id="subject" placeholder="Course Inquiry / Project Discussion" required />
+                    <Input id="subject" placeholder="Course Inquiry / Project Discussion" value={formData.subject} onChange={handleInputChange} required />
                   </div>
 
                   <div className="space-y-2">
@@ -67,6 +90,8 @@ export default function ContactPage() {
                       id="message"
                       placeholder="Tell us about your requirements or questions..."
                       className="min-h-[120px]"
+                      value={formData.message}
+                      onChange={handleInputChange}
                       required
                     />
                   </div>
@@ -114,17 +139,17 @@ export default function ContactPage() {
                       <Phone className="h-6 w-6 text-green-600" />
                     </div>
                     <div className="flex space-x-[11rem]">
-                    <div>
-                      <h3 className="font-semibold text-gray-900">Phone</h3>
-                      <p className="text-gray-600">+91 8383811977</p>
-                    </div>
-                    <div>
-                      <h3 className="font-semibold text-gray-900">Phone</h3>
-                      <p className="text-gray-600">+91 9057513693</p>
-                    </div>
+                      <div>
+                        <h3 className="font-semibold text-gray-900">Phone</h3>
+                        <p className="text-gray-600">+91 8383811977</p>
+                      </div>
+                      <div>
+                        <h3 className="font-semibold text-gray-900">Phone</h3>
+                        <p className="text-gray-600">+91 9057513693</p>
+                      </div>
                     </div>
                   </div>
-                  
+
 
                   <div className="flex items-start space-x-4">
                     <div className="bg-purple-100 p-3 rounded-lg">
@@ -153,32 +178,6 @@ export default function ContactPage() {
                 </div>
               </div>
 
-              {/* Quick Contact Cards */}
-              <div className="space-y-4">
-                <h3 className="text-xl font-semibold text-gray-900">Quick Contact</h3>
-
-                <Card className="hover:shadow-md transition-shadow">
-                  <CardHeader className="pb-3">
-                    <CardTitle className="text-lg">Course Admissions</CardTitle>
-                    <CardDescription>Questions about our courses, enrollment, or schedules?</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <Button className="w-full">Contact Admissions</Button>
-                  </CardContent>
-                </Card>
-
-                <Card className="hover:shadow-md transition-shadow">
-                  <CardHeader className="pb-3">
-                    <CardTitle className="text-lg">Project Consultation</CardTitle>
-                    <CardDescription>Need a custom software solution for your business?</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <Button variant="outline" className="w-full bg-transparent">
-                      Schedule Consultation
-                    </Button>
-                  </CardContent>
-                </Card>
-              </div>
             </div>
           </div>
         </div>
@@ -197,17 +196,17 @@ export default function ContactPage() {
           {/* Placeholder for map */}
           <div className="bg-gray-200 h-96 rounded-lg">
             <div className="h-[100%] w-full rounded-lg overflow-hidden">
-                 <iframe
-            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3557.3223038250117!2d80.92241527549284!3d26.924994976639855!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3999565edfcb41f1%3A0x135bdd0d8b44ed44!2sD%20N%20SINGH%20COMPLEX!5e0!3m2!1sen!2sin!4v1745611371761!5m2!1sen!2sin%22"
-            width="100%"
-            height="100%"
-            style={{ border: 0, borderRadius: "0.5rem" }}
-            allowFullScreen
-            loading="lazy"
-            referrerPolicy="no-referrer-when-downgrade"
-            title="Google Maps"
-          ></iframe>
-          </div>
+              <iframe
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3557.3223038250117!2d80.92241527549284!3d26.924994976639855!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3999565edfcb41f1%3A0x135bdd0d8b44ed44!2sD%20N%20SINGH%20COMPLEX!5e0!3m2!1sen!2sin!4v1745611371761!5m2!1sen!2sin%22"
+                width="100%"
+                height="100%"
+                style={{ border: 0, borderRadius: "0.5rem" }}
+                allowFullScreen
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                title="Google Maps"
+              ></iframe>
+            </div>
           </div>
         </div>
       </section>

@@ -12,6 +12,7 @@ export const metadata: Metadata = {
   description: "Computer Institute & Software Development Company",
   generator: 'procotech',
   applicationName: "Proco Technologies",
+  manifest: "/manifest.json",
   keywords: [
     "Proco Technologies",
     "Computer Institute",
