@@ -74,7 +74,6 @@ export default function RootLayout({
           crossOrigin="anonymous"
           strategy="beforeInteractive"
         />
-        <script type='text/javascript' src='//pl27915847.effectivegatecpm.com/db/c3/c1/dbc3c11b2e3c7ef2c364a8eb6bdace39.js'></script>
       </head>
       <body className={inter.className}>
         <ClientLayout>{children}</ClientLayout>
