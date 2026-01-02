@@ -6,9 +6,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
-import { BookOpen, Clock, CheckCircle, AlertCircle, Calendar, FileText, Award } from "lucide-react"
+import { BookOpen, Clock, CheckCircle, AlertCircle, FileText, Award } from "lucide-react"
 import { useStudent } from "@/hooks/useStudent"
-import { getEnrolledCourses, getStudentData, enrollInCourse } from "@/lib/student"
+import { getEnrolledCoursesWithApproval, getStudentData, enrollInCourse } from "@/lib/student"
 import { doc, getDoc } from "firebase/firestore"
 import { db } from "@/lib/firebase"
 
@@ -44,8 +44,8 @@ export default function CoursesPage() {
         const fetchData = async () => {
             if (studentData?.uid) {
                 try {
-                    // Get enrolled courses
-                    const courses = await getEnrolledCourses(studentData.uid)
+                    // Get enrolled courses with approval status
+                    const courses = await getEnrolledCoursesWithApproval(studentData.uid)
                     setEnrolledCourses(courses as CourseWithEnrollment[])
 
                     // Get assigned courses from student data
@@ -64,9 +64,11 @@ export default function CoursesPage() {
 
     const getCourseStatus = (enrollment: CourseWithEnrollment) => {
         const isCompleted = isCourseCompleted(enrollment.enrolledAt, enrollment.course?.duration || "")
+        const isApproved = enrollment.approvedForCertificate === true
 
-        if (isCompleted && enrollment.approvedForCertificate) {
-            return { label: "Approved", variant: "default" as const, icon: CheckCircle, color: "text-green-600" }
+        // If admin approves the certificate, show as completed regardless of actual completion date
+        if (isApproved) {
+            return { label: "Completed", variant: "default" as const, icon: CheckCircle, color: "text-green-600" }
         } else if (isCompleted) {
             return { label: "Pending Approval", variant: "secondary" as const, icon: Clock, color: "text-yellow-600" }
         } else if (enrollment.status === "active") {
@@ -139,7 +141,7 @@ export default function CoursesPage() {
         try {
             await enrollInCourse(studentData.uid, courseId)
             // Refresh enrolled courses
-            const courses = await getEnrolledCourses(studentData.uid)
+            const courses = await getEnrolledCoursesWithApproval(studentData.uid)
             setEnrolledCourses(courses as CourseWithEnrollment[])
         } catch (error) {
             console.error("Error enrolling in course:", error)
@@ -310,7 +312,8 @@ export default function CoursesPage() {
 
                                             {(() => {
                                                 const isCompleted = isCourseCompleted(enrollment.enrolledAt, enrollment.course?.duration || "")
-                                                const progressValue = isCompleted ? 100 : (enrollment.progress || 0)
+                                                const isApproved = enrollment.approvedForCertificate === true
+                                                const progressValue = (isApproved || isCompleted) ? 100 : (enrollment.progress || 0)
 
                                                 return (
                                                     <div className="space-y-3 mb-4">
@@ -318,41 +321,37 @@ export default function CoursesPage() {
                                                             <span className="font-medium">Progress</span>
                                                             <span className="text-gray-600">{progressValue}%</span>
                                                         </div>
-                                                        <Progress value={progressValue} className="h-2" />
+                                                        {/* Animated Progress Line */}
+                                                        <div className="relative h-3 bg-gray-200 rounded-full overflow-hidden">
+                                                            {isApproved || isCompleted ? (
+                                                                // Completed - Full green line
+                                                                <div className="h-full bg-gradient-to-r from-green-400 to-green-600 w-full"></div>
+                                                            ) : (
+                                                                // In Progress - Animated multi-color line
+                                                                <style>{`
+                                                                    @keyframes progressSlide {
+                                                                        0% { left: 0; }
+                                                                        100% { left: 100%; }
+                                                                    }
+                                                                    .progress-line-animation {
+                                                                        animation: progressSlide 2s infinite;
+                                                                    }
+                                                                `}</style>
+                                                            )}
+                                                            {!(isApproved || isCompleted) && (
+                                                                <div className="progress-line-animation absolute top-0 left-0 h-full w-1/4 bg-gradient-to-r from-red-500 via-yellow-500 to-green-500 rounded-full shadow-lg"></div>
+                                                            )}
+                                                        </div>
                                                     </div>
                                                 )
                                             })()}
 
                                             <div className="flex justify-between text-sm text-gray-500 pt-3 border-t">
                                                 <div className="flex flex-col space-y-1">
-                                                    <span className="flex items-center">
-                                                        <Calendar className="h-4 w-4 mr-1" />
-                                                        Started: {enrollment.enrolledAt?.toDate
-                                                            ? enrollment.enrolledAt.toDate().toLocaleDateString()
-                                                            : "N/A"
-                                                        }
-                                                    </span>
-                                                    {(() => {
-                                                        const endDate = calculateCourseEndDate(enrollment.enrolledAt, enrollment.course?.duration || "")
-                                                        return endDate ? (
-                                                            <span className="flex items-center text-blue-600">
-                                                                <Clock className="h-4 w-4 mr-1" />
-                                                                Ends: {endDate.toLocaleDateString()}
-                                                            </span>
-                                                        ) : null
-                                                    })()}
                                                 </div>
                                                 <div className="text-right">
                                                     <span className="block">Duration: {enrollment.course?.duration || "N/A"}</span>
-                                                    {(() => {
-                                                        const isCompleted = isCourseCompleted(enrollment.enrolledAt, enrollment.course?.duration || "")
-                                                        return (
-                                                            <Badge variant={isCompleted ? "default" : "secondary"} className="mt-1">
-                                                                {isCompleted ? "Completed" : "In Progress"}
-                                                            </Badge>
-                                                        )
-                                                    })()}
-                                                </div>
+                                                                                                    </div>
                                             </div>
 
                                             {/* Certificate Section */}
@@ -364,9 +363,9 @@ export default function CoursesPage() {
                                                 {(() => {
                                                     const isCompleted = isCourseCompleted(enrollment.enrolledAt, enrollment.course?.duration || "")
                                                     const endDate = calculateCourseEndDate(enrollment.enrolledAt, enrollment.course?.duration || "")
-                                                    const isApproved = enrollment.approvedForCertificate
+                                                    const isApproved = enrollment.approvedForCertificate === true
 
-                                                    if (isCompleted && isApproved) {
+                                                    if (isApproved) {
                                                         return (
                                                             <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
                                                                 <div className="flex items-center text-green-700">

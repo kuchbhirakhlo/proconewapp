@@ -11,6 +11,7 @@ import { useStudent } from "@/hooks/useStudent"
 import { signOutStudent } from "@/lib/student"
 import { BookOpen, User, Award, Settings, LogOut, Home, AlertCircle, Menu, X, FileText } from "lucide-react"
 import Image from "next/image"
+import { Line } from "recharts"
 
 interface StudentLayoutProps {
   children: React.ReactNode
@@ -90,18 +91,6 @@ export default function StudentLayout({ children, title }: StudentLayoutProps) {
 
   return (
     <div className="min-h-screen bg-gray-50 flex">
-      {/* Mobile menu button */}
-      <div className="lg:hidden fixed top-4 left-4 z-50">
-        <Button
-          variant="outline"
-          size="icon"
-          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          className="bg-white shadow-md"
-        >
-          {mobileMenuOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
-        </Button>
-      </div>
-
       {/* Mobile overlay */}
       {mobileMenuOpen && (
         <div
@@ -112,20 +101,16 @@ export default function StudentLayout({ children, title }: StudentLayoutProps) {
 
       {/* Sidebar */}
       <div className={`
-        fixed lg:static inset-y-0 left-0 z-50 w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out flex flex-col
+        fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out flex flex-col
         ${mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}
         lg:translate-x-0
       `}>
         <div className="flex flex-col h-full">
-          <div className="flex  items-center justify-center h-8 px-4  text-white">
-            <Image
-              src="/logo.png"
-              alt=""
-              width={68}
-              height={68}
-              className="w-1/2 h-auto"
-            />
-            <h1 className="text-1xl text-blue-400 font-bold">Student Portal</h1>
+          <div className="flex items-center justify-center h-16 p-4">
+<h1 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 text-transparent bg-clip-text">
+    PROCO Student Portal
+</h1>
+            <Line />
           </div>
 
           <nav className="flex-1 px-4 py-6 space-y-2">
@@ -166,7 +151,28 @@ export default function StudentLayout({ children, title }: StudentLayoutProps) {
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 lg:ml-0 min-h-screen">
+      <div className="flex-1 lg:ml-64 min-h-screen overflow-auto">
+        {/* Mobile top bar */}
+        <div className="lg:hidden bg-white shadow-md p-4 flex items-center">
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="mr-4"
+          >
+            {mobileMenuOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
+          </Button>
+          <div className="flex-1 flex items-center justify-center">
+            <Image
+              src="/logo.png"
+              alt=""
+              width={32}
+              height={32}
+              className="w-8 h-8 mr-2"
+            />
+            <h1 className="text-lg text-blue-600 font-bold">Student Portal</h1>
+          </div>
+        </div>
         <main className="p-4 lg:p-6">{children}</main>
         <a href="https://obligedmeditatedazed.com/j6y4n7df?key=de899420720345158643a35a4c1934d3"></a>
       </div>

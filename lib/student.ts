@@ -27,6 +27,7 @@ interface EnrollmentData {
   progress: number
   approvedForCertificate?: boolean
   certificateApprovedAt?: any
+  certificateId?: string
 }
 
 // Student Authentication
@@ -212,6 +213,7 @@ export const getEnrolledCoursesWithApproval = async (studentId: string) => {
           progress: enrollment.progress,
           approvedForCertificate: enrollment.approvedForCertificate || false,
           certificateApprovedAt: enrollment.certificateApprovedAt,
+          certificateId: enrollment.certificateId,
           course: courseData,
         }
       } catch (error) {
@@ -224,6 +226,7 @@ export const getEnrolledCoursesWithApproval = async (studentId: string) => {
           status: enrollment.status,
           progress: enrollment.progress,
           approvedForCertificate: false,
+          certificateId: undefined,
           course: null,
         }
       }

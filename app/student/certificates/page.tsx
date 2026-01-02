@@ -5,11 +5,9 @@ import StudentLayout from "@/components/student/student-layout"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
-import { Award, Download, Calendar, Clock, BookOpen, Eye, AlertCircle } from "lucide-react"
+import { Award, BookOpen, AlertCircle, Calendar, Download } from "lucide-react"
 import { useStudent } from "@/hooks/useStudent"
 import { getEnrolledCourses, getEnrolledCoursesWithApproval } from "@/lib/student"
-import { generateCertificatePDF, previewCertificate, CertificateData, generateCertificateId } from "@/lib/certificate-generator"
 
 interface CourseWithEnrollment {
     id: string
@@ -27,91 +25,10 @@ interface CourseWithEnrollment {
     courseId: string
     approvedForCertificate?: boolean
     certificateApprovedAt?: any
+    certificateId?: string
 }
 
-interface CertificatePreviewProps {
-    studentName: string
-    courseTitle: string
-    courseDescription: string
-    completionDate: string
-    certificateId: string
-    courseDuration?: string
-}
 
-const CertificatePreview = ({
-    studentName,
-    courseTitle,
-    courseDescription,
-    completionDate,
-    certificateId,
-    courseDuration
-}: CertificatePreviewProps) => {
-    return (
-        <div className="certificate-preview bg-white border-4 border-gray-800 p-8 max-w-4xl mx-auto">
-            <div className="text-center">
-                {/* Header */}
-                <h1 className="text-4xl font-bold text-gray-800 mb-2 tracking-wider uppercase">
-                    Certificate of Completion
-                </h1>
-                <div className="w-24 h-1 bg-blue-500 mx-auto mb-8"></div>
-
-                {/* Content */}
-                <div className="my-12">
-                    <p className="text-xl text-gray-700 mb-6">This is to certify that</p>
-                    <h2 className="text-3xl font-bold text-gray-800 mb-6 uppercase tracking-wide">
-                        {studentName}
-                    </h2>
-                    <p className="text-lg text-gray-700 mb-6">has successfully completed the course</p>
-                    <h3 className="text-2xl font-bold text-blue-600 mb-6 italic">
-                        "{courseTitle}"
-                    </h3>
-                    <p className="text-gray-600 max-w-2xl mx-auto leading-relaxed">
-                        {courseDescription}
-                    </p>
-                </div>
-
-                {/* Details */}
-                <div className="flex justify-center space-x-16 my-12">
-                    <div className="text-center">
-                        <p className="text-sm text-gray-500 mb-1">Completion Date</p>
-                        <p className="text-lg font-bold text-gray-800">{completionDate}</p>
-                    </div>
-                    <div className="text-center">
-                        <p className="text-sm text-gray-500 mb-1">Certificate ID</p>
-                        <p className="text-lg font-bold text-gray-800">{certificateId}</p>
-                    </div>
-                </div>
-
-                {/* Course Duration */}
-                {courseDuration && (
-                    <div className="text-center mb-8">
-                        <p className="text-sm text-gray-500 mb-1">Course Duration</p>
-                        <p className="text-lg font-bold text-gray-800">{courseDuration}</p>
-                    </div>
-                )}
-
-                {/* Logo */}
-                <div className="mt-12 text-center">
-                    <div className="inline-block text-center mx-10">
-                        <img
-                            src="/logo.png"
-                            alt="Organization Logo"
-                            className="h-16 w-auto mx-auto mb-4 object-contain"
-                        />
-                        <p className="text-sm text-gray-500">Certified by</p>
-                        <p className="text-lg font-bold text-gray-800">ProCo Tech</p>
-                    </div>
-                </div>
-
-                {/* Footer */}
-                <div className="mt-12 text-center">
-                    <p className="text-xs text-gray-500 mb-1">This certificate is officially recognized and verified</p>
-                    <p className="text-xs text-gray-500">Issued on {new Date().toLocaleDateString()}</p>
-                </div>
-            </div>
-        </div>
-    )
-}
 
 export default function CertificatesPage() {
     const { studentData } = useStudent()
@@ -147,10 +64,11 @@ export default function CertificatesPage() {
                         throw new Error("Invalid response format - expected array")
                     }
 
-                    // Filter only completed courses
+                    // Filter only completed courses or courses approved for certificate
                     const completed = enrollments.filter(enrollment => {
                         const isCompleted = isCourseCompleted(enrollment.enrolledAt, enrollment.course?.duration || "")
-                        return isCompleted
+                        const isApprovedForCertificate = enrollment.approvedForCertificate === true
+                        return isCompleted || isApprovedForCertificate
                     })
                     console.log("Filtered completed courses:", completed.length)
                     setCompletedCourses(completed)
@@ -214,62 +132,7 @@ export default function CertificatesPage() {
         return new Date() >= endDate
     }
 
-    // Generate certificate function
-    const generateCertificate = async (enrollment: CourseWithEnrollment) => {
-        if (!enrollment.course?.title || !studentData?.fullName) {
-            alert("Unable to generate certificate: Missing course or student information.");
-            return;
-        }
-
-        // Check if course is approved for certification
-        if (!enrollment.approvedForCertificate) {
-            alert("Certificate not yet approved by admin. Please contact administration.");
-            return;
-        }
-
-        try {
-            const endDate = calculateCourseEndDate(enrollment.enrolledAt, enrollment.course?.duration || "")
-            const certificateData: CertificateData = {
-                studentName: studentData.fullName,
-                courseTitle: enrollment.course.title,
-                courseDescription: enrollment.course.description || "Course completion certificate",
-                completionDate: endDate?.toLocaleDateString() || new Date().toLocaleDateString(),
-                certificateId: generateCertificateId(),
-                courseDuration: enrollment.course.duration
-            };
-
-            await generateCertificatePDF(certificateData);
-        } catch (error) {
-            console.error("Error generating certificate:", error);
-            alert("Failed to generate certificate. Please try again.");
-        }
-    }
-
-    // Preview certificate function
-    const previewCertificateHandler = (enrollment: CourseWithEnrollment) => {
-        if (!enrollment.course?.title || !studentData?.fullName) {
-            alert("Unable to preview certificate: Missing course or student information.");
-            return;
-        }
-
-        // Check if course is approved for certification
-        if (!enrollment.approvedForCertificate) {
-            alert("Certificate not yet approved by admin. Please contact administration.");
-            return;
-        }
-
-        const endDate = calculateCourseEndDate(enrollment.enrolledAt, enrollment.course?.duration || "")
-        const certificateData: CertificateData = {
-            studentName: studentData.fullName,
-            courseTitle: enrollment.course.title,
-            courseDescription: enrollment.course.description || "Course completion certificate",
-            completionDate: endDate?.toLocaleDateString() || new Date().toLocaleDateString(),
-            certificateId: generateCertificateId(),
-            courseDuration: enrollment.course.duration
-        };
-
-        previewCertificate(certificateData);
-    }
+    
 
     return (
         <StudentLayout title="My Certificates">
@@ -338,14 +201,6 @@ export default function CertificatesPage() {
 
                                                     <div className="flex flex-wrap gap-4 text-sm text-gray-500">
                                                         <span className="flex items-center">
-                                                            <Calendar className="h-4 w-4 mr-1" />
-                                                            Started: {startDate.toLocaleDateString()}
-                                                        </span>
-                                                        <span className="flex items-center">
-                                                            <Clock className="h-4 w-4 mr-1" />
-                                                            Completed: {endDate?.toLocaleDateString()}
-                                                        </span>
-                                                        <span className="flex items-center">
                                                             Duration: {enrollment.course?.duration || "N/A"}
                                                         </span>
                                                     </div>
@@ -362,46 +217,7 @@ export default function CertificatesPage() {
                                                             Pending Approval
                                                         </Badge>
                                                     )}
-                                                    <div className="flex space-x-2">
-                                                        <Dialog>
-                                                            <DialogTrigger asChild>
-                                                                <Button
-                                                                    variant="outline"
-                                                                    className="bg-white border-blue-300 text-blue-700 hover:bg-blue-50"
-                                                                    disabled={!enrollment.approvedForCertificate}
-                                                                >
-                                                                    <Eye className="h-4 w-4 mr-2" />
-                                                                    Preview
-                                                                </Button>
-                                                            </DialogTrigger>
-                                                            <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
-                                                                <DialogHeader>
-                                                                    <DialogTitle>Certificate Preview</DialogTitle>
-                                                                    <DialogDescription>
-                                                                        Preview of your certificate for "{enrollment.course?.title}"
-                                                                    </DialogDescription>
-                                                                </DialogHeader>
-                                                                <div className="mt-4">
-                                                                    <CertificatePreview
-                                                                        studentName={studentData?.fullName || ""}
-                                                                        courseTitle={enrollment.course?.title || ""}
-                                                                        courseDescription={enrollment.course?.description || ""}
-                                                                        completionDate={endDate?.toLocaleDateString() || ""}
-                                                                        certificateId={generateCertificateId()}
-                                                                        courseDuration={enrollment.course?.duration}
-                                                                    />
-                                                                </div>
-                                                            </DialogContent>
-                                                        </Dialog>
-                                                        <Button
-                                                            onClick={() => generateCertificate(enrollment)}
-                                                            disabled={!enrollment.approvedForCertificate}
-                                                            className="bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-white disabled:opacity-50 disabled:cursor-not-allowed"
-                                                        >
-                                                            <Download className="h-4 w-4 mr-2" />
-                                                            {enrollment.approvedForCertificate ? "Download Certificate" : "Pending Approval"}
-                                                        </Button>
-                                                    </div>
+                                                    
                                                 </div>
                                             </div>
 
@@ -413,7 +229,7 @@ export default function CertificatesPage() {
                                                         <div className="space-y-1 text-sm text-gray-600">
                                                             <div>Course ID: {enrollment.course?.id}</div>
                                                             <div>Enrollment ID: {enrollment.id}</div>
-                                                            <div>Progress: {enrollment.progress || 0}%</div>
+                                                            <div>Progress: {enrollment.progress || 100}%</div>
                                                         </div>
                                                     </div>
 
@@ -460,7 +276,7 @@ export default function CertificatesPage() {
                                         return acc + (match ? parseInt(match[1]) : 0)
                                     }, 0) / completedCourses.length) || 0}
                                 </div>
-                                <div className="text-sm text-gray-600">Avg. Course Duration (months)</div>
+                                <div className="text-sm text-gray-600">Course Duration (months)</div>
                             </CardContent>
                         </Card>
                         <Card>
