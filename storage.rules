@@ -1,4 +1,3 @@
-v
 rules_version = '2';
 
 // Firebase Storage Security Rules
@@ -10,32 +9,34 @@ service firebase.storage {
         firestore.exists(/databases/(default)/documents/admins/$(request.auth.uid));
     }
 
+    function isStudent() {
+      return request.auth != null &&
+        firestore.exists(/databases/(default)/documents/students/$(request.auth.uid));
+    }
+
     function isAuthenticated() {
       return request.auth != null;
     }
 
-    // Allow authenticated users to read all files
-    match /{allPaths=**} {
-      allow read: if isAuthenticated();
-      allow write: if isAdmin() && isAuthenticated();
-    }
-
-    // Specific rules for course PDFs folder
+    // IMPORTANT: Course PDFs can ONLY be accessed through the secure API endpoint
+    // Direct access to PDFs is DENIED to prevent bypassing enrollment checks
     match /course_pdfs/{fileName} {
-      // Allow admins to upload PDFs
+      // Allow admins to upload PDFs only
       allow write: if isAdmin() && isAuthenticated() &&
         request.resource.contentType.matches('application/pdf');
 
       // Allow admins to delete PDFs
       allow delete: if isAdmin() && isAuthenticated();
 
-      // Allow authenticated users to read PDFs
-      allow read: if isAuthenticated();
+      // DENY direct read access - must use secure API endpoint instead
+      allow read: if false;
     }
 
-    // Default bucket rules
+    // Other storage paths can remain open for admins to manage
     match /{allPaths=**} {
-      allow read, write: if false; // Deny by default
+      allow write: if isAdmin() && isAuthenticated();
+      allow delete: if isAdmin() && isAuthenticated();
+      allow read: if false; // Deny all public read access
     }
   }
 }

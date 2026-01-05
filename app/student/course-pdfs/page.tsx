@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { FileText, Search, Download, Eye, Calendar, BookOpen, Filter, X } from "lucide-react"
+import { FileText, Search, Eye, Calendar, BookOpen, Filter, X } from "lucide-react"
 import { useStudent } from "@/hooks/useStudent"
 import { collection, getDocs, query, where } from "firebase/firestore"
 import { db } from "@/lib/firebase"
@@ -121,17 +121,6 @@ export default function CoursePDFsPage() {
         setSelectedPdf(null)
     }
 
-    const handleDownloadPDF = (pdfUrl: string, title: string) => {
-        // Create download link
-        const link = document.createElement('a')
-        link.href = pdfUrl
-        link.download = `${title}.pdf`
-        link.target = '_blank'
-        document.body.appendChild(link)
-        link.click()
-        document.body.removeChild(link)
-    }
-
     const formatDate = (date: any) => {
         if (!date) return "Unknown"
         const d = date.toDate ? date.toDate() : new Date(date)
@@ -187,16 +176,6 @@ export default function CoursePDFsPage() {
                         </div>
                     </CardContent>
                 </Card>
-
-                {/* Ad Block */}
-                <div className="w-full">
-                    <GoogleAds
-                        slot="1234567890"
-                        format="horizontal"
-                        className="mx-auto max-w-4xl"
-                        responsive={true}
-                    />
-                </div>
 
                 {/* PDFs Grid */}
                 {loading ? (
@@ -292,15 +271,7 @@ export default function CoursePDFsPage() {
                                             className="flex-1 bg-transparent text-xs sm:text-sm"
                                         >
                                             <Eye className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
-                                            View
-                                        </Button>
-                                        <Button
-                                            size="sm"
-                                            variant="outline"
-                                            onClick={() => handleDownloadPDF(pdf.pdfUrl, pdf.title)}
-                                            className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 bg-transparent text-xs sm:text-sm"
-                                        >
-                                            <Download className="h-3 w-3 sm:h-4 sm:w-4" />
+                                            View PDF
                                         </Button>
                                     </div>
                                 </CardContent>
@@ -308,16 +279,6 @@ export default function CoursePDFsPage() {
                         ))}
                     </div>
                 )}
-
-                {/* Ad Block */}
-                <div className="w-full">
-                    <GoogleAds
-                        slot="2345678901"
-                        format="rectangle"
-                        className="mx-auto max-w-sm sm:max-w-md"
-                        responsive={true}
-                    />
-                </div>
 
                 {/* Course-wise PDF Summary */}
                 {courses.length > 0 && (

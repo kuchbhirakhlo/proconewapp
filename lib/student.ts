@@ -78,8 +78,9 @@ export const signInStudent = async (email: string, password: string) => {
       studentData: { id: finalSnap.id, ...data } as StudentData,
     }
   } catch (error: any) {
-    // Map Firebase auth errors to nicer copy
-    switch (error.code) {
+    // Map Firebase auth errors to nicer copy and log for debugging
+    console.error("signInStudent error:", error?.code, error?.message)
+    switch (error?.code) {
       case "auth/user-not-found":
         throw new Error("No student account exists with that email.")
       case "auth/wrong-password":
@@ -89,7 +90,8 @@ export const signInStudent = async (email: string, password: string) => {
       case "auth/too-many-requests":
         throw new Error("Too many attempts. Try again later.")
       default:
-        throw error
+        // Surface the provider error message for debugging; callers may show this briefly
+        throw new Error(error?.message || "Authentication failed")
     }
   }
 }

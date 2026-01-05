@@ -73,12 +73,16 @@ service cloud.firestore {
       allow read, write, update, delete: if isAdmin();
     }
 
-    // Course PDFs collection - admins can manage, students can read their own
+    // Course PDFs collection - admins can manage, students can read PDFs for courses they're enrolled in
     match /course_pdfs/{pdfId} {
-      allow read: if isAdmin() || (isStudent() && exists(/databases/$(database)/documents/enrollments/$(pdfId)) && 
-                    get(/databases/$(database)/documents/enrollments/$(pdfId)).data.studentId == request.auth.uid);
-      allow write, update, delete: if isAdmin();
-      allow create: if isAdmin();
+      allow read: if isAdmin() || (
+        isStudent() &&
+        // Verify the student's Firestore doc lists enrollment for at least one of the PDF's courseIds
+        get(/databases/$(database)/documents/students/$(request.auth.uid)).data.enrolledCourses != null &&
+        get(/databases/$(database)/documents/students/$(request.auth.uid)).data.enrolledCourses.hasAny(resource.data.courseIds)
+      );
+
+      allow create, write, update, delete: if isAdmin();
     }
 
     // Catch-all: Deny all other access

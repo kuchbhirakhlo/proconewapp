@@ -133,6 +133,24 @@ export default function CoursesPage() {
         }
     }
 
+    // Helper to extract a readable filename from a PDF URL
+    const getPdfName = (pdfUrl: string, index: number) => {
+        try {
+            const url = new URL(pdfUrl)
+            const pathname = decodeURIComponent(url.pathname || '')
+            const parts = pathname.split('/')
+            const name = parts.pop() || ''
+            return name || `PDF ${index + 1}`
+        } catch (e) {
+            const raw = pdfUrl.split('/').pop()?.split('?')[0]
+            try {
+                return raw ? decodeURIComponent(raw) : `PDF ${index + 1}`
+            } catch {
+                return raw || `PDF ${index + 1}`
+            }
+        }
+    }
+
     // Handle start course
     const handleStartCourse = async (courseId: string) => {
         if (!studentData?.uid) return
@@ -437,7 +455,7 @@ export default function CoursesPage() {
                                                                 <div className="flex items-center">
                                                                     <FileText className="h-4 w-4 mr-2 text-blue-600" />
                                                                     <span className="text-sm truncate max-w-48">
-                                                                        {pdfUrl.split('/').pop()?.split('?')[0] || `PDF ${index + 1}`}
+                                                                        {getPdfName(pdfUrl, index)}
                                                                     </span>
                                                                 </div>
                                                                 <Button
@@ -446,7 +464,7 @@ export default function CoursesPage() {
                                                                     onClick={() => window.open(pdfUrl, '_blank')}
                                                                     className="text-xs"
                                                                 >
-                                                                    View
+                                                                    Read
                                                                 </Button>
                                                             </div>
                                                         ))}

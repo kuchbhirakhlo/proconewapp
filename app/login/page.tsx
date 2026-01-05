@@ -53,7 +53,7 @@ export default function LoginPage() {
       }, 1000)
     } catch (error: any) {
       console.error("Login error:", error)
-      setError("Login failed. Please check your credentials.")
+      setError(error?.message || "Login failed. Please check your credentials.")
       setLoading(false)
     }
   }

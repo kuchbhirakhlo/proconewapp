@@ -163,14 +163,7 @@ export default function StudentLayout({ children, title }: StudentLayoutProps) {
             {mobileMenuOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
           </Button>
           <div className="flex-1 flex items-center justify-center">
-            <Image
-              src="/logo.png"
-              alt=""
-              width={32}
-              height={32}
-              className="w-8 h-8 mr-2"
-            />
-            <h1 className="text-lg text-blue-600 font-bold">Student Portal</h1>
+            <h1 className="text-lg text-blue-600 font-bold">Proco Student Portal</h1>
           </div>
         </div>
         <main className="p-4 lg:p-6">{children}</main>
