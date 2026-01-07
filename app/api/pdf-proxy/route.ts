@@ -1,18 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getStorage, ref, getBytes } from 'firebase/storage'
-import { initializeApp } from 'firebase/app'
-
-const firebaseConfig = {
-  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY || "AIzaSyBBTMiyPuA1-zKX-2EMSmeo_G8EHgD7kcw",
-  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN || "procotech-879c2.firebaseapp.com",
-  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || "procotech-879c2",
-  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET || "procotech-879c2.firebasestorage.app",
-}
 
 export async function GET(request: NextRequest) {
   try {
     const url = new URL(request.url)
-    const pdfId = url.searchParams.get('pdfId')
+    // Decode the pdfId first, then re-encode for the Firebase URL
+    const pdfId = decodeURIComponent(url.searchParams.get('pdfId') || '')
+    const token = url.searchParams.get('token')
 
     if (!pdfId) {
       return NextResponse.json(
@@ -21,23 +14,44 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    // For now, redirect to Firebase Storage with CORS headers
-    // This assumes Firebase Storage CORS is configured
-    return NextResponse.redirect(
-      `https://firebasestorage.googleapis.com/v0/b/procotech-879c2.firebasestorage.app/o/course_pdfs%2F${pdfId}?alt=media`,
-      {
-        status: 307,
-        headers: {
-          'Access-Control-Allow-Origin': '*',
-          'Access-Control-Allow-Methods': 'GET, OPTIONS',
-          'Access-Control-Allow-Headers': 'Content-Type',
-        },
+    // URL encode the pdfId for Firebase Storage URL
+    const encodedPdfId = encodeURIComponent(pdfId)
+    const firebaseStorageUrl = `https://firebasestorage.googleapis.com/v0/b/procotech-879c2.firebasestorage.app/o/course_pdfs%2F${encodedPdfId}?alt=media${token ? `&token=${token}` : ''}`
+
+    // Fetch the PDF from Firebase Storage
+    const response = await fetch(firebaseStorageUrl, {
+      headers: {
+        'Accept': 'application/pdf',
       }
-    )
+    })
+
+    if (!response.ok) {
+      const errorText = await response.text()
+      return NextResponse.json(
+        { error: `Failed to fetch PDF: ${response.status} ${response.statusText} - ${errorText}` },
+        { status: response.status }
+      )
+    }
+
+    // Get the PDF as an array buffer
+    const pdfBuffer = await response.arrayBuffer()
+
+    // Return the PDF with proper CORS headers
+    return new NextResponse(pdfBuffer, {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/pdf',
+        'Content-Length': pdfBuffer.byteLength.toString(),
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type',
+        'Content-Disposition': `inline; filename="${encodeURIComponent(pdfId)}"`,
+      },
+    })
   } catch (error) {
     console.error('Error in PDF proxy:', error)
     return NextResponse.json(
-      { error: 'Internal Server Error' },
+      { error: `Internal Server Error: ${error instanceof Error ? error.message : 'Unknown error'}` },
       { status: 500 }
     )
   }

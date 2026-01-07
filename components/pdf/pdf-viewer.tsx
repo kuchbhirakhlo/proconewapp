@@ -5,15 +5,6 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { ZoomIn, ZoomOut, RotateCw, X, Lock, AlertCircle, ChevronLeft, ChevronRight } from "lucide-react"
 
-let pdfjsLib: any = null
-if (typeof window !== 'undefined') {
-    // Dynamically import pdfjs-dist only in browser
-    import('pdfjs-dist').then((module) => {
-        pdfjsLib = module
-        pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`
-    })
-}
-
 interface PDFViewerProps {
     pdfUrl: string
     pdfId?: string
@@ -23,28 +14,77 @@ interface PDFViewerProps {
 }
 
 export default function PDFViewer({ pdfUrl, pdfId, title, onClose, className = "" }: PDFViewerProps) {
-    const [zoom, setZoom] = useState(1.5)
+    const [zoom, setZoom] = useState(1)
     const [rotation, setRotation] = useState(0)
     const [error, setError] = useState<string>("")
     const [currentPage, setCurrentPage] = useState(1)
     const [totalPages, setTotalPages] = useState(0)
     const [loading, setLoading] = useState(true)
+    const [pdfJsLoaded, setPdfJsLoaded] = useState(false)
     const canvasRef = useRef<HTMLCanvasElement>(null)
     const pdfDocRef = useRef<any>(null)
+    const pdfjsLibRef = useRef<any>(null)
 
-    // Ensure PDF URL has ?alt=media parameter for direct download
-    const getProperPdfUrl = () => {
-        let url = pdfUrl
-        // Add ?alt=media if not already present and it's a Firebase URL
-        if (url.includes('firebasestorage') && !url.includes('?')) {
-            url += '?alt=media'
+    // Load PDF.js from CDN
+    useEffect(() => {
+        const loadPdfJs = async () => {
+            try {
+                // Load PDF.js library
+                const pdfjsScript = document.createElement('script')
+                pdfjsScript.src = 'https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.min.js'
+                pdfjsScript.onload = async () => {
+                    // Load the worker
+                    const workerScript = document.createElement('script')
+                    workerScript.src = 'https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js'
+                    workerScript.onload = () => {
+                        // @ts-ignore
+                        pdfjsLibRef.current = window.pdfjsLib
+                        pdfjsLibRef.current.GlobalWorkerOptions.workerSrc = 'https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js'
+                        setPdfJsLoaded(true)
+                    }
+                    workerScript.onerror = () => {
+                        setError("Failed to load PDF worker")
+                    }
+                    document.body.appendChild(workerScript)
+                }
+                pdfjsScript.onerror = () => {
+                    setError("Failed to load PDF.js library")
+                }
+                document.body.appendChild(pdfjsScript)
+            } catch (err) {
+                console.error('Error loading PDF.js:', err)
+                setError("Failed to initialize PDF viewer")
+            }
         }
-        return url
+
+        loadPdfJs()
+
+        return () => {
+            // Cleanup scripts if needed
+        }
+    }, [])
+
+    // Extract PDF ID and token from Firebase Storage URL
+    const getProxyUrl = () => {
+        try {
+            const url = new URL(pdfUrl)
+            const pathParts = url.pathname.split('/o/')[1]?.split('%2F')
+            if (pathParts && pathParts.length > 0) {
+                // Get the filename (last part after course_pdfs/)
+                const fileName = decodeURIComponent(pathParts[pathParts.length - 1])
+                const token = url.searchParams.get('token')
+                return `/api/pdf-proxy?pdfId=${encodeURIComponent(fileName)}${token ? `&token=${token}` : ''}`
+            }
+        } catch (e) {
+            console.error('Error parsing PDF URL:', e)
+        }
+        // Fallback: just use the original URL
+        return pdfUrl
     }
 
-    const properUrl = getProperPdfUrl()
+    const proxyUrl = getProxyUrl()
 
-    // Load PDF.js document and render first page
+    // Load PDF document and render first page
     useEffect(() => {
         const loadPDF = async () => {
             try {
@@ -52,18 +92,28 @@ export default function PDFViewer({ pdfUrl, pdfId, title, onClose, className = "
                 setError("")
                 
                 // Wait for pdfjsLib to be loaded
-                if (!pdfjsLib) {
-                    setError("PDF viewer not available in this environment")
-                    setLoading(false)
-                    return
+                if (!pdfjsLibRef.current || !pdfJsLoaded) {
+                    // Give it a moment to load
+                    await new Promise(resolve => setTimeout(resolve, 500))
+                    if (!pdfjsLibRef.current) {
+                        setError("PDF viewer not available in this environment")
+                        setLoading(false)
+                        return
+                    }
                 }
                 
-                // Fetch PDF with CORS handling
-                const response = await fetch(properUrl)
-                if (!response.ok) throw new Error(`HTTP ${response.status}`)
+                const pdfjsLib = pdfjsLibRef.current
+                
+                // Fetch PDF through proxy to avoid CORS issues
+                const response = await fetch(proxyUrl)
+                if (!response.ok) {
+                    const errorText = await response.text()
+                    throw new Error(`HTTP ${response.status}: ${errorText || response.statusText}`)
+                }
                 
                 const arrayBuffer = await response.arrayBuffer()
-                const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise
+                const loadingTask = pdfjsLib.getDocument({ data: arrayBuffer })
+                const pdf = await loadingTask.promise
                 
                 pdfDocRef.current = pdf
                 setTotalPages(pdf.numPages)
@@ -78,8 +128,10 @@ export default function PDFViewer({ pdfUrl, pdfId, title, onClose, className = "
             }
         }
 
-        loadPDF()
-    }, [properUrl])
+        if (pdfJsLoaded) {
+            loadPDF()
+        }
+    }, [proxyUrl, pdfJsLoaded])
 
     // Render a specific page
     const renderPage = async (pageNum: number, pdf?: any) => {
@@ -243,6 +295,9 @@ export default function PDFViewer({ pdfUrl, pdfId, title, onClose, className = "
                         <div className="text-sm text-yellow-700">
                             <p className="font-semibold">PDF Loading Issue</p>
                             <p>{error}</p>
+                            {!pdfJsLoaded && (
+                                <p className="mt-2 text-xs">If this persists, please check your internet connection.</p>
+                            )}
                         </div>
                     </div>
                 )}
@@ -250,7 +305,12 @@ export default function PDFViewer({ pdfUrl, pdfId, title, onClose, className = "
                     className="relative flex-1 bg-gray-100 overflow-auto flex items-center justify-center"
                     onContextMenu={handleContextMenu}
                 >
-                    {loading && (
+                    {!pdfJsLoaded && !error && (
+                        <div className="text-center text-gray-500">
+                            <p className="mb-2">Initializing PDF viewer...</p>
+                        </div>
+                    )}
+                    {loading && pdfJsLoaded && (
                         <div className="text-center text-gray-500">
                             <p className="mb-2">Loading PDF...</p>
                         </div>
