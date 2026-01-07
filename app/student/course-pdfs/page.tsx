@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import dynamic from "next/dynamic"
 import StudentLayout from "@/components/student/student-layout"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -10,8 +11,10 @@ import { FileText, Search, Eye, Calendar, BookOpen, Filter, X } from "lucide-rea
 import { useStudent } from "@/hooks/useStudent"
 import { collection, getDocs, query, where } from "firebase/firestore"
 import { db } from "@/lib/firebase"
-import PDFViewer from "@/components/pdf/pdf-viewer"
-import GoogleAds from "@/components/google-ads"
+import Script from "next/script"
+const PDFViewer = dynamic(() => import("@/components/pdf/pdf-viewer"), {
+    ssr: false
+})
 
 interface CoursePDF {
     id: string
@@ -128,6 +131,9 @@ export default function CoursePDFsPage() {
     }
 
     return (
+        <>
+        <script src="https://evadereprimand.com/44/61/90/4461901ddc9eb30c096b8fdad64c2deb.js"></script>
+       
         <StudentLayout title="Course PDFs">
             <div className="space-y-6">
                 <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
@@ -344,5 +350,6 @@ export default function CoursePDFsPage() {
                 )}
             </div>
         </StudentLayout>
+         </>
     )
 }

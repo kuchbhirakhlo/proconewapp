@@ -4,11 +4,14 @@ import { useState, useEffect, useRef } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { ZoomIn, ZoomOut, RotateCw, X, Lock, AlertCircle, ChevronLeft, ChevronRight } from "lucide-react"
-import * as pdfjsLib from 'pdfjs-dist'
 
-// Set up the PDF.js worker
+let pdfjsLib: any = null
 if (typeof window !== 'undefined') {
-    pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`
+    // Dynamically import pdfjs-dist only in browser
+    import('pdfjs-dist').then((module) => {
+        pdfjsLib = module
+        pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`
+    })
 }
 
 interface PDFViewerProps {
@@ -47,6 +50,13 @@ export default function PDFViewer({ pdfUrl, pdfId, title, onClose, className = "
             try {
                 setLoading(true)
                 setError("")
+                
+                // Wait for pdfjsLib to be loaded
+                if (!pdfjsLib) {
+                    setError("PDF viewer not available in this environment")
+                    setLoading(false)
+                    return
+                }
                 
                 // Fetch PDF with CORS handling
                 const response = await fetch(properUrl)
@@ -153,7 +163,9 @@ export default function PDFViewer({ pdfUrl, pdfId, title, onClose, className = "
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                         <CardTitle className="text-lg truncate">{title}</CardTitle>
-                        <Lock className="h-4 w-4 text-green-600" title="This document is secure and protected" />
+                        <div title="This document is secure and protected">
+                            <Lock className="h-4 w-4 text-green-600" />
+                        </div>
                     </div>
                     <div className="flex items-center gap-2">
                         <div className="flex items-center gap-1 bg-gray-200 rounded-md p-1">
