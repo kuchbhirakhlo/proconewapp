@@ -16,6 +16,8 @@ export default function Navbar() {
     { name: "Courses", href: "/courses" },
     { name: "Portfolio", href: "/portfolio" },
     { name: "Contact", href: "/contact" },
+    { name: "Certificate", href: "/verify-certificate" },
+    { name: "Typing Test", href: "/typing-test-online" },
   ]
 
   return (
@@ -34,7 +36,7 @@ export default function Navbar() {
               <Link
                 key={item.name}
                 href={item.href}
-                className="text-gray-700 hover:text-red-600 px-3 py-2 text-sm font-medium transition-colors"
+                className="text-gray-700 hover:text-red-600 px-2 py-2 text-sm font-medium transition-colors"
               >
                 {item.name}
               </Link>
