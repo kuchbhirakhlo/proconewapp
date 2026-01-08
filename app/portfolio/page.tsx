@@ -19,6 +19,8 @@ interface PortfolioItem {
   client: string
   year: string
   status?: string
+  liveUrl?: string
+  githubUrl?: string
 }
 
 export default function PortfolioPage() {
@@ -153,11 +155,22 @@ export default function PortfolioPage() {
                       ))}
                     </div>
                     <div className="flex gap-2">
-                      <Button size="sm" variant="outline" className="flex-1 bg-transparent">
+                      <Button 
+                        size="sm" 
+                        variant="outline" 
+                        className="flex-1 bg-transparent"
+                        onClick={() => project.liveUrl ? window.open(project.liveUrl, "_blank") : alert("Live URL not available")}
+                        disabled={!project.liveUrl}
+                      >
                         <ExternalLink className="h-4 w-4 mr-2" />
                         View Live
                       </Button>
-                      <Button size="sm" variant="outline">
+                      <Button 
+                        size="sm" 
+                        variant="outline"
+                        onClick={() => project.githubUrl ? window.open(project.githubUrl, "_blank") : alert("GitHub URL not available")}
+                        disabled={!project.githubUrl}
+                      >
                         <Github className="h-4 w-4" />
                       </Button>
                     </div>

@@ -150,7 +150,12 @@ export default function CoursesPage() {
                       </ul>
                     </div>
 
-                    <Button className="w-full">Enroll Now</Button>
+                    <Button 
+                      className="w-full" 
+                      onClick={() => window.open("https://wa.me/918383811977", "_blank")}
+                    >
+                      Enroll Now
+                    </Button>
                   </CardContent>
                 </Card>
               ))}

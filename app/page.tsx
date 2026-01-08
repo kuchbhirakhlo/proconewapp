@@ -47,20 +47,37 @@ export default function HomePage() {
   }, [])
 
   const handleInstallClick = async () => {
-    if (!deferredPrompt) return
+    // Check if it's iOS
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent)
 
-    // Show the install prompt
-    deferredPrompt.prompt()
-
-    // Wait for the user to respond to the prompt
-    const { outcome } = await deferredPrompt.userChoice
-
-    // Clean up
-    setDeferredPrompt(null)
-    setShowInstallButton(false)
-
-    if (outcome === "accepted") {
-      setIsInstalled(true)
+    if (deferredPrompt) {
+      // For Android/Desktop - show native install prompt
+      deferredPrompt.prompt()
+      const { outcome } = await deferredPrompt.userChoice
+      setDeferredPrompt(null)
+      setShowInstallButton(false)
+      if (outcome === "accepted") {
+        setIsInstalled(true)
+      }
+    } else if (isIOS) {
+      // For iOS - show share sheet to add to home screen
+      if (navigator.share) {
+        try {
+          await navigator.share({
+            title: "Install Proco Technologies App",
+            text: "Install our app for the best experience!",
+            url: window.location.href,
+          })
+        } catch (err) {
+          // User cancelled or error
+        }
+      } else {
+        // Fallback: show instructions for iOS
+        alert("To install this app on iOS:\n\n1. Tap the Share button (box with arrow) in Safari\n2. Scroll down and tap 'Add to Home Screen'\n3. Tap 'Add' to confirm")
+      }
+    } else {
+      // For other browsers - show manual instructions
+      alert("To install this app:\n\n• Mobile: Tap the menu (⋮) and select 'Add to Home Screen'\n• Desktop: Click the install icon in your browser's address bar")
     }
   }
   const services = [
@@ -236,7 +253,7 @@ export default function HomePage() {
                 <Button
                   size="lg"
                   onClick={handleInstallClick}
-                  disabled={!deferredPrompt || isInstalled}
+                  disabled={isInstalled}
                   className="group hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl bg-green-600 hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <Download className="mr-2 h-4 w-4" />
