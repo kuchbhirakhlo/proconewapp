@@ -24,6 +24,7 @@ export default function PDFViewer({ pdfUrl, pdfId, title, onClose, className = "
     const canvasRef = useRef<HTMLCanvasElement>(null)
     const pdfDocRef = useRef<any>(null)
     const pdfjsLibRef = useRef<any>(null)
+    const initialRenderDone = useRef(false)
 
     // Load PDF.js from CDN
     useEffect(() => {
@@ -84,7 +85,7 @@ export default function PDFViewer({ pdfUrl, pdfId, title, onClose, className = "
 
     const proxyUrl = getProxyUrl()
 
-    // Load PDF document and render first page
+    // Load PDF document
     useEffect(() => {
         const loadPDF = async () => {
             try {
@@ -117,9 +118,6 @@ export default function PDFViewer({ pdfUrl, pdfId, title, onClose, className = "
                 
                 pdfDocRef.current = pdf
                 setTotalPages(pdf.numPages)
-                
-                // Render first page
-                await renderPage(1, pdf)
             } catch (err) {
                 console.error('PDF loading error:', err)
                 setError(`Failed to load PDF: ${err instanceof Error ? err.message : 'Unknown error'}`)
@@ -133,11 +131,36 @@ export default function PDFViewer({ pdfUrl, pdfId, title, onClose, className = "
         }
     }, [proxyUrl, pdfJsLoaded])
 
+    // Render first page when PDF is loaded and canvas is available
+    useEffect(() => {
+        if (!pdfDocRef.current || loading || initialRenderDone.current) return
+
+        const renderInitialPage = async () => {
+            initialRenderDone.current = true
+            // Wait for canvas to be available in DOM
+            let attempts = 0
+            while (!canvasRef.current && attempts < 20) {
+                await new Promise(resolve => setTimeout(resolve, 50))
+                attempts++
+            }
+            if (canvasRef.current) {
+                await renderPage(1, pdfDocRef.current, true)
+            }
+        }
+
+        renderInitialPage()
+    }, [pdfDocRef.current, loading])
+
     // Render a specific page
-    const renderPage = async (pageNum: number, pdf?: any) => {
+    const renderPage = async (pageNum: number, pdf?: any, isInitial = false) => {
         try {
             const pdfDoc = pdf || pdfDocRef.current
             if (!pdfDoc || !canvasRef.current) return
+
+            // Ensure canvas is in DOM before rendering
+            if (isInitial && !canvasRef.current.offsetParent) {
+                await new Promise(resolve => setTimeout(resolve, 100))
+            }
 
             const page = await pdfDoc.getPage(pageNum)
             const viewport = page.getViewport({ scale: zoom, rotation })

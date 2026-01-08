@@ -84,7 +84,7 @@ export default function AdminLayout({ children, title }: AdminLayoutProps) {
 
       {/* Sidebar */}
       <div className={`
-        fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out flex flex-col
+        fixed lg:sticky inset-y-0 left-0 z-50 w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out flex flex-col
         ${mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}
         lg:translate-x-0
       `}>
@@ -129,7 +129,7 @@ export default function AdminLayout({ children, title }: AdminLayoutProps) {
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 lg:ml-0 min-h-screen">
+      <div className="flex-1 min-h-screen">
         <main className="p-4 lg:p-6">{children}</main>
       </div>
     </div>

@@ -32,9 +32,10 @@ export default function AdminDashboard() {
         const thirtyDaysAgo = new Date()
         thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
 
-        const recentEnrollments = enrollments.filter(
-          (enrollment) => enrollment.enrolledAt?.toDate() > thirtyDaysAgo,
-        ).length
+        const recentEnrollments = enrollments.filter((enrollment) => {
+          const enrolledAt = enrollment.enrolledAt?.toDate()
+          return enrolledAt !== undefined && enrolledAt > thirtyDaysAgo
+        }).length
 
         const activeStudents = students.filter((student) => student.status === "active").length
 

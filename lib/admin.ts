@@ -17,6 +17,20 @@ import { auth, db } from "./firebase"
 import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from "firebase/storage"
 import { generateCertificateId } from "./certificate-generator"
 
+// Student interface
+export interface Student {
+  id: string
+  uid: string
+  fullName: string
+  email: string
+  phone: string
+  enrolledCourses: string[]
+  assignedCourses: string[]
+  status: string
+  createdAt?: any
+  updatedAt?: any
+}
+
 // Course interface
 export interface Course {
   id: string
@@ -29,6 +43,22 @@ export interface Course {
   category: string
   status: string
   pdfUrls?: string[]
+  createdAt?: any
+  updatedAt?: any
+}
+
+// Enrollment interface
+export interface Enrollment {
+  id: string
+  studentId: string
+  courseId: string
+  enrolledAt?: Timestamp
+  status: string
+  progress: number
+  approvedForCertificate?: boolean
+  certificateId?: string
+  certificateApprovedAt?: Timestamp
+  certificateApprovedBy?: string
   createdAt?: any
   updatedAt?: any
 }
@@ -199,11 +229,11 @@ export const deletePortfolioItem = async (portfolioId: string) => {
 }
 
 // Student Management
-export const getStudents = async () => {
+export const getStudents = async (): Promise<Student[]> => {
   const studentsRef = collection(db, "students")
   const q = query(studentsRef, orderBy("createdAt", "desc"))
   const snapshot = await getDocs(q)
-  return snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }))
+  return snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() } as Student))
 }
 
 // Validation helper functions
@@ -420,11 +450,11 @@ export const assignCoursesToStudent = async (studentId: string, courseIds: strin
 }
 
 // Enrollment Management
-export const getEnrollments = async () => {
+export const getEnrollments = async (): Promise<Enrollment[]> => {
   const enrollmentsRef = collection(db, "enrollments")
   const q = query(enrollmentsRef, orderBy("createdAt", "desc"))
   const snapshot = await getDocs(q)
-  return snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }))
+  return snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() } as Enrollment))
 }
 
 // Certificate Approval Management

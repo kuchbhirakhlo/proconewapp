@@ -47,7 +47,7 @@ export default function VerifyCertificatePage() {
                     </div>
                     <h1 className="text-4xl font-bold text-gray-900 mb-2">Verify Certificate</h1>
                     <p className="text-gray-600 text-lg">
-                        Check if a ProCo Tech certificate is genuine and valid
+                        Check if a Proco Technologies certificate is genuine and valid
                     </p>
                 </div>
 
@@ -121,7 +121,7 @@ export default function VerifyCertificatePage() {
                 {/* Footer Info */}
                 <div className="max-w-2xl mx-auto mt-12 text-center text-gray-600 text-sm">
                     <p>
-                        This verification service is provided by ProCo Tech. For security, only verified
+                        This verification service is provided by Proco Technologies. For security, only verified
                         certificates will be displayed.
                     </p>
                 </div>
@@ -213,7 +213,7 @@ function CertificateDisplayCard({ certificate }: { certificate: CertificateVerif
                     <div className="bg-indigo-50 border border-indigo-200 p-4 rounded-lg">
                         <p className="text-sm text-indigo-800">
                             ✓ This certificate has been verified against our official database and is authentic.
-                            The certificate was issued on {certificate.certificateApprovedAt} by ProCo Tech.
+                            The certificate was issued on {certificate.certificateApprovedAt} by Proco Technologies.
                         </p>
                     </div>
                 </div>

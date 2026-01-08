@@ -1,5 +1,6 @@
 "use client"
 
+import { useState, useEffect } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
@@ -9,6 +10,59 @@ import { Code, GraduationCap, Users, Award, Smartphone, Database, Cloud, ArrowRi
 import AnimatedBackground from "@/components/animated-background"
 
 export default function HomePage() {
+  const [deferredPrompt, setDeferredPrompt] = useState<any>(null)
+  const [showInstallButton, setShowInstallButton] = useState(false)
+  const [isInstalled, setIsInstalled] = useState(false)
+
+  useEffect(() => {
+    // Check if already installed
+    if (window.matchMedia("(display-mode: standalone)").matches) {
+      setIsInstalled(true)
+    }
+
+    // Listen for the beforeinstallprompt event
+    const handleBeforeInstallPrompt = (e: Event) => {
+      e.preventDefault()
+      setDeferredPrompt(e)
+      setShowInstallButton(true)
+    }
+
+    // Listen for successful install
+    window.addEventListener("appinstalled", () => {
+      setIsInstalled(true)
+      setShowInstallButton(false)
+      setDeferredPrompt(null)
+    })
+
+    window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt)
+
+    return () => {
+      window.removeEventListener("beforeinstallprompt", handleBeforeInstallPrompt)
+      window.removeEventListener("appinstalled", () => {
+        setIsInstalled(true)
+        setShowInstallButton(false)
+        setDeferredPrompt(null)
+      })
+    }
+  }, [])
+
+  const handleInstallClick = async () => {
+    if (!deferredPrompt) return
+
+    // Show the install prompt
+    deferredPrompt.prompt()
+
+    // Wait for the user to respond to the prompt
+    const { outcome } = await deferredPrompt.userChoice
+
+    // Clean up
+    setDeferredPrompt(null)
+    setShowInstallButton(false)
+
+    if (outcome === "accepted") {
+      setIsInstalled(true)
+    }
+  }
   const services = [
     {
       icon: <Code className="h-8 w-8 text-red-600" />,
@@ -158,8 +212,7 @@ export default function HomePage() {
                 </span>
               </h1>
               <p className="text-xl text-gray-600 mb-8 leading-relaxed backdrop-blur-sm bg-white/50 p-4 rounded-lg">
-                Transform your career with our comprehensive courses and professional software development services.
-                Join hundreds of successful graduates and clients.
+                Transform your career with our comprehensive <strong>computer courses</strong> and professional <strong>software development services</strong>. Join hundreds of successful graduates and clients.
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
                 <Button
@@ -182,19 +235,12 @@ export default function HomePage() {
                 </Button>
                 <Button
                   size="lg"
-                  onClick={() => {
-                    // Trigger PWA install prompt or fallback to add to home screen instructions
-                    if ('serviceWorker' in navigator && 'BeforeInstallPromptEvent' in window) {
-                      // PWA install logic would go here, but for now we'll show a message
-                      alert('To install the app, click the "Add to Home Screen" option in your browser menu or use the install button if available.');
-                    } else {
-                      alert('To install the app: On mobile, tap the share button and select "Add to Home Screen". On desktop, click the install icon in the address bar.');
-                    }
-                  }}
-                  className="group hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl bg-green-600 hover:bg-green-700"
+                  onClick={handleInstallClick}
+                  disabled={!deferredPrompt || isInstalled}
+                  className="group hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl bg-green-600 hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <Download className="mr-2 h-4 w-4" />
-                  Download App
+                  {isInstalled ? "Installed" : "Download App"}
                 </Button>
               </div>
             </div>

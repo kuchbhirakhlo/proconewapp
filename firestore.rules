@@ -44,8 +44,12 @@ service cloud.firestore {
 
     // Enrollments collection - key rules for certificate verification
     match /enrollments/{enrollmentId} {
+      // Admins: Full access to read all enrollments
+      allow read: if isAdmin();
+      
       // PUBLIC: Anyone can read approved certificates for verification (no auth required)
-      allow read: if resource.data.approvedForCertificate == true;
+      // Handle case where field may not exist
+      allow read: if resource.data.approvedForCertificate;
       
       // Students: Can read their own enrollments
       allow read: if request.auth != null && isStudent() && request.auth.uid == resource.data.studentId;
@@ -57,7 +61,7 @@ service cloud.firestore {
       allow update: if request.auth != null && isStudent() && request.auth.uid == resource.data.studentId && 
                        !request.resource.data.approvedForCertificate;
       
-      // Admins: Full access to read, write, update, delete
+      // Admins: Full access to write, update, delete
       allow write, delete: if isAdmin();
       allow update: if isAdmin();
     }
