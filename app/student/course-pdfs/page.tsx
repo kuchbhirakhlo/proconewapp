@@ -338,7 +338,7 @@ export default function CoursePDFsPage() {
                 {/* PDF Viewer Modal */}
                 {showPdfViewer && selectedPdf && (
                     <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-2 sm:p-4">
-                        <div className="bg-white rounded-lg w-full h-full sm:h-[90vh] sm:max-h-[90vh] sm:max-w-6xl">
+                        <div className="bg-white rounded-lg w-full h-full sm:h-[98vh] sm:max-h-[98vh] sm:max-w-6xl">
                             <PDFViewer
                                 pdfUrl={selectedPdf.pdfUrl}
                                 title={selectedPdf.title}
