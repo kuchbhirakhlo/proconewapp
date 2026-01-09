@@ -316,42 +316,6 @@ export default function TypingTestOnline() {
           </CardContent>
         </Card>
 
-        {isTestComplete && results && (
-          <Card className="mb-8 bg-gradient-to-r from-green-50 to-blue-50 dark:from-green-950 dark:to-blue-950 border-green-200">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2"><Trophy className="w-6 h-6 text-yellow-500" />Test Results</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid md:grid-cols-4 gap-4 mb-6">
-                <div className="text-center p-4 bg-white dark:bg-gray-800 rounded-lg shadow">
-                  <p className="text-sm text-gray-500 mb-1">WPM</p>
-                  <p className={`text-3xl font-bold ${results.passed ? "text-green-600" : "text-red-600"}`}>{results.wpm}</p>
-                </div>
-                <div className="text-center p-4 bg-white dark:bg-gray-800 rounded-lg shadow">
-                  <p className="text-sm text-gray-500 mb-1">Accuracy</p>
-                  <p className={`text-3xl font-bold ${results.accuracy >= 90 ? "text-green-600" : results.accuracy >= 70 ? "text-yellow-600" : "text-red-600"}`}>{results.accuracy}%</p>
-                </div>
-                <div className="text-center p-4 bg-white dark:bg-gray-800 rounded-lg shadow">
-                  <p className="text-sm text-gray-500 mb-1">Errors</p>
-                  <p className="text-3xl font-bold text-red-600">{results.errors}</p>
-                </div>
-                <div className="text-center p-4 bg-white dark:bg-gray-800 rounded-lg shadow">
-                  <p className="text-sm text-gray-500 mb-1">Time</p>
-                  <p className="text-3xl font-bold text-blue-600">{formatTime(results.timeTaken)}</p>
-                </div>
-              </div>
-              <div className="flex flex-wrap gap-4 justify-center">
-                <Button onClick={() => handleDownloadCertificate(currentLevel)} className="flex items-center gap-2">
-                  <Award className="w-4 h-4" />Download Certificate
-                </Button>
-                <Button onClick={initializeTest} variant="outline" className="flex items-center gap-2">
-                  <RefreshCw className="w-4 h-4" />Try Again
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        )}
-
         {/* Results Popup Dialog */}
         <Dialog open={showResultDialog} onOpenChange={setShowResultDialog}>
           <DialogContent className="sm:max-w-md">
@@ -392,7 +356,7 @@ export default function TypingTestOnline() {
                   <div className="text-center">
                     <p className="text-green-600 font-semibold mb-2">Congratulations! You passed the {currentLevel} level!</p>
                     {levelConfig[currentLevel as Level].nextLevel === "completed" ? (
-                      <p className="text-sm text-gray-600">You've completed all levels! Download your certificate.</p>
+                      <p className="text-sm text-gray-600 mb-4">You've completed all levels! Download your certificate now.</p>
                     ) : (
                       <p className="text-sm text-gray-600">Click Continue to move to the next level.</p>
                     )}
@@ -405,13 +369,22 @@ export default function TypingTestOnline() {
                 )}
 
                 <div className="flex gap-2 mt-4">
-                  <Button 
-                    onClick={handleResultDialogClose} 
-                    className="flex-1"
-                    variant={results.passed ? "default" : "destructive"}
-                  >
-                    {results.passed ? "Continue" : "Try Again"}
-                  </Button>
+                  {results.passed && levelConfig[currentLevel as Level].nextLevel === "completed" ? (
+                    <Button 
+                      onClick={() => { setShowResultDialog(false); handleDownloadCertificate("completed"); }} 
+                      className="flex-1"
+                    >
+                      <Award className="w-4 h-4 mr-2" />Download Certificate
+                    </Button>
+                  ) : (
+                    <Button 
+                      onClick={handleResultDialogClose} 
+                      className="flex-1"
+                      variant={results.passed ? "default" : "destructive"}
+                    >
+                      {results.passed ? "Continue" : "Try Again"}
+                    </Button>
+                  )}
                 </div>
               </div>
             )}
