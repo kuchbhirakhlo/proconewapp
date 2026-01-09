@@ -66,6 +66,7 @@ export default function TypingTestOnline() {
   const [showNameDialog, setShowNameDialog] = useState(false);
   const [showResultDialog, setShowResultDialog] = useState(false);
   const [certificates, setCertificates] = useState<string[]>([]);
+  const [isResetClicked, setIsResetClicked] = useState(false);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -102,7 +103,7 @@ export default function TypingTestOnline() {
   useEffect(() => { if (isTestActive && inputRef.current) inputRef.current.focus(); }, [isTestActive]);
 
   const handleStart = () => { setIsTestActive(true); setStartTime(Date.now()); if (inputRef.current) inputRef.current.focus(); };
-  const handleReset = () => { if (currentLevel === "completed") resetToBeginner(); else initializeTest(); };
+  const handleReset = () => { setIsResetClicked(true); if (currentLevel === "completed") resetToBeginner(); else initializeTest(); };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     if (!isTestActive) handleStart();
@@ -287,7 +288,7 @@ export default function TypingTestOnline() {
           <CardHeader>
             <CardTitle className="flex items-center justify-between">
               <span className="flex items-center gap-2"><RefreshCw className="w-5 h-5 text-purple-500" />Typing Test - {language.charAt(0).toUpperCase() + language.slice(1)}</span>
-              <Button variant="outline" size="sm" onClick={handleReset}>Reset</Button>
+              <Button variant="outline" size="sm" onClick={handleReset} disabled={isResetClicked}>Reset</Button>
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -310,7 +311,7 @@ export default function TypingTestOnline() {
                 <Button onClick={handleStart} className="bg-green-600 hover:bg-green-700">Start Test</Button>
               )}
               {isTestActive && (
-                <Button onClick={handleReset} variant="outline">Reset</Button>
+                <Button onClick={handleReset} variant="outline" disabled={isResetClicked}>Reset</Button>
               )}
             </div>
           </CardContent>
@@ -411,6 +412,110 @@ export default function TypingTestOnline() {
         </Dialog>
 
         <Toaster />
+      </div>
+
+      {/* SEO Content Section */}
+      <div className="container mx-auto px-4 py-12 max-w-6xl">
+        <h2 className="text-3xl font-bold mb-8 text-center">Complete Guide to Online Typing Practice</h2>
+        
+        <div className="grid md:grid-cols-2 gap-8">
+          <div className="prose dark:prose-invert max-w-none">
+            <h3 className="text-xl font-semibold mb-4">Why Typing Practice is Important</h3>
+            <p className="text-gray-600 dark:text-gray-400 mb-4">
+              In today's digital world, typing has become an essential skill that we use every day. Whether you're a student writing essays, a professional creating documents, or someone communicating with friends and family, efficient typing saves valuable time and reduces frustration. Regular typing practice helps develop muscle memory, allowing you to type faster and with fewer errors. This skill becomes increasingly important as more jobs require computer work, making typing proficiency a valuable asset in any career path.
+            </p>
+            <p className="text-gray-600 dark:text-gray-400 mb-4">
+              Beyond professional benefits, typing practice improves cognitive skills and hand-eye coordination. When you type regularly, your brain learns to process information faster, and your fingers automatically find the correct keys without looking at the keyboard. This touch typing technique, also known as touch typing, is a game-changer for productivity. It allows you to focus on your work rather than hunting for keys, resulting in higher quality output and less eye strain from constantly looking between the keyboard and screen.
+            </p>
+
+            <h3 className="text-xl font-semibold mb-4">Benefits of English Typing Practice</h3>
+            <p className="text-gray-600 dark:text-gray-400 mb-4">
+              English is the global language of business, technology, and communication. Improving your English typing speed opens doors to international opportunities, online work, and global collaboration. With our free online typing practice, you can master English typing at your own pace, starting from beginner level and progressing to professional proficiency. The ability to type 40+ words per minute with high accuracy is often a requirement for many jobs, and our structured approach helps you achieve this goal.
+            </p>
+            <p className="text-gray-600 dark:text-gray-400 mb-4">
+              Our English typing tests include carefully selected passages that gradually increase in complexity. From simple sentences for beginners to professional-level paragraphs, each level challenges you to improve while building confidence. The real-time feedback on WPM (words per minute) and accuracy helps you track your progress and identify areas for improvement. Many students who practice regularly see significant improvements within weeks, making consistent practice the key to success.
+            </p>
+
+            <h3 className="text-xl font-semibold mb-4">Typing in Hindi - A Digital Revolution</h3>
+            <p className="text-gray-600 dark:text-gray-400 mb-4">
+              Hindi is one of the most widely spoken languages in the world, with millions of people using it daily for personal and professional communication. Our Hindi typing practice section helps users master typing in Devanagari script, bridging the gap between traditional writing and digital communication. As more government services, educational resources, and business communications move online, Hindi typing proficiency has become increasingly valuable for native speakers and learners alike.
+            </p>
+            <p className="text-gray-600 dark:text-gray-400 mb-4">
+              Learning to type in Hindi requires understanding the Devanagari keyboard layout and practicing regularly. Our platform provides structured Hindi typing exercises that start with simple words and progress to complex sentences. The practice texts are culturally relevant and meaningful, making the learning process more engaging. Many users find that regular Hindi typing practice not only improves their typing speed but also helps them learn new vocabulary and improve their overall Hindi language skills.
+            </p>
+
+            <h3 className="text-xl font-semibold mb-4">The Importance of Hindi Typing Skills</h3>
+            <p className="text-gray-600 dark:text-gray-400 mb-4">
+              With India's digital transformation, Hindi typing skills have become essential for accessing government services, filling online forms, and participating in digital governance. Many competitive exams in India require Hindi typing proficiency, making our free practice platform an invaluable resource for exam preparation. The ability to type fluently in Hindi also enables content creators, bloggers, and journalists to reach a wider Hindi-speaking audience.
+            </p>
+            <p className="text-gray-600 dark:text-gray-400 mb-4">
+              Our Hindi typing tests are designed to match the requirements of various competitive exams and professional settings. The minimum speed requirements for different levels (Beginner: 20 WPM, Intermediate: 25 WPM, Pro: 30 WPM) align with common exam requirements. Regular practice on our platform helps you build the speed and accuracy needed to excel in these tests, giving you a competitive edge in your career and academic pursuits.
+            </p>
+          </div>
+
+          <div className="prose dark:prose-invert max-w-none">
+            <h3 className="text-xl font-semibold mb-4">Online Typing Games for Skill Development</h3>
+            <p className="text-gray-600 dark:text-gray-400 mb-4">
+              Making typing practice fun and engaging is essential for maintaining motivation and improving skills. Our typing test approach gamifies the learning experience by introducing levels, progress tracking, and achievement-based progression. As you complete each level, you earn certificates and unlock new challenges, making the journey from beginner to pro feel like an exciting adventure rather than a tedious task.
+            </p>
+            <p className="text-gray-600 dark:text-gray-400 mb-4">
+              Unlike traditional typing games that focus solely on speed, our platform emphasizes accuracy alongside speed. This balanced approach ensures that you develop proper typing habits from the beginning. The no-backspace policy encourages careful typing rather than rushed corrections, building discipline and attention to detail. These skills transfer beyond typing to other areas of work and study, making you more careful and precise in all your activities.
+            </p>
+
+            <h3 className="text-xl font-semibold mb-4">Free Typing Practice for Everyone</h3>
+            <p className="text-gray-600 dark:text-gray-400 mb-4">
+              Education should be accessible to all, which is why our typing practice platform is completely free. You don't need to pay for expensive typing courses or software to learn this essential skill. Our free online typing tests are available 24/7, allowing you to practice whenever it's convenient for you. Whether you're a student on a tight budget, a professional looking to upgrade skills, or a senior citizen learning new technology, our platform welcomes everyone.
+            </p>
+            <p className="text-gray-600 dark:text-gray-400 mb-4">
+              The cost-effectiveness of online typing practice extends beyond just saving money. By practicing at home or in your office, you save time and transportation costs associated with attending physical typing classes. The flexible nature of online practice means you can fit typing sessions into your schedule without disrupting your daily routine. This accessibility has helped millions of people worldwide improve their typing skills without financial barriers.
+            </p>
+
+            <h3 className="text-xl font-semibold mb-4">Touch Typing Mastery</h3>
+            <p className="text-gray-600 dark:text-gray-400 mb-4">
+              Touch typing is the art of typing without looking at the keyboard, using all ten fingers efficiently. This method is significantly faster than the hunt-and-peck method and reduces eye strain and physical fatigue. Our typing practice is designed to help you develop touch typing skills through repetition and muscle memory training. The carefully crafted exercises guide your fingers to the correct keys naturally over time.
+            </p>
+            <p className="text-gray-600 dark:text-gray-400 mb-4">
+              Achieving touch typing mastery requires patience and consistent practice. Most people can reach 40+ WPM within a few months of regular practice. Our platform tracks your progress and provides detailed statistics to help you understand your improvement patterns. The combination of immediate feedback, structured levels, and achievement rewards makes the journey to touch typing mastery enjoyable and sustainable.
+            </p>
+
+            <h3 className="text-xl font-semibold mb-4">Typing Speed and Accuracy</h3>
+            <p className="text-gray-600 dark:text-gray-400 mb-4">
+              Balancing speed and accuracy is crucial for professional typing. Many beginners make the mistake of focusing only on speed, resulting in numerous errors that require correction, ultimately slowing them down. Our platform teaches you to find the optimal balance, building accuracy first and then gradually increasing speed. This approach leads to sustainable improvements that last a lifetime.
+            </p>
+            <p className="text-gray-600 dark:text-gray-400 mb-4">
+              The WPM (words per minute) metric used in our tests is calculated based on correctly typed words, not just total keystrokes. This accurate measurement reflects your true typing proficiency. Our accuracy requirements (90% for beginners, 95% for intermediate, 100% for pro) ensure that you develop the habit of producing error-free work. These standards prepare you for real-world scenarios where accuracy is often as important as speed.
+            </p>
+          </div>
+        </div>
+
+        {/* Structured Data for SEO */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "WebApplication",
+              "name": "Online Typing Practice",
+              "description": "Free online typing practice platform with tests in English and Hindi. Improve your typing speed and accuracy with our structured learning approach.",
+              "applicationCategory": "EducationalApplication",
+              "operatingSystem": "Web-based",
+              "offers": {
+                "@type": "Offer",
+                "price": "0",
+                "priceCurrency": "USD",
+                "availability": "https://schema.org/InStock"
+              },
+              "featureList": [
+                "English typing practice",
+                "Hindi typing practice",
+                "Multiple difficulty levels",
+                "Progress tracking",
+                "Certificate generation",
+                "Free online access"
+              ]
+            })
+          }}
+        />
       </div>
     </div>
   );
