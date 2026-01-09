@@ -20,6 +20,8 @@ export default function ClientLayout({
 
   // Hide header/footer for admin, student, and login routes
   const hideHeaderFooter = isAdminRoute || isStudentRoute || isLoginRoute
+  // Only show gallery on homepage
+  const showGallery = pathname === "/" && !hideHeaderFooter
 
   return (
     <>
@@ -27,7 +29,7 @@ export default function ClientLayout({
       <main className={hideHeaderFooter ? "min-h-screen" : "min-h-screen"}>{children}</main>
       {!hideHeaderFooter && (
         <>
-          <Gallery />
+          {showGallery && <Gallery />}
           <Footer />
         </>
       )}
