@@ -27,6 +27,25 @@ const typingTexts: { english: { beginner: string[]; intermediate: string[]; pro:
 
 interface TestResult { wpm: number; accuracy: number; errors: number; timeTaken: number; level: string; language: string; passed: boolean; }
 type Level = "beginner" | "intermediate" | "pro" | "completed";
+
+const howItWorksContent = {
+  english: {
+    title: "How It Works",
+    steps: [
+      { title: "Start Typing", description: "Click 'Start Test' and type the shown text in the box below without backspacing or pasting." },
+      { title: "Pass Each Level", description: "Meet the minimum WPM and Accuracy requirements to advance to the next level." },
+      { title: "Get Certificate", description: "Complete all 3 levels and download your official typing proficiency certificate!" },
+    ]
+  },
+  hindi: {
+    title: "यह कैसे काम करता है",
+    steps: [
+      { title: "टाइपिंग शुरू करें", description: "'Start Test' पर क्लिक करें और बिना backspace या paste किए नीचे दिए गए टेक्स्ट को टाइप करें।" },
+      { title: "हर स्तर पास करें", description: "अगले स्तर पर आगे बढ़ने के लिए न्यूनतम WPM और Accuracy आवश्यकताओं को पूरा करें।" },
+      { title: "प्रमाणपत्र प्राप्त करें", description: "सभी 3 स्तरों को पूरा करें और अपना आधिकारिक टाइपिंग प्रवीणता प्रमाणपत्र डाउनलोड करें!" },
+    ]
+  }
+};
 const levelConfig: Record<string, { minWpm: number; minAccuracy: number; nextLevel: Level }> = {
   beginner: { minWpm: 20, minAccuracy: 90, nextLevel: "intermediate" },
   intermediate: { minWpm: 25, minAccuracy: 95, nextLevel: "pro" },
@@ -45,6 +64,7 @@ export default function TypingTestOnline() {
   const [results, setResults] = useState<TestResult | null>(null);
   const [name, setName] = useState("");
   const [showNameDialog, setShowNameDialog] = useState(false);
+  const [showResultDialog, setShowResultDialog] = useState(false);
   const [certificates, setCertificates] = useState<string[]>([]);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
@@ -131,22 +151,23 @@ export default function TypingTestOnline() {
     setResults(testResults);
     setIsTestActive(false);
     setIsTestComplete(true);
+    setShowResultDialog(true);
+  };
 
-    if (passed) {
-      toast.success(`${currentLevel.charAt(0).toUpperCase() + currentLevel.slice(1)} Level Passed!`, { description: `WPM: ${wpm}, Accuracy: ${accuracy}%` });
-      setTimeout(() => {
+  const handleResultDialogClose = () => {
+    setShowResultDialog(false);
+    if (results) {
+      const config = levelConfig[currentLevel];
+      if (results.passed) {
         if (config.nextLevel === "completed") {
           setCertificates(prev => [...prev, "pro"]);
-          toast.success("Congratulations! You've completed all levels!", { description: "Download your final certificate." });
         } else {
           setCertificates(prev => [...prev, currentLevel]);
-          toast.info(`Moving to ${config.nextLevel.charAt(0).toUpperCase() + config.nextLevel.slice(1)} Level!`);
           setCurrentLevel(config.nextLevel);
         }
-      }, 2000);
-    } else {
-      toast.error("Level Failed", { description: `Required: ${config.minWpm} WPM, ${config.minAccuracy}% accuracy. Restarting...` });
-      setTimeout(() => { resetToBeginner(); }, 3000);
+      } else {
+        resetToBeginner();
+      }
     }
   };
 
@@ -189,32 +210,20 @@ export default function TypingTestOnline() {
         <Card className="mb-8 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950 dark:to-indigo-950 border-blue-200">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-blue-700 dark:text-blue-300">
-              <BookOpen className="w-5 h-5" />How It Works
+              <BookOpen className="w-5 h-5" />{howItWorksContent[language as "english" | "hindi"].title}
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid md:grid-cols-3 gap-4 text-sm">
-              <div className="flex items-start gap-2">
-                <span className="flex items-center justify-center w-6 h-6 rounded-full bg-blue-600 text-white font-bold text-xs">1</span>
-                <div>
-                  <p className="font-semibold">Start Typing</p>
-                  <p className="text-gray-600 dark:text-gray-400">Click "Start Test" and type the shown text in the box below without backspacing or pasting.</p>
+              {howItWorksContent[language as "english" | "hindi"].steps.map((step, index) => (
+                <div key={index} className="flex items-start gap-2">
+                  <span className="flex items-center justify-center w-6 h-6 rounded-full bg-blue-600 text-white font-bold text-xs shrink-0">{index + 1}</span>
+                  <div>
+                    <p className="font-semibold">{step.title}</p>
+                    <p className="text-gray-600 dark:text-gray-400">{step.description}</p>
+                  </div>
                 </div>
-              </div>
-              <div className="flex items-start gap-2">
-                <span className="flex items-center justify-center w-6 h-6 rounded-full bg-blue-600 text-white font-bold text-xs">2</span>
-                <div>
-                  <p className="font-semibold">Pass Each Level</p>
-                  <p className="text-gray-600 dark:text-gray-400">Meet the minimum WPM and Accuracy requirements to advance to the next level.</p>
-                </div>
-              </div>
-              <div className="flex items-start gap-2">
-                <span className="flex items-center justify-center w-6 h-6 rounded-full bg-blue-600 text-white font-bold text-xs">3</span>
-                <div>
-                  <p className="font-semibold">Get Certificate</p>
-                  <p className="text-gray-600 dark:text-gray-400">Complete all 3 levels and download your official typing proficiency certificate!</p>
-                </div>
-              </div>
+              ))}
             </div>
           </CardContent>
         </Card>
@@ -342,6 +351,72 @@ export default function TypingTestOnline() {
             </CardContent>
           </Card>
         )}
+
+        {/* Results Popup Dialog */}
+        <Dialog open={showResultDialog} onOpenChange={setShowResultDialog}>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                {results?.passed ? (
+                  <Trophy className="w-6 h-6 text-green-500" />
+                ) : (
+                  <Trophy className="w-6 h-6 text-red-500" />
+                )}
+                {results?.passed ? "Level Passed!" : "Level Failed"}
+              </DialogTitle>
+            </DialogHeader>
+            {results && (
+              <div className="py-4">
+                <div className="grid grid-cols-2 gap-4 mb-6">
+                  <div className="text-center p-3 bg-gray-100 dark:bg-gray-800 rounded-lg">
+                    <p className="text-sm text-gray-500">WPM</p>
+                    <p className={`text-2xl font-bold ${results.passed ? "text-green-600" : "text-red-600"}`}>{results.wpm}</p>
+                    <p className="text-xs text-gray-400">Target: {levelConfig[currentLevel as Level].minWpm}</p>
+                  </div>
+                  <div className="text-center p-3 bg-gray-100 dark:bg-gray-800 rounded-lg">
+                    <p className="text-sm text-gray-500">Accuracy</p>
+                    <p className={`text-2xl font-bold ${results.passed ? "text-green-600" : "text-red-600"}`}>{results.accuracy}%</p>
+                    <p className="text-xs text-gray-400">Target: {levelConfig[currentLevel as Level].minAccuracy}%</p>
+                  </div>
+                  <div className="text-center p-3 bg-gray-100 dark:bg-gray-800 rounded-lg">
+                    <p className="text-sm text-gray-500">Errors</p>
+                    <p className="text-2xl font-bold text-red-600">{results.errors}</p>
+                  </div>
+                  <div className="text-center p-3 bg-gray-100 dark:bg-gray-800 rounded-lg">
+                    <p className="text-sm text-gray-500">Time</p>
+                    <p className="text-2xl font-bold text-blue-600">{formatTime(results.timeTaken)}</p>
+                  </div>
+                </div>
+                
+                {results.passed ? (
+                  <div className="text-center">
+                    <p className="text-green-600 font-semibold mb-2">Congratulations! You passed the {currentLevel} level!</p>
+                    {levelConfig[currentLevel as Level].nextLevel === "completed" ? (
+                      <p className="text-sm text-gray-600">You've completed all levels! Download your certificate.</p>
+                    ) : (
+                      <p className="text-sm text-gray-600">Click Continue to move to the next level.</p>
+                    )}
+                  </div>
+                ) : (
+                  <div className="text-center">
+                    <p className="text-red-600 font-semibold mb-2">You didn't meet the requirements.</p>
+                    <p className="text-sm text-gray-600">Click Continue to restart from the beginning.</p>
+                  </div>
+                )}
+
+                <div className="flex gap-2 mt-4">
+                  <Button 
+                    onClick={handleResultDialogClose} 
+                    className="flex-1"
+                    variant={results.passed ? "default" : "destructive"}
+                  >
+                    {results.passed ? "Continue" : "Try Again"}
+                  </Button>
+                </div>
+              </div>
+            )}
+          </DialogContent>
+        </Dialog>
 
         <Dialog open={showNameDialog} onOpenChange={setShowNameDialog}>
           <DialogContent>
