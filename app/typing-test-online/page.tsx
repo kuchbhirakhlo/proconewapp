@@ -105,6 +105,15 @@ export default function TypingTestOnline() {
     }
   };
 
+  const handlePaste = (e: React.ClipboardEvent<HTMLTextAreaElement>) => {
+    // Prevent pasting completely - this is a typing test, not a paste test
+    e.preventDefault();
+    // Show warning toast
+    if (isTestActive || !isTestComplete) {
+      toast.warning("Pasting is not allowed!", { description: "Please type the text manually." });
+    }
+  };
+
   const completeTest = (input: string) => {
     if (!startTime) return;
     const timeInMinutes = (Date.now() - startTime) / 60000;
@@ -176,6 +185,40 @@ export default function TypingTestOnline() {
       </div>
 
       <div className="container mx-auto px-4 py-8 max-w-6xl">
+        {/* How it works section */}
+        <Card className="mb-8 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950 dark:to-indigo-950 border-blue-200">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-blue-700 dark:text-blue-300">
+              <BookOpen className="w-5 h-5" />How It Works
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid md:grid-cols-3 gap-4 text-sm">
+              <div className="flex items-start gap-2">
+                <span className="flex items-center justify-center w-6 h-6 rounded-full bg-blue-600 text-white font-bold text-xs">1</span>
+                <div>
+                  <p className="font-semibold">Start Typing</p>
+                  <p className="text-gray-600 dark:text-gray-400">Click "Start Test" and type the shown text in the box below without backspacing or pasting.</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-2">
+                <span className="flex items-center justify-center w-6 h-6 rounded-full bg-blue-600 text-white font-bold text-xs">2</span>
+                <div>
+                  <p className="font-semibold">Pass Each Level</p>
+                  <p className="text-gray-600 dark:text-gray-400">Meet the minimum WPM and Accuracy requirements to advance to the next level.</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-2">
+                <span className="flex items-center justify-center w-6 h-6 rounded-full bg-blue-600 text-white font-bold text-xs">3</span>
+                <div>
+                  <p className="font-semibold">Get Certificate</p>
+                  <p className="text-gray-600 dark:text-gray-400">Complete all 3 levels and download your official typing proficiency certificate!</p>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
         <Card className="mb-8">
           <CardContent className="py-4">
             <div className="flex items-center justify-between mb-4">
@@ -247,6 +290,7 @@ export default function TypingTestOnline() {
               value={userInput}
               onChange={handleInputChange}
               onKeyDown={handleKeyDown}
+              onPaste={handlePaste}
               placeholder="Start typing here..."
               disabled={isTestComplete}
               className="w-full p-4 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[100px] resize-none font-mono"
