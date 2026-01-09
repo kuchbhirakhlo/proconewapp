@@ -1,0 +1,41 @@
+# Robots.txt for Proco Technology Website
+# Generated: 2026-01-09
+
+User-agent: *
+Allow: /
+
+# Disallow admin and private areas
+Disallow: /admin/
+Disallow: /api/
+Disallow: /student/dashboard
+Disallow: /student/courses
+Disallow: /student/course-pdfs
+Disallow: /student/certificates
+
+# Sitemap location
+Sitemap: https://proco.in/sitemap.xml
+
+# Crawl-delay for respect
+Crawl-delay: 10
+
+# Googlebot specific rules
+User-agent: Googlebot
+Allow: /
+Disallow: /admin/
+Disallow: /api/
+Disallow: /student/dashboard
+
+# Bingbot specific rules
+User-agent: Bingbot
+Allow: /
+Disallow: /admin/
+Disallow: /api/
+Disallow: /student/dashboard
+
+# Facebook crawler
+User-agent: facebookexternalhit
+Allow: /
+
+# Twitter crawler
+User-agent: Twitterbot
+Allow: /

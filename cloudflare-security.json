@@ -1,0 +1,104 @@
+{
+  "name": "Proco Technology Website Security Configuration",
+  "description": "Cloudflare security settings for proco.in",
+  "created": "2026-01-09",
+  
+  "cloudflare_pages_config": {
+    "_headers": "public/_headers",
+    "_redirects": null
+  },
+  
+  "security_headers": {
+    "X-Frame-Options": "SAMEORIGIN",
+    "X-Content-Type-Options": "nosniff",
+    "X-XSS-Protection": "1; mode=block",
+    "Referrer-Policy": "strict-origin-when-cross-origin",
+    "Permissions-Policy": "accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()",
+    "Strict-Transport-Security": "max-age=31536000; includeSubDomains; preload"
+  },
+  
+  "content_security_policy": {
+    "default-src": ["'self'"],
+    "script-src": ["'self'", "'unsafe-inline'", "'unsafe-eval'", "https://www.googletagmanager.com", "https://www.google-analytics.com"],
+    "style-src": ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+    "font-src": ["'self'", "https://fonts.gstatic.com"],
+    "img-src": ["'self'", "data:", "https:"],
+    "connect-src": ["'self'", "https://www.google-analytics.com", "https://www.googletagmanager.com"],
+    "frame-ancestors": ["'self'"]
+  },
+  
+  "firewall_rules": [
+    {
+      "description": "Block SQL Injection",
+      "expression": "(http.request.uri.sql_signature OR http.request.uri contains \"'\")"
+    },
+    {
+      "description": "Block XSS Attacks",
+      "expression": "http.request.uri contains \"<script\" OR http.request.uri contains \"javascript:\""
+    },
+    {
+      "description": "Block Path Traversal",
+      "expression": "http.request.uri contains \"../\" OR http.request.uri contains \"..\\\""
+    },
+    {
+      "description": "Rate Limit - API Endpoints",
+      "expression": "http.request.uri.path contains \"/api/\"",
+      "rate_limit": {
+        "requests_per_minute": 60,
+        "action": "challenge"
+      }
+    }
+  ],
+  
+  "bot_management": {
+    "enable_bot_protection": true,
+    "challenge_suspected_bots": true,
+    "automatically_challenge_country_blocks": false
+  },
+  
+  "ddos_protection": {
+    "enable_ddos_protection": true,
+    "sensitivity_level": "medium"
+  },
+  
+  "ssl_tls": {
+    "ssl_mode": "full",
+    "tls_version": "1.2",
+    "minimum_tls_version": "1.2",
+    "enable_tls_1_3": true,
+    "enable_ocsp_stapling": true
+  },
+  
+  "caching": {
+    "browser_cache_ttl": 31536000,
+    "edge_cache_ttl": 31536000,
+    "cache_level": "cache_everything",
+    "purge_cache_on_deploy": true
+  },
+  
+  "page_rules": [
+    {
+      "url": "proco.in/api/*",
+      "settings": {
+        "cache_level": "bypass",
+        "security_level": "high",
+        "bot_fight_mode": "on"
+      }
+    },
+    {
+      "url": "proco.in/admin/*",
+      "settings": {
+        "cache_level": "bypass",
+        "security_level": "high",
+        "allow_geolocation": false
+      }
+    },
+    {
+      "url": "proco.in/*.pdf",
+      "settings": {
+        "cache_level": "standard",
+        "browser_cache_ttl": 86400
+      }
+    }
+  ]
+}
