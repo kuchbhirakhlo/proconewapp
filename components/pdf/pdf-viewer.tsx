@@ -163,9 +163,28 @@ export default function PDFViewer({ pdfUrl, pdfId, title, onClose, className = "
             }
 
             const page = await pdfDoc.getPage(pageNum)
+
+            // Calculate optimal scale for mobile devices on initial load
+            let finalZoom = zoom
+
+            if (isInitial && canvasRef.current.offsetParent) {
+                const containerWidth = (canvasRef.current.offsetParent as HTMLElement).clientWidth
+                const isMobile = containerWidth < 768
+
+                if (isMobile) {
+                    // Get base viewport to calculate fit-to-screen scale
+                    const baseViewport = page.getViewport({ scale: 1, rotation })
+                    const padding = 40 // padding on mobile for controls
+                    const maxWidth = containerWidth - padding
+                    const scaleX = maxWidth / baseViewport.width
+                    // Use the smaller of fit-to-width or current zoom
+                    finalZoom = Math.min(scaleX, zoom)
+                }
+            }
+
             // Apply rotation through PDF.js viewport so the canvas size matches
             // the rotated page, preventing the content from being cut off.
-            const viewport = page.getViewport({ scale: zoom, rotation })
+            const viewport = page.getViewport({ scale: finalZoom, rotation })
 
             canvasRef.current.width = viewport.width
             canvasRef.current.height = viewport.height
@@ -236,57 +255,59 @@ export default function PDFViewer({ pdfUrl, pdfId, title, onClose, className = "
 
     return (
         <Card className={`w-full h-full flex flex-col ${className}`}>
-            <CardContent className="p-0 flex flex-col flex-1 overflow-hidden">
+            <CardContent className="p-0 flex flex-col flex-1 overflow-hidden min-h-0">
                 {error && (
-                    <div className="p-4 bg-yellow-50 border-b border-yellow-200 flex items-start gap-2">
-                        <AlertCircle className="h-5 w-5 text-yellow-600 mt-0.5 flex-shrink-0" />
-                        <div className="text-sm text-yellow-700">
+                    <div className="p-3 sm:p-4 bg-yellow-50 border-b border-yellow-200 flex items-start gap-2">
+                        <AlertCircle className="h-4 w-4 sm:h-5 sm:w-5 text-yellow-600 mt-0.5 flex-shrink-0" />
+                        <div className="text-xs sm:text-sm text-yellow-700">
                             <p className="font-semibold">PDF Loading Issue</p>
-                            <p>{error}</p>
+                            <p className="break-words">{error}</p>
                             {!pdfJsLoaded && (
-                                <p className="mt-2 text-xs">If this persists, please check your internet connection.</p>
+                                <p className="mt-2 text-[10px] sm:text-xs">If this persists, please check your internet connection.</p>
                             )}
                         </div>
                     </div>
                 )}
                 <div
-                    className="relative flex-1 bg-gray-100 overflow-auto"
+                    className="relative flex-1 bg-gray-100 overflow-auto touch-pan-y touch-pan-x"
                     onContextMenu={handleContextMenu}
+                    style={{ WebkitOverflowScrolling: 'touch' }}
                 >
                     {!pdfJsLoaded && !error && (
-                        <div className="absolute inset-0 flex items-center justify-center text-gray-500">
-                            <p>Initializing PDF viewer...</p>
+                        <div className="absolute inset-0 flex items-center justify-center text-gray-500 p-4">
+                            <p className="text-sm sm:text-base">Initializing PDF viewer...</p>
                         </div>
                     )}
                     {loading && pdfJsLoaded && (
-                        <div className="absolute inset-0 flex items-center justify-center text-gray-500">
-                            <p>Loading PDF...</p>
+                        <div className="absolute inset-0 flex items-center justify-center text-gray-500 p-4">
+                            <p className="text-sm sm:text-base">Loading PDF...</p>
                         </div>
                     )}
                     {!loading && (
-                        <div className="flex items-center justify-center min-h-full p-4">
+                        <div className="flex items-center justify-center min-h-full p-2 sm:p-4">
                             <canvas
                                 ref={canvasRef}
-                                className="shadow-lg"
+                                className="shadow-lg max-w-full h-auto"
+                                style={{ maxHeight: '100%' }}
                             />
                         </div>
                     )}
 
-                    {/* Floating controls in bottom-right corner */}
-                    <div className="absolute bottom-4 right-4 z-10 bg-white/95 backdrop-blur-sm rounded-lg shadow-lg border border-gray-200 p-2 flex flex-col gap-2">
+                    {/* Floating controls - responsive layout */}
+                    <div className="absolute bottom-2 right-2 sm:bottom-4 sm:right-4 z-10 bg-white/95 backdrop-blur-sm rounded-lg shadow-lg border border-gray-200 p-1.5 sm:p-2 flex flex-row sm:flex-col gap-1.5 sm:gap-2 max-w-[calc(100vw-1rem)] sm:max-w-none">
                         {/* Page navigation */}
-                        <div className="flex items-center gap-1 bg-gray-100 rounded-md p-1">
+                        <div className="flex items-center gap-0.5 sm:gap-1 bg-gray-100 rounded-md p-0.5 sm:p-1">
                             <Button
                                 variant="ghost"
                                 size="sm"
                                 onClick={handlePrevPage}
                                 disabled={currentPage <= 1}
                                 title="Previous page"
-                                className="h-7 w-7 p-0"
+                                className="h-9 w-9 sm:h-7 sm:w-7 p-0 touch-manipulation"
                             >
-                                <ChevronLeft className="h-3.5 w-3.5" />
+                                <ChevronLeft className="h-4 w-4 sm:h-3.5 sm:w-3.5" />
                             </Button>
-                            <span className="text-xs text-gray-600 min-w-[60px] text-center px-1">
+                            <span className="text-xs sm:text-xs text-gray-600 min-w-[50px] sm:min-w-[60px] text-center px-0.5 sm:px-1 text-[10px] sm:text-xs">
                                 {currentPage}/{totalPages}
                             </span>
                             <Button
@@ -295,25 +316,25 @@ export default function PDFViewer({ pdfUrl, pdfId, title, onClose, className = "
                                 onClick={handleNextPage}
                                 disabled={currentPage >= totalPages}
                                 title="Next page"
-                                className="h-7 w-7 p-0"
+                                className="h-9 w-9 sm:h-7 sm:w-7 p-0 touch-manipulation"
                             >
-                                <ChevronRight className="h-3.5 w-3.5" />
+                                <ChevronRight className="h-4 w-4 sm:h-3.5 sm:w-3.5" />
                             </Button>
                         </div>
 
                         {/* Zoom controls */}
-                        <div className="flex items-center gap-1">
+                        <div className="flex items-center gap-0.5 sm:gap-1">
                             <Button
                                 variant="outline"
                                 size="sm"
                                 onClick={handleZoomOut}
                                 disabled={zoom <= 0.5}
                                 title="Zoom out"
-                                className="h-7 w-7 p-0"
+                                className="h-9 w-9 sm:h-7 sm:w-7 p-0 touch-manipulation"
                             >
-                                <ZoomOut className="h-3.5 w-3.5" />
+                                <ZoomOut className="h-4 w-4 sm:h-3.5 sm:w-3.5" />
                             </Button>
-                            <span className="text-xs text-gray-600 min-w-[50px] text-center px-1">
+                            <span className="text-[10px] sm:text-xs text-gray-600 min-w-[40px] sm:min-w-[50px] text-center px-0.5 sm:px-1">
                                 {Math.round(zoom * 100)}%
                             </span>
                             <Button
@@ -322,26 +343,29 @@ export default function PDFViewer({ pdfUrl, pdfId, title, onClose, className = "
                                 onClick={handleZoomIn}
                                 disabled={zoom >= 3}
                                 title="Zoom in"
-                                className="h-7 w-7 p-0"
+                                className="h-9 w-9 sm:h-7 sm:w-7 p-0 touch-manipulation"
                             >
-                                <ZoomIn className="h-3.5 w-3.5" />
+                                <ZoomIn className="h-4 w-4 sm:h-3.5 sm:w-3.5" />
                             </Button>
                         </div>
 
                         {/* Other controls */}
-                        <div className="flex items-center gap-1">
+                        <div className="flex items-center gap-0.5 sm:gap-1">
                             <Button
                                 variant="outline"
                                 size="sm"
                                 onClick={handleRotate}
                                 title="Rotate page"
-                                className="h-7 w-7 p-0"
+                                className="h-9 w-9 sm:h-7 sm:w-7 p-0 touch-manipulation"
                             >
-                                <RotateCw className="h-3.5 w-3.5" />
+                                <RotateCw className="h-4 w-4 sm:h-3.5 sm:w-3.5" />
                             </Button>
-                            <div className="flex items-center gap-1 px-2 text-xs text-green-700" title="Secure document">
+                            <div className="hidden sm:flex items-center gap-1 px-2 text-xs text-green-700" title="Secure document">
                                 <Lock className="h-3 w-3 text-green-600" />
                                 <span>Secure</span>
+                            </div>
+                            <div className="sm:hidden flex items-center px-1" title="Secure document">
+                                <Lock className="h-3.5 w-3.5 text-green-600" />
                             </div>
                             {onClose && (
                                 <Button
@@ -349,9 +373,9 @@ export default function PDFViewer({ pdfUrl, pdfId, title, onClose, className = "
                                     size="sm"
                                     onClick={onClose}
                                     title="Close"
-                                    className="h-7 w-7 p-0"
+                                    className="h-9 w-9 sm:h-7 sm:w-7 p-0 touch-manipulation"
                                 >
-                                    <X className="h-3.5 w-3.5" />
+                                    <X className="h-4 w-4 sm:h-3.5 sm:w-3.5" />
                                 </Button>
                             )}
                         </div>
