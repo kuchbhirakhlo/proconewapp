@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
 import { ZoomIn, ZoomOut, RotateCw, X, Lock, AlertCircle, ChevronLeft, ChevronRight } from "lucide-react"
 
 interface PDFViewerProps {
@@ -91,7 +91,7 @@ export default function PDFViewer({ pdfUrl, pdfId, title, onClose, className = "
             try {
                 setLoading(true)
                 setError("")
-                
+
                 // Wait for pdfjsLib to be loaded
                 if (!pdfjsLibRef.current || !pdfJsLoaded) {
                     // Give it a moment to load
@@ -102,20 +102,20 @@ export default function PDFViewer({ pdfUrl, pdfId, title, onClose, className = "
                         return
                     }
                 }
-                
+
                 const pdfjsLib = pdfjsLibRef.current
-                
+
                 // Fetch PDF through proxy to avoid CORS issues
                 const response = await fetch(proxyUrl)
                 if (!response.ok) {
                     const errorText = await response.text()
                     throw new Error(`HTTP ${response.status}: ${errorText || response.statusText}`)
                 }
-                
+
                 const arrayBuffer = await response.arrayBuffer()
                 const loadingTask = pdfjsLib.getDocument({ data: arrayBuffer })
                 const pdf = await loadingTask.promise
-                
+
                 pdfDocRef.current = pdf
                 setTotalPages(pdf.numPages)
             } catch (err) {
@@ -163,6 +163,8 @@ export default function PDFViewer({ pdfUrl, pdfId, title, onClose, className = "
             }
 
             const page = await pdfDoc.getPage(pageNum)
+            // Apply rotation through PDF.js viewport so the canvas size matches
+            // the rotated page, preventing the content from being cut off.
             const viewport = page.getViewport({ scale: zoom, rotation })
 
             canvasRef.current.width = viewport.width
@@ -233,85 +235,8 @@ export default function PDFViewer({ pdfUrl, pdfId, title, onClose, className = "
     }
 
     return (
-        <Card className={`w-full h-full ${className}`}>
-            <CardHeader className="pb-3">
-                <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                        <CardTitle className="text-lg truncate">{title}</CardTitle>
-                        <div title="This document is secure and protected">
-                            <Lock className="h-4 w-4 text-green-600" />
-                        </div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                        <div className="flex items-center gap-1 bg-gray-200 rounded-md p-1">
-                            <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={handlePrevPage}
-                                disabled={currentPage <= 1}
-                                title="Previous page"
-                                className="h-8 w-8 p-0"
-                            >
-                                <ChevronLeft className="h-4 w-4" />
-                            </Button>
-                            <span className="text-sm text-gray-600 min-w-[80px] text-center">
-                                {currentPage}/{totalPages}
-                            </span>
-                            <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={handleNextPage}
-                                disabled={currentPage >= totalPages}
-                                title="Next page"
-                                className="h-8 w-8 p-0"
-                            >
-                                <ChevronRight className="h-4 w-4" />
-                            </Button>
-                        </div>
-                        
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={handleZoomOut}
-                            disabled={zoom <= 0.5}
-                            title="Zoom out"
-                        >
-                            <ZoomOut className="h-4 w-4" />
-                        </Button>
-                        <span className="text-sm text-gray-600 min-w-[60px] text-center">
-                            {Math.round(zoom * 100)}%
-                        </span>
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={handleZoomIn}
-                            disabled={zoom >= 3}
-                            title="Zoom in"
-                        >
-                            <ZoomIn className="h-4 w-4" />
-                        </Button>
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={handleRotate}
-                            title="Rotate page"
-                        >
-                            <RotateCw className="h-4 w-4" />
-                        </Button>
-                        {onClose && (
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={onClose}
-                                title="Close"
-                            >
-                                <X className="h-4 w-4" />
-                            </Button>
-                        )}
-                    </div>
-                </div>
-            </CardHeader>
-            <CardContent className="p-0 flex flex-col h-full">
+        <Card className={`w-full h-full flex flex-col ${className}`}>
+            <CardContent className="p-0 flex flex-col flex-1 overflow-hidden">
                 {error && (
                     <div className="p-4 bg-yellow-50 border-b border-yellow-200 flex items-start gap-2">
                         <AlertCircle className="h-5 w-5 text-yellow-600 mt-0.5 flex-shrink-0" />
@@ -324,36 +249,111 @@ export default function PDFViewer({ pdfUrl, pdfId, title, onClose, className = "
                         </div>
                     </div>
                 )}
-                <div 
-                    className="relative flex-1 bg-gray-100 overflow-auto flex items-center justify-center"
+                <div
+                    className="relative flex-1 bg-gray-100 overflow-auto"
                     onContextMenu={handleContextMenu}
                 >
                     {!pdfJsLoaded && !error && (
-                        <div className="text-center text-gray-500">
-                            <p className="mb-2">Initializing PDF viewer...</p>
+                        <div className="absolute inset-0 flex items-center justify-center text-gray-500">
+                            <p>Initializing PDF viewer...</p>
                         </div>
                     )}
                     {loading && pdfJsLoaded && (
-                        <div className="text-center text-gray-500">
-                            <p className="mb-2">Loading PDF...</p>
+                        <div className="absolute inset-0 flex items-center justify-center text-gray-500">
+                            <p>Loading PDF...</p>
                         </div>
                     )}
                     {!loading && (
-                        <canvas
-                            ref={canvasRef}
-                            className="shadow-lg"
-                            style={{
-                                transform: `rotate(${rotation}deg)`,
-                            }}
-                        />
+                        <div className="flex items-center justify-center min-h-full p-4">
+                            <canvas
+                                ref={canvasRef}
+                                className="shadow-lg"
+                            />
+                        </div>
                     )}
-                </div>
-                <div className="p-4 bg-blue-50 border-t border-blue-200">
-                    <div className="flex items-start gap-2">
-                        <Lock className="h-4 w-4 text-blue-600 mt-1 flex-shrink-0" />
-                        <div className="text-sm text-blue-700">
-                            <p className="font-semibold mb-1">🔒 Secure Document</p>
-                            <p>This document is protected and can only be viewed by authorized students. Downloading and sharing are disabled.</p>
+
+                    {/* Floating controls in bottom-right corner */}
+                    <div className="absolute bottom-4 right-4 z-10 bg-white/95 backdrop-blur-sm rounded-lg shadow-lg border border-gray-200 p-2 flex flex-col gap-2">
+                        {/* Page navigation */}
+                        <div className="flex items-center gap-1 bg-gray-100 rounded-md p-1">
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={handlePrevPage}
+                                disabled={currentPage <= 1}
+                                title="Previous page"
+                                className="h-7 w-7 p-0"
+                            >
+                                <ChevronLeft className="h-3.5 w-3.5" />
+                            </Button>
+                            <span className="text-xs text-gray-600 min-w-[60px] text-center px-1">
+                                {currentPage}/{totalPages}
+                            </span>
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={handleNextPage}
+                                disabled={currentPage >= totalPages}
+                                title="Next page"
+                                className="h-7 w-7 p-0"
+                            >
+                                <ChevronRight className="h-3.5 w-3.5" />
+                            </Button>
+                        </div>
+
+                        {/* Zoom controls */}
+                        <div className="flex items-center gap-1">
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={handleZoomOut}
+                                disabled={zoom <= 0.5}
+                                title="Zoom out"
+                                className="h-7 w-7 p-0"
+                            >
+                                <ZoomOut className="h-3.5 w-3.5" />
+                            </Button>
+                            <span className="text-xs text-gray-600 min-w-[50px] text-center px-1">
+                                {Math.round(zoom * 100)}%
+                            </span>
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={handleZoomIn}
+                                disabled={zoom >= 3}
+                                title="Zoom in"
+                                className="h-7 w-7 p-0"
+                            >
+                                <ZoomIn className="h-3.5 w-3.5" />
+                            </Button>
+                        </div>
+
+                        {/* Other controls */}
+                        <div className="flex items-center gap-1">
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={handleRotate}
+                                title="Rotate page"
+                                className="h-7 w-7 p-0"
+                            >
+                                <RotateCw className="h-3.5 w-3.5" />
+                            </Button>
+                            <div className="flex items-center gap-1 px-2 text-xs text-green-700" title="Secure document">
+                                <Lock className="h-3 w-3 text-green-600" />
+                                <span>Secure</span>
+                            </div>
+                            {onClose && (
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={onClose}
+                                    title="Close"
+                                    className="h-7 w-7 p-0"
+                                >
+                                    <X className="h-3.5 w-3.5" />
+                                </Button>
+                            )}
                         </div>
                     </div>
                 </div>
