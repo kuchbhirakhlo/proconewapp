@@ -12,6 +12,7 @@ export default function Navbar() {
 
   const navigation = [
     { name: "Home", href: "/" },
+    { name: "Blog", href: "https://blog.procotech.in" },
     { name: "About", href: "/about" },
     { name: "Courses", href: "/courses" },
     { name: "Portfolio", href: "/portfolio" },
