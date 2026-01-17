@@ -405,8 +405,9 @@ export default function TypingTestOnline() {
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Enter your full name"
                 className="mt-2"
+                onKeyDown={(e) => e.key === "Enter" && name.trim() && handleDownloadCertificate("completed")}
               />
-              <Button onClick={() => setShowNameDialog(false)} className="w-full mt-4">Generate Certificate</Button>
+              <Button onClick={() => handleDownloadCertificate("completed")} className="w-full mt-4" disabled={!name.trim()}>Generate Certificate</Button>
             </div>
           </DialogContent>
         </Dialog>
