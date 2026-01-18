@@ -580,3 +580,16 @@ export const enrollStudent = async (studentId: string, courseId: string) => {
     progress: 0,
   })
 }
+
+// Fee Management
+export const updateStudentFee = async (studentId: string, feeData: {
+  courseFee: number
+  feeSubmitted: number
+  feeRemaining: number
+}) => {
+  const studentRef = doc(db, "students", studentId)
+  return await updateDoc(studentRef, {
+    ...feeData,
+    updatedAt: Timestamp.now(),
+  })
+}

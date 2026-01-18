@@ -32,6 +32,9 @@ interface Student {
   fullName: string
   email: string
   phone: string
+  aadharNumber?: string
+  profilePicture?: string
+  dateOfBirth?: string
   enrolledCourses: string[]
   assignedCourses?: string[]
   status: string
@@ -68,6 +71,9 @@ export default function StudentsManagement() {
     email: string
     phone: string
     password: string
+    aadharNumber: string
+    dateOfBirth: string
+    profilePicture: string
     status: string
     assignedCourses: string[]
     autoAssignCourses: boolean
@@ -76,6 +82,9 @@ export default function StudentsManagement() {
     email: "",
     phone: "",
     password: "",
+    aadharNumber: "",
+    dateOfBirth: "",
+    profilePicture: "",
     status: "active",
     assignedCourses: [],
     autoAssignCourses: false,
@@ -116,6 +125,9 @@ export default function StudentsManagement() {
         await updateStudent(editingStudent.id, {
           fullName: formData.fullName,
           phone: formData.phone,
+          aadharNumber: formData.aadharNumber,
+          dateOfBirth: formData.dateOfBirth,
+          profilePicture: formData.profilePicture,
           status: formData.status,
           assignedCourses: formData.assignedCourses,
         })
@@ -125,6 +137,9 @@ export default function StudentsManagement() {
           fullName: formData.fullName,
           email: formData.email,
           phone: formData.phone,
+          aadharNumber: formData.aadharNumber,
+          dateOfBirth: formData.dateOfBirth,
+          profilePicture: formData.profilePicture,
           password: formData.password,
           status: formData.status,
           assignedCourses: formData.assignedCourses,
@@ -198,6 +213,9 @@ export default function StudentsManagement() {
       email: student.email,
       phone: student.phone,
       password: "",
+      aadharNumber: student.aadharNumber || "",
+      dateOfBirth: student.dateOfBirth || "",
+      profilePicture: student.profilePicture || "",
       status: student.status,
       assignedCourses: student.assignedCourses || [],
       autoAssignCourses: false,
@@ -224,6 +242,9 @@ export default function StudentsManagement() {
       email: "",
       phone: "",
       password: "",
+      aadharNumber: "",
+      dateOfBirth: "",
+      profilePicture: "",
       status: "active",
       assignedCourses: [],
       autoAssignCourses: false,
@@ -522,6 +543,40 @@ export default function StudentsManagement() {
                               className="h-11 border-0 bg-gray-50 focus:bg-white focus:ring-2 focus:ring-blue-500"
                               placeholder="+1 (555) 123-4567"
                               required
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label htmlFor="dateOfBirth" className="text-sm font-medium text-gray-700">Date of Birth</Label>
+                            <Input
+                              id="dateOfBirth"
+                              type="date"
+                              value={formData.dateOfBirth}
+                              onChange={(e) => setFormData({ ...formData, dateOfBirth: e.target.value })}
+                              className="h-11 border-0 bg-gray-50 focus:bg-white focus:ring-2 focus:ring-blue-500"
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label htmlFor="aadharNumber" className="text-sm font-medium text-gray-700">Aadhar Number</Label>
+                            <Input
+                              id="aadharNumber"
+                              value={formData.aadharNumber}
+                              onChange={(e) => setFormData({ ...formData, aadharNumber: e.target.value })}
+                              className="h-11 border-0 bg-gray-50 focus:bg-white focus:ring-2 focus:ring-blue-500"
+                              placeholder="XXXX XXXX XXXX"
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label htmlFor="profilePicture" className="text-sm font-medium text-gray-700">Profile Picture URL</Label>
+                            <Input
+                              id="profilePicture"
+                              type="url"
+                              value={formData.profilePicture}
+                              onChange={(e) => setFormData({ ...formData, profilePicture: e.target.value })}
+                              className="h-11 border-0 bg-gray-50 focus:bg-white focus:ring-2 focus:ring-blue-500"
+                              placeholder="https://example.com/photo.jpg"
                             />
                           </div>
 

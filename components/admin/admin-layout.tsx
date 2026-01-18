@@ -58,6 +58,7 @@ export default function AdminLayout({ children, title }: AdminLayoutProps) {
     { name: "Course PDFs", href: "/admin/course-pdfs", icon: FileText },
     { name: "Portfolio", href: "/admin/portfolio", icon: Briefcase },
     { name: "Students", href: "/admin/students", icon: Users },
+    { name: "Fees", href: "/admin/fees", icon: FileText },
   ]
 
   return (
