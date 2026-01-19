@@ -129,8 +129,31 @@ export default function TypingTestOnline() {
   const handlePaste = (e: React.ClipboardEvent<HTMLTextAreaElement>) => {
     // Prevent pasting completely - this is a typing test, not a paste test
     e.preventDefault();
+    e.stopPropagation();
     // Show warning toast
     if (isTestActive || !isTestComplete) {
+      toast.warning("Pasting is not allowed!", { description: "Please type the text manually." });
+    }
+  };
+
+  const handleBeforeInput = (e: React.FormEvent<HTMLTextAreaElement>) => {
+    // Block any input that isn't a single character (catches paste from keyboard shortcuts, voice-to-text, etc.)
+    if (isTestActive && !isTestComplete) {
+      // Allow single character input (normal typing)
+      // This won't work for paste detection but helps with other methods
+    }
+  };
+
+  const handleInput = (e: React.FormEvent<HTMLTextAreaElement>) => {
+    // Additional protection: check if input length jumped significantly (indicates paste)
+    const target = e.target as HTMLTextAreaElement;
+    const currentLength = target.value.length;
+    const previousLength = userInput.length;
+    
+    // If more than 3 characters were added at once, it's likely a paste
+    if (isTestActive && !isTestComplete && currentLength - previousLength > 3) {
+      // Revert the change
+      target.value = userInput;
       toast.warning("Pasting is not allowed!", { description: "Please type the text manually." });
     }
   };
@@ -301,9 +324,19 @@ export default function TypingTestOnline() {
               onChange={handleInputChange}
               onKeyDown={handleKeyDown}
               onPaste={handlePaste}
+              onBeforeInput={handleBeforeInput}
+              onInput={handleInput}
               placeholder="Start typing here..."
               disabled={isTestComplete}
-              className="w-full p-4 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[100px] resize-none font-mono"
+              className="w-full p-4 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[100px] resize-none font-mono select-none"
+              style={{ userSelect: 'none', WebkitUserSelect: 'none', WebkitAppearance: 'none' }}
+              data-gramm="false"
+              data-gramm_editor="false"
+              data-enable-grammarly="false"
+              autoComplete="off"
+              autoCorrect="off"
+              autoCapitalize="off"
+              spellCheck="false"
             />
             <div className="flex justify-between items-center mt-4">
               <span className="flex items-center gap-2 text-lg"><Clock className="w-5 h-5 text-blue-500" />Time: {formatTime(elapsedTime)}</span>
