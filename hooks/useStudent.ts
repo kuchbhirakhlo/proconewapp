@@ -11,7 +11,11 @@ interface StudentData {
   fullName: string
   email: string
   phone: string
+  profilePicture?: string
+  aadharNumber?: string
+  dateOfBirth?: string
   enrolledCourses: string[]
+  assignedCourses?: string[]
   status: string
   createdAt: any
   updatedAt: any

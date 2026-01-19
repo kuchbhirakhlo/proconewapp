@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Alert, AlertDescription } from "@/components/ui/alert"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { useStudent } from "@/hooks/useStudent"
 import { signOutStudent } from "@/lib/student"
 import { BookOpen, User, Award, Settings, LogOut, Home, AlertCircle, Menu, X, FileText } from "lucide-react"
@@ -82,6 +83,10 @@ export default function StudentLayout({ children, title }: StudentLayoutProps) {
     )
   }
 
+  const getInitials = (name: string) => {
+    return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)
+  }
+
   const navigation = [
     { name: "Dashboard", href: "/student/dashboard", icon: Home },
     { name: "My Courses", href: "/student/courses", icon: BookOpen },
@@ -134,9 +139,12 @@ export default function StudentLayout({ children, title }: StudentLayoutProps) {
 
           <div className="p-4 border-t">
             <div className="flex items-center mb-4">
-              <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white text-sm font-bold">
-                {studentData.fullName.charAt(0).toUpperCase()}
-              </div>
+              <Avatar className="h-10 w-10">
+                <AvatarImage src={studentData.profilePicture} alt={studentData.fullName} />
+                <AvatarFallback className="bg-blue-600 text-white text-sm font-bold">
+                  {getInitials(studentData.fullName)}
+                </AvatarFallback>
+              </Avatar>
               <div className="ml-3 flex-1 min-w-0">
                 <p className="text-sm font-medium text-gray-900 truncate">{studentData.fullName}</p>
                 <p className="text-xs text-gray-500 truncate">{studentData.email}</p>

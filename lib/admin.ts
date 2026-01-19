@@ -24,6 +24,9 @@ export interface Student {
   fullName: string
   email: string
   phone: string
+  aadharNumber?: string
+  profilePicture?: string
+  dateOfBirth?: string
   enrolledCourses: string[]
   assignedCourses: string[]
   status: string

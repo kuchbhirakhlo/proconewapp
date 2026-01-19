@@ -4,6 +4,7 @@ import { Inter } from "next/font/google"
 import Script from "next/script"
 import "./globals.css"
 import ClientLayout from "./ClientLayout"
+import SplashScreen from "@/components/splash-screen"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -194,6 +195,7 @@ export default function RootLayout({
         />
       </head>
       <body className={inter.className}>
+        <SplashScreen />
         <ClientLayout>{children}</ClientLayout>
       </body>
     </html>

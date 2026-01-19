@@ -5,7 +5,9 @@ import StudentLayout from "@/components/student/student-layout"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
-import { BookOpen, Award, Clock, TrendingUp, Calendar } from "lucide-react"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Button } from "@/components/ui/button"
+import { BookOpen, Award, Clock, TrendingUp, Calendar, Cake, PartyPopper } from "lucide-react"
 import { useStudent } from "@/hooks/useStudent"
 import { getEnrolledCourses } from "@/lib/student"
 
@@ -13,6 +15,7 @@ export default function StudentDashboard() {
   const { studentData } = useStudent()
   const [enrolledCourses, setEnrolledCourses] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
+  const [isBirthday, setIsBirthday] = useState(false)
 
   useEffect(() => {
     const fetchEnrolledCourses = async () => {
@@ -29,6 +32,21 @@ export default function StudentDashboard() {
     }
 
     fetchEnrolledCourses()
+  }, [studentData])
+
+  // Check if it's the student's birthday
+  useEffect(() => {
+    if (studentData?.dateOfBirth) {
+      const today = new Date()
+      const birthDate = new Date(studentData.dateOfBirth)
+      
+      if (
+        today.getDate() === birthDate.getDate() &&
+        today.getMonth() === birthDate.getMonth()
+      ) {
+        setIsBirthday(true)
+      }
+    }
   }, [studentData])
 
   const stats = [
@@ -73,21 +91,64 @@ export default function StudentDashboard() {
     },
   ]
 
+  const getInitials = (name: string) => {
+    return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)
+  }
+
   return (
     <StudentLayout title="Dashboard">
       <div className="space-y-6">
+        {/* Birthday Celebration Popup */}
+        {isBirthday && (
+          <Card className="bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 text-white animate-pulse">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-center space-x-4">
+                <div className="relative">
+                  <Avatar className="h-20 w-20 border-4 border-white">
+                    <AvatarImage src={studentData?.profilePicture} alt={studentData?.fullName} />
+                    <AvatarFallback className="bg-pink-600 text-white text-2xl font-bold">
+                      {studentData?.fullName ? getInitials(studentData.fullName) : "??"}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="absolute -bottom-2 -right-2 bg-yellow-400 rounded-full p-2">
+                    <Cake className="h-5 w-5 text-pink-600" />
+                  </div>
+                </div>
+                <div className="text-center">
+                  <h2 className="text-3xl font-bold flex items-center justify-center">
+                    <PartyPopper className="h-8 w-8 mr-2" />
+                    Happy Birthday {studentData?.fullName}!
+                    <PartyPopper className="h-8 w-8 ml-2" />
+                  </h2>
+                  <p className="text-white/90 text-lg mt-2">
+                    🎉 Wishing you a fantastic day filled with joy and learning! 🎉
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
         {/* Welcome Message */}
         <Card className="bg-gradient-to-r from-blue-500 to-blue-600 text-white">
-          <CardHeader>
-            <CardTitle className="text-2xl">Welcome back, {studentData?.fullName}!</CardTitle>
-            <CardDescription className="text-blue-100">
-              Continue your learning journey and track your progress
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-center text-blue-100">
-              <Calendar className="h-4 w-4 mr-2" />
-              <span>Last login: {new Date().toLocaleDateString()}</span>
+          <CardContent className="p-6">
+            <div className="flex items-center space-x-4">
+              <Avatar className="h-16 w-16 border-2 border-white">
+                <AvatarImage src={studentData?.profilePicture} alt={studentData?.fullName} />
+                <AvatarFallback className="bg-blue-700 text-white text-xl">
+                  {studentData?.fullName ? getInitials(studentData.fullName) : "??"}
+                </AvatarFallback>
+              </Avatar>
+              <div className="flex-1">
+                <h2 className="text-2xl font-bold">Welcome back, {studentData?.fullName}!</h2>
+                <p className="text-blue-100">
+                  Continue your learning journey and track your progress
+                </p>
+                <div className="flex items-center mt-2 text-sm text-blue-200">
+                  <Calendar className="h-4 w-4 mr-2" />
+                  <span>Last login: {new Date().toLocaleDateString()}</span>
+                </div>
+              </div>
             </div>
           </CardContent>
         </Card>

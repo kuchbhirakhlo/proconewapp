@@ -39,6 +39,7 @@ interface Student {
   assignedCourses?: string[]
   status: string
   createdAt: any
+  updatedAt?: any
 }
 
 interface Course {
@@ -932,7 +933,7 @@ export default function StudentsManagement() {
                           <TableCell>
                             <div className="flex items-center space-x-3">
                               <Avatar className="h-10 w-10">
-                                <AvatarImage src="" alt={student.fullName} />
+                                <AvatarImage src={student.profilePicture} alt={student.fullName} />
                                 <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-white">
                                   {getInitials(student.fullName)}
                                 </AvatarFallback>
@@ -1035,7 +1036,7 @@ export default function StudentsManagement() {
                               className="rounded border-gray-300 mt-1"
                             />
                             <Avatar className="h-12 w-12">
-                              <AvatarImage src="" alt={student.fullName} />
+                              <AvatarImage src={student.profilePicture} alt={student.fullName} />
                               <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-white">
                                 {getInitials(student.fullName)}
                               </AvatarFallback>
