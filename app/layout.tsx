@@ -168,11 +168,6 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        {/* Hide body immediately to prevent flash of content */}
-        <script dangerouslySetInnerHTML={{ __html: `
-          document.body.style.opacity = "0";
-          document.body.style.overflow = "hidden";
-        ` }} />
         {/* <!-- Google tag (gtag.js) --> */}
         <script async src="https://www.googletagmanager.com/gtag/js?id=G-7LMD5WF7XW"></script>
         <script

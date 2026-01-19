@@ -4,30 +4,21 @@ import { useState, useEffect } from "react"
 
 export default function SplashScreen() {
   const [isVisible, setIsVisible] = useState(true)
-  const [showContent, setShowContent] = useState(false)
 
   useEffect(() => {
-    // Start fade out after animation
+    // Hide splash screen after animation completes
     const timer = setTimeout(() => {
       setIsVisible(false)
-      // Show main content after splash fades
-      setTimeout(() => {
-        setShowContent(true)
-      }, 500)
     }, 2500)
 
     return () => clearTimeout(timer)
   }, [])
 
+  if (!isVisible) return null
+
   return (
-    <>
-      <style jsx global>{`
-        body {
-          overflow: hidden;
-          opacity: ${showContent ? 1 : 0};
-          transition: opacity 0.3s ease-in-out;
-        }
-        
+    <div className="splash-screen">
+      <style jsx>{`
         .splash-screen {
           position: fixed;
           top: 0;
@@ -39,8 +30,8 @@ export default function SplashScreen() {
           flex-direction: column;
           align-items: center;
           justify-content: center;
-          z-index: 99999;
-          animation: ${!isVisible ? 'fadeOut 0.5s ease-in-out forwards' : 'none'};
+          z-index: 9999;
+          animation: fadeOut 0.5s ease-in-out 2s forwards;
         }
 
         .logo-container {
@@ -128,8 +119,12 @@ export default function SplashScreen() {
         }
 
         @keyframes pulse {
-          0%, 100% { transform: scale(1); }
-          50% { transform: scale(1.05); }
+          0%, 100% {
+            transform: scale(1);
+          }
+          50% {
+            transform: scale(1.05);
+          }
         }
 
         @keyframes slideUp {
@@ -155,8 +150,12 @@ export default function SplashScreen() {
         }
 
         @keyframes rotate {
-          from { transform: rotate(0deg); }
-          to { transform: rotate(360deg); }
+          from {
+            transform: rotate(0deg);
+          }
+          to {
+            transform: rotate(360deg);
+          }
         }
 
         @keyframes fadeOut {
@@ -167,23 +166,21 @@ export default function SplashScreen() {
         }
       `}</style>
 
-      <div className="splash-screen">
-        <div className="circle-decoration" />
-        <div className="circle-decoration" />
+      <div className="circle-decoration" />
+      <div className="circle-decoration" />
 
-        <div className="logo-container">
-          <img src="/proco_tech.jpg" alt="Proco Technologies" />
-        </div>
-
-        <h1 className="brand-name">Proco Technologies</h1>
-        <p className="tagline">Innovate. Create. Transform.</p>
-
-        <div className="loading-dots">
-          <span />
-          <span />
-          <span />
-        </div>
+      <div className="logo-container">
+        <img src="/proco_tech.jpg" alt="Proco Technologies" />
       </div>
-    </>
+
+      <h1 className="brand-name">Proco Technologies</h1>
+      <p className="tagline">Innovate. Create. Transform.</p>
+
+      <div className="loading-dots">
+        <span />
+        <span />
+        <span />
+      </div>
+    </div>
   )
 }
