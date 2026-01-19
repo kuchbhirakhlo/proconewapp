@@ -315,8 +315,8 @@ export default function TypingTestOnline() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="bg-gray-50 dark:bg-gray-800 p-6 rounded-lg mb-4 min-h-[120px]">
-              <p className="text-lg leading-relaxed font-mono">{renderText()}</p>
+            <div className="bg-gray-50 dark:bg-gray-800 p-6 rounded-lg mb-4 min-h-[120px] select-none">
+              <p className="text-lg leading-relaxed font-mono select-none">{renderText()}</p>
             </div>
             <textarea
               ref={inputRef}

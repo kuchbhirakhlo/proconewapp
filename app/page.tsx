@@ -139,6 +139,39 @@ export default function HomePage() {
 
   return (
     <div className="flex flex-col">
+      {/* Typing Test Challenge Banner */}
+      <section className="py-4 bg-gradient-to-r from-red-600 via-purple-600 to-green-600 text-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <div className="bg-white/20 p-2 rounded-lg">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+              </div>
+              <div>
+                <p className="text-sm font-medium text-red-100">New Student Challenge</p>
+                <p className="font-bold text-lg">🎯 Typing Test Challenge - Win 1 Month FREE Classes!</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-3">
+              <div className="hidden sm:flex items-center gap-2 text-sm text-red-100">
+                <span>⏱️ 5 Minutes</span>
+                <span>•</span>
+                <span>🏆 Prize: 1 Month Free</span>
+                <span>•</span>
+                <span>📊 All Levels</span>
+              </div>
+              <Button asChild size="sm" className="bg-white text-purple-600 hover:bg-red-100 font-semibold">
+                <Link href="/typing-test-online">
+                  Start Challenge
+                </Link>
+              </Button>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Hero Section */}
       <section className="relative bg-gradient-to-br from-red-50 via-white to-green-50 py-20 lg:py-32 overflow-hidden">
         {/* Animated Canvas Background */}
