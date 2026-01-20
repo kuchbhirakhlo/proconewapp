@@ -323,8 +323,8 @@ export default function TypingTestOnline() {
             <CardHeader><CardTitle className="flex items-center gap-2"><Target className="w-5 h-5 text-blue-500" />Select Language</CardTitle></CardHeader>
             <CardContent>
               <div className="flex gap-4">
-                <Button variant={language === "english" ? "default" : "outline"} onClick={() => setLanguage("english")} className="flex-1">English</Button>
-                <Button variant={language === "hindi" ? "default" : "outline"} onClick={() => setLanguage("hindi")} className="flex-1">Hindi</Button>
+                <Button variant={language === "english" ? "default" : "outline"} onClick={() => { setLanguage("english"); setCurrentLevel("beginner"); }} className="flex-1">English</Button>
+                <Button variant={language === "hindi" ? "default" : "outline"} onClick={() => { setLanguage("hindi"); setCurrentLevel("beginner"); }} className="flex-1">Hindi</Button>
               </div>
             </CardContent>
           </Card>
