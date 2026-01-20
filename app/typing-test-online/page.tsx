@@ -10,7 +10,9 @@ import { Progress } from "@/components/ui/progress";
 import { Toaster } from "@/components/ui/sonner";
 import { toast } from "sonner";
 import { generateCertificateId, generateCertificatePDF, type CertificateData } from "@/lib/certificate-generator";
-import { Trophy, Clock, Target, BookOpen, RefreshCw, Star, Award, ChevronRight } from "lucide-react";
+import { mapQwertyToHindi, isDevanagari, mapQwertyToHindiWithShift } from "@/lib/hindi-transliteration";
+import { Trophy, Clock, Target, BookOpen, RefreshCw, Star, Award, ChevronRight, AlertCircle } from "lucide-react";
+import TypingPractice from "@/components/typing-practice";
 
 const typingTexts: { english: { beginner: string[]; intermediate: string[]; pro: string[] }; hindi: { beginner: string[]; intermediate: string[]; pro: string[] } } = {
   english: {
@@ -19,9 +21,9 @@ const typingTexts: { english: { beginner: string[]; intermediate: string[]; pro:
     pro: ["Technology is best when it brings people together and bridges the gap between different cultures.", "In the digital age keyboard proficiency is not just a skill but a fundamental literacy that empowers individuals.", "The pursuit of excellence in typing speed and accuracy demonstrates dedication discipline and commitment.", "With consistent practice and proper technique anyone can achieve remarkable proficiency in touch typing.", "Remember that true mastery is not about speed alone but also about precision efficiency and maintaining wellness."],
   },
   hindi: {
-    beginner: ["रात बहुत गहरी थी जब चाँद आसमान में चमका।", "पक्षी ऊपर उड़ रहे थे आज़ादी के नारे लगाते हुए।", "बच्चे खेल रहे थे पार्क में खुशियाँ मनाते हुए।", "फूल बहुत सुंदर थे खिलने की उम्मीद लिए।", "पानी बहुत ठंडा था इस गर्मी के मौसम में।", "सूरज की किरणें ज़मीन पर गिर रही थीं।", "हवा तेज़ चल रही थी बदलों के साथ।"],
-    intermediate: ["हमें अपने लक्ष्य के प्रति समर्पित रहना चाहिए हर पल।", "कठिन परिश्रम सफलता की असली कुंजी है जीवन में।", "जहां इच्छा है, वहां रास्ता भी बनता है स्वयं।", "समय का सदुपयोग करना चाहिए हर एक पल का।", "सपने देखने की शक्ति रखनी चाहिए सदैव मन में।", "लगन और परिश्रम से कोई भी कार्य संभव है।", "ज्ञान ही शक्ति है जो हमें आगे बढ़ाता है।"],
-    pro: ["प्रौद्योगिकी ने हमारे जीवन को बहुत आसान बना दिया है और दूरियों को कम कर दिया है।", "कंप्यूटर पर टाइपिंग की कला में निपुणता प्राप्त करना एक महत्वपूर्ण कौशल है आज के युग में।", "नियमित अभ्यास और सही तकनीक से कोई भी टच टाइपिंग में महारत हासिल कर सकता है।", "डिजिटल युग में तकनीकी साक्षरता सभी के लिए आवश्यक है व्यक्तिगत और व्यावसायिक विकास के लिए।"],
+    beginner: ["मैं स्कूल जाता हूँ। मेरा नाम राज है। यह एक किताब है। बिल्ली घर में है। कुत्ता सो रहा है।", "पानी ठंडा है। आसमान नीला है। फूल सुंदर हैं। पक्षी उड़ रहे हैं। सूरज चमकता है।", "बच्चे खेल रहे हैं। माँ खाना बना रही है। पिता काम कर रहे हैं। दादा-दादी बैठे हैं। भाई पढ़ रहा है।", "यह घर बड़ा है। वह पेड़ पुराना है। मेरी किताब लाल है। तुम्हारी पेंसिल नीली है। उसका कपड़ा सफेद है।", "मुझे खेलना पसंद है। उसे पढ़ना पसंद है। हमें गाना पसंद है। आपको क्या पसंद है। वे नाचना पसंद करते हैं।", "आज मौसम अच्छा है। कल बारिश हुई थी। परसों धूप होगी। इस हफ्ते ठंड रहेगी। अगले महीने गर्मी आएगी।", "सड़क पर कार है। बाग में गुलाब हैं। घर के आगे बेंच है। पार्क में झूले हैं। स्कूल के पास दुकान है।", "मेरे पास पेन है। तुम्हारे पास किताब है। उसके पास पैसे हैं। हमारे पास समय है। आपके पास घर है।"],
+    intermediate: ["शिक्षा मनुष्य के विकास का मूल आधार है। यह हमारे ज्ञान, कौशल और व्यक्तित्व को निखारती है। पुस्तकें मानव की सबसे अच्छी मित्र हैं। ये हमें ज्ञान और आनंद प्रदान करती हैं।", "हमारा भारत देश बहुत सुंदर है। यहाँ विविध संस्कृतियों का मिलन होता है। प्रकृति की सुंदरता हर ओर दिखाई देती है। हरे-भरे पहाड़ और नदियों की सुंदरता मन मोह लेती है।", "कठिन परिश्रम सफलता की कुंजी है। जो मेहनत करते हैं उन्हें अवश्य सफलता मिलती है। धैर्य और लगन से कोई भी लक्ष्य प्राप्त किया जा सकता है। समय का सदुपयोग करना बहुत महत्वपूर्ण है।", "टाइपिंग एक महत्वपूर्ण कौशल है आजकल। कंप्यूटर पर तेजी से टाइप करना व्यावहारिक जीवन में बहुत जरूरी है। नियमित अभ्यास से टाइपिंग की गति बढ़ाई जा सकती है। सटीकता और गति दोनों ही महत्वपूर्ण हैं।", "प्रौद्योगिकी ने हमारे जीवन को बदल दिया है। डिजिटल युग में हर काम कंप्यूटर पर होता है। इंटरनेट से दुनिया की जानकारी मिलती है। तकनीकी ज्ञान आजकल आवश्यक हो गया है।", "स्वास्थ्य सबसे बड़ा धन है। नियमित व्यायाम से शरीर स्वस्थ रहता है। संतुलित आहार बहुत महत्वपूर्ण है। पर्याप्त नींद लेना आवश्यक है। मानसिक शांति भी स्वास्थ्य का अंग है।"],
+    pro: ["भारतीय संस्कृति विश्व की सबसे प्राचीन और समृद्ध संस्कृतियों में से एक है। योग, आयुर्वेद और दर्शन का ज्ञान हमारी संस्कृति की विशेषता है। राष्ट्रीय विकास और सामाजिक प्रगति के लिए शिक्षा, स्वास्थ्य और तकनीकी कौशल आवश्यक है।", "कंप्यूटर और टाइपिंग की दक्षता आधुनिक समय में एक मौलिक आवश्यकता बन गई है। डिजिटल साक्षरता से ही व्यक्तिगत और व्यावसायिक विकास संभव है। नियमित अभ्यास और सही तकनीक से कोई भी उत्कृष्ट परिणाम प्राप्त कर सकता है।", "सामाजिक परिवर्तन का दायित्व प्रत्येक नागरिक का है। शिक्षा और जागरूकता का प्रसार समाज के विकास का मूल मंत्र है। लोकतांत्रिक मूल्यों का संरक्षण और प्रसार आवश्यक है। सामूहिक प्रयास से ही राष्ट्रीय लक्ष्य को प्राप्त किया जा सकता है।", "पर्यावरण संरक्षण और सतत विकास आधुनिक युग की प्रमुख चुनौतियाँ हैं। प्राकृतिक संसाधनों का सुरक्षित उपयोग आवश्यक है। प्रदूषण को कम करने के लिए सामूहिक प्रयास करना चाहिए। हरी पृथ्वी के लिए वृक्षारोपण अति आवश्यक है।", "अंतर्राष्ट्रीय स्तर पर भारत का महत्व निरंतर बढ़ रहा है। भारतीय युवाओं की प्रतिभा विश्व में स्वीकृत है। वैज्ञानिक और तकनीकी क्षेत्र में भारत तेजी से आगे बढ़ रहा है। भारत की आर्थिक वृद्धि विश्व में अग्रणी है।"],
   },
 };
 
@@ -107,13 +109,53 @@ export default function TypingTestOnline() {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     if (!isTestActive) handleStart();
-    const value = e.target.value;
+    let value = e.target.value;
+    
     // Prevent backspace - only allow forward typing
     if (value.length < userInput.length) {
       return; // Ignore backspace/delete
     }
+
+    // Hindi language - automatic QWERTY to Devanagari keyboard mapping
+    if (language === "hindi" && value.length > userInput.length) {
+      // Get the newly added character
+      const newChar = value[value.length - 1];
+      // We'll map this in handleKeyDown with proper shift detection
+    }
+
     setUserInput(value);
     if (value.length >= currentText.length) completeTest(value);
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (!isTestActive || language !== "hindi") return;
+
+    // For Hindi, map the key to Devanagari character with shift support
+    const key = e.key;
+    const isShift = e.shiftKey;
+    
+    // Prevent default character input, we'll add our mapped character instead
+    e.preventDefault();
+    
+    const textarea = e.currentTarget;
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const before = userInput.substring(0, start);
+    const after = userInput.substring(end);
+    
+    // Map the key to Hindi character
+    const mappedChar = mapQwertyToHindiWithShift("", key, isShift);
+    const newValue = before + mappedChar + after;
+    
+    setUserInput(newValue);
+    
+    // Update textarea and set cursor position
+    textarea.value = newValue;
+    setTimeout(() => {
+      textarea.selectionStart = textarea.selectionEnd = start + mappedChar.length;
+    }, 0);
+    
+    if (newValue.length >= currentText.length) completeTest(newValue);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -318,11 +360,23 @@ export default function TypingTestOnline() {
             <div className="bg-gray-50 dark:bg-gray-800 p-6 rounded-lg mb-4 min-h-[120px] select-none">
               <p className="text-lg leading-relaxed font-mono select-none">{renderText()}</p>
             </div>
+            
+            {/* Language instruction */}
+            {language === "hindi" && (
+              <div className="bg-blue-50 dark:bg-blue-900 border border-blue-200 dark:border-blue-700 p-3 rounded-lg mb-4 flex gap-2">
+                <AlertCircle className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+                <div className="text-sm text-blue-800 dark:text-blue-200">
+                  <p><strong>⌨️ हिंदी कीबोर्ड:</strong> QWERTY कीबोर्ड पर सीधे हिंदी अक्षर दिखेंगे। कोई अतिरिक्त सेटअप नहीं चाहिए!</p>
+                  <p className="text-xs mt-1 opacity-90">Q→औ, W→ऐ, E→आ, R→ई, T→ऊ, Y→भ, U→ङ, I→घ, O→ध, P→झ</p>
+                </div>
+              </div>
+            )}
             <textarea
               ref={inputRef}
               value={userInput}
               onChange={handleInputChange}
               onKeyDown={handleKeyDown}
+              onKeyPress={language === "hindi" ? handleKeyPress : undefined}
               onPaste={handlePaste}
               onBeforeInput={handleBeforeInput}
               onInput={handleInput}
@@ -444,6 +498,15 @@ export default function TypingTestOnline() {
             </div>
           </DialogContent>
         </Dialog>
+
+        {/* Typing Practice Section */}
+        <div className="mt-12 pt-8 border-t border-gray-200 dark:border-gray-700">
+          <div className="mb-8">
+            <h2 className="text-3xl font-bold mb-2 flex items-center gap-3"><BookOpen className="w-8 h-8" />Typing Practice - Master Your Skills</h2>
+            <p className="text-gray-600 dark:text-gray-400">Structured lesson-based learning with real-time feedback and progress tracking. Choose your language, difficulty level, and typing mode to begin your journey to typing mastery!</p>
+          </div>
+          <TypingPractice />
+        </div>
 
         <Toaster />
       </div>
