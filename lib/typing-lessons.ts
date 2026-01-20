@@ -722,6 +722,25 @@ export const typingLessons: Lesson[] = [
     estimatedTime: 120,
     difficulty: 3,
   },
+  {
+    id: "hi-beginner-no-matras",
+    level: "beginner",
+    language: "hindi",
+    title: "बिना मात्रा के शब्द",
+    description: "50 आम हिंदी शब्द बिना मात्रा (vowel marks) के",
+    topic: "व्यंजन अभ्यास",
+    texts: [
+      "क ख ग घ च छ ज झ ट ठ ड ढ त थ द ध न प फ ब भ म य र ल व स ह क्ष त्र ज्ञ श्र",
+      "कम खग गध चज छझ टड ठढ तद थध नप फब भम यर लव सह क्षत्रज्ञश्र",
+      "क ख ग घ च छ ज झ ट ठ ड ढ त थ द ध न प फ ब भ म य र ल व स ह क्ष त्र",
+      "क्षत्र ज्ञान श्रम कम खग गध चज छझ टड ठढ तद थध नप फब भम यर लव सह क्ष",
+      "त्र ज्ञ श्र क ख ग घ च छ ज झ ट ठ ड ढ त थ द ध न प फ ब भ म य र ल व स ह",
+    ],
+    minWpm: 15,
+    minAccuracy: 88,
+    estimatedTime: 150,
+    difficulty: 2,
+  },
 ];
 
 // Get lessons by language and level

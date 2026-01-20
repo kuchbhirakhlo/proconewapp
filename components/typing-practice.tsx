@@ -126,15 +126,11 @@ export default function TypingPractice() {
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     let value = e.target.value;
 
-    // Prevent backspace
-    if (value.length < userInput.length) {
-      return;
-    }
-
+    // Allow backspace for practice (disabled backspace removed)
     setUserInput(value);
 
     // Auto-start test on first input
-    if (!isActive && !startTime) {
+    if (!isActive && !startTime && value.length > 0) {
       startTest();
     }
 
@@ -144,11 +140,23 @@ export default function TypingPractice() {
     }
   };
 
-  const handleKeyPress = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (language !== "hindi") return;
+
+    // Ignore special keys (Enter, Tab, Arrow keys, etc.) but allow Backspace/Delete for practice
+    const specialKeys = ['Enter', 'Tab', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Control', 'Shift', 'Alt', 'Meta'];
+    if (specialKeys.includes(e.key)) {
+      return;
+    }
+
+    // Allow Backspace and Delete natively
+    if (e.key === 'Backspace' || e.key === 'Delete') {
+      return; // Let browser handle deletion
+    }
 
     // For Hindi, map the key to Devanagari character with shift support
     const key = e.key;
+    const code = e.code;
     const isShift = e.shiftKey;
     
     // Prevent default character input, we'll add our mapped character instead
@@ -160,8 +168,8 @@ export default function TypingPractice() {
     const before = userInput.substring(0, start);
     const after = userInput.substring(end);
     
-    // Map the key to Hindi character
-    const mappedChar = mapQwertyToHindiWithShift("", key, isShift);
+    // Map the key to Hindi character (using code for accurate key mapping with shift)
+    const mappedChar = mapQwertyToHindiWithShift("", key, isShift, code);
     const newValue = before + mappedChar + after;
     
     setUserInput(newValue);
@@ -172,7 +180,7 @@ export default function TypingPractice() {
       textarea.selectionStart = textarea.selectionEnd = start + mappedChar.length;
     }, 0);
     
-    // Auto-start test on first input
+    // Auto-start test on first input (ALWAYS in Hindi mode when user types first character)
     if (!isActive && !startTime) {
       startTest();
     }
@@ -427,23 +435,14 @@ export default function TypingPractice() {
               </p>
             </div>
 
-            {/* Language instruction */}
-            {language === "hindi" && (
-              <div className="bg-blue-50 dark:bg-blue-900 border border-blue-200 dark:border-blue-700 p-3 rounded-lg flex gap-2">
-                <AlertCircle className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
-                <div className="text-sm text-blue-800 dark:text-blue-200">
-                  <p><strong>⌨️ हिंदी कीबोर्ड:</strong> QWERTY कीबोर्ड पर सीधे हिंदी अक्षर दिखेंगे। कोई अतिरिक्त सेटअप नहीं चाहिए!</p>
-                  <p className="text-xs mt-1 opacity-90">Q→औ, W→ऐ, E→आ, R→ई, T→ऊ, Y→भ, U→ङ, I→घ, O→ध, P→झ</p>
-                </div>
-              </div>
-            )}
+
 
             {/* Input Area */}
             <textarea
               ref={inputRef}
               value={userInput}
               onChange={handleInputChange}
-              onKeyPress={language === "hindi" ? handleKeyPress : undefined}
+              onKeyDown={language === "hindi" ? handleKeyDown : undefined}
               onPaste={handlePaste}
               placeholder="Start typing here... (Click Start button to begin)"
               disabled={showResults}
