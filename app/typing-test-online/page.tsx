@@ -104,6 +104,52 @@ export default function TypingTestOnline() {
 
   useEffect(() => { if (isTestActive && inputRef.current) inputRef.current.focus(); }, [isTestActive]);
 
+  // Disable screenshots on mobile devices
+  useEffect(() => {
+    const handleScreenshot = () => {
+      if (isTestActive || isTestComplete) {
+        toast.warning("Screenshots are not allowed during typing tests!");
+      }
+    };
+
+    const handleVisibilityChange = () => {
+      if (document.hidden && (isTestActive || isTestComplete)) {
+        toast.warning("Screenshots and screen recording are disabled on this page for security.");
+      }
+    };
+
+    // iOS and Android screenshot detection
+    let screenshotLastTime = 0;
+    const handleVolumeChange = () => {
+      const now = Date.now();
+      if (now - screenshotLastTime < 150 && (isTestActive || isTestComplete)) {
+        handleScreenshot();
+      }
+      screenshotLastTime = now;
+    };
+
+    // Listen for visibility changes (screenshot event)
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    
+    // Try to detect screenshot via volume button press (Android)
+    if (typeof window !== "undefined" && "ontouchstart" in window) {
+      document.addEventListener("volumeup", handleVolumeChange);
+      document.addEventListener("volumedown", handleVolumeChange);
+    }
+
+    // Add meta tag to prevent recording
+    const metaTag = document.createElement("meta");
+    metaTag.name = "apple-mobile-web-app-capable";
+    metaTag.content = "no";
+    document.head.appendChild(metaTag);
+
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      document.removeEventListener("volumeup", handleVolumeChange);
+      document.removeEventListener("volumedown", handleVolumeChange);
+    };
+  }, [isTestActive, isTestComplete]);
+
   const handleStart = () => { setIsTestActive(true); setStartTime(Date.now()); if (inputRef.current) inputRef.current.focus(); };
   const handleReset = () => { setIsResetClicked(true); if (currentLevel === "completed") resetToBeginner(); else initializeTest(); };
 
@@ -270,7 +316,29 @@ export default function TypingTestOnline() {
   const config = levelConfig[currentLevel];
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white dark:from-gray-900 dark:to-gray-800">
+    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white dark:from-gray-900 dark:to-gray-800" style={{ WebkitTouchCallout: 'none', WebkitUserSelect: 'none' }}>
+      <style jsx>{`
+        @media only screen and (max-width: 768px) {
+          * {
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            user-select: none;
+          }
+          
+          textarea {
+            -webkit-user-select: none;
+            user-select: none;
+          }
+        }
+        
+        @supports (background: blur(10px)) {
+          @media screen and (max-width: 768px) {
+            .sensitive-content {
+              mix-blend-mode: multiply;
+            }
+          }
+        }
+      `}</style>
       <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-12">
         <div className="container mx-auto px-4 text-center">
           <h1 className="text-4xl font-bold mb-4 flex items-center justify-center gap-3"><BookOpen className="w-10 h-10" />Online Typing Practice</h1>
@@ -380,7 +448,7 @@ export default function TypingTestOnline() {
               placeholder="Start typing here..."
               disabled={isTestComplete}
               className="w-full p-4 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[100px] resize-none font-mono select-none"
-              style={{ userSelect: 'none', WebkitUserSelect: 'none', WebkitAppearance: 'none' }}
+              style={{ userSelect: 'none', WebkitUserSelect: 'none', WebkitAppearance: 'none', isolation: 'isolate' }}
               data-gramm="false"
               data-gramm_editor="false"
               data-enable-grammarly="false"
