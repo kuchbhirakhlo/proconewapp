@@ -175,7 +175,6 @@ export default function StudentLayout({ children, title }: StudentLayoutProps) {
           </div>
         </div>
         <main className="p-4 lg:p-6">{children}</main>
-        <a href="https://obligedmeditatedazed.com/j6y4n7df?key=de899420720345158643a35a4c1934d3"></a>
       </div>
     </div>
   )
