@@ -181,7 +181,7 @@ function CertificateDisplayCard({ certificate }: { certificate: CertificateVerif
                             <p className="text-xs text-gray-600 uppercase font-semibold mb-1">
                                 Completion Date
                             </p>
-                            <p className="text-lg font-bold text-gray-900">{certificate.completionDate}</p>
+                            <p className="text-lg font-bold text-gray-900">{certificate.certificateApprovedAt}</p>
                         </div>
                         <div className="bg-white p-3 rounded-lg border border-green-200">
                             <p className="text-xs text-gray-600 uppercase font-semibold mb-1">Approval Date</p>
@@ -205,7 +205,7 @@ function CertificateDisplayCard({ certificate }: { certificate: CertificateVerif
                             </div>
                             <div className="flex justify-between">
                                 <span className="text-gray-600">Issued By:</span>
-                                <span className="font-semibold text-gray-900">ProCo Tech</span>
+                                <span className="font-semibold text-gray-900">Proco Technologies</span>
                             </div>
                         </div>
                     </div>
