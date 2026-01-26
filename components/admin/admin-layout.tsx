@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button"
 import { useAdmin } from "@/hooks/useAdmin"
 import { signOut } from "firebase/auth"
 import { auth } from "@/lib/firebase"
-import { LayoutDashboard, BookOpen, Briefcase, Users, LogOut, Settings, Menu, X, FileText } from "lucide-react"
+import { LayoutDashboard, BookOpen, Briefcase, Users, LogOut, Settings, Menu, X, FileText, MessageSquare, UserCheck } from "lucide-react"
 import Image from "next/image"
 
 interface AdminLayoutProps {
@@ -59,6 +59,8 @@ export default function AdminLayout({ children, title }: AdminLayoutProps) {
     { name: "Portfolio", href: "/admin/portfolio", icon: Briefcase },
     { name: "Students", href: "/admin/students", icon: Users },
     { name: "Fees", href: "/admin/fees", icon: FileText },
+    { name: "Contact Inquiries", href: "/admin/inquiries", icon: MessageSquare },
+    { name: "Course Enrollments", href: "/admin/enrollments", icon: UserCheck },
   ]
 
   return (

@@ -72,6 +72,18 @@ service cloud.firestore {
       allow read, update, delete: if isAdmin();
     }
 
+    // Contact Inquiries collection - public can create, admins can manage
+    match /contact_inquiries/{inquiryId} {
+      allow create: if true; // Anyone can submit inquiries
+      allow read, update, delete: if isAdmin();
+    }
+
+    // Course Enrollments collection - public can create, admins can manage
+    match /course_enrollments/{enrollmentId} {
+      allow create: if true; // Anyone can submit enrollment requests
+      allow read, update, delete: if isAdmin();
+    }
+
     // Analytics collection - only admins can read/write
     match /analytics/{analyticsId} {
       allow read, write, update, delete: if isAdmin();

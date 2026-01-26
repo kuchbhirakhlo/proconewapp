@@ -185,8 +185,8 @@ We have partnerships with 200+ companies including:
 
   contact: `Contact Proco Technologies:
 
-**Phone:** +91-XXXXXXXXXX
-**Email:** contact@procotech.in
+**Phone:** +91-8383811977
+**Email:** theprocotech@gmail.com
 **Website:** procotech.in
 
 **Office Locations:**

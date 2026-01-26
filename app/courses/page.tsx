@@ -4,13 +4,34 @@ import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Clock, Users, Award, CheckCircle, Loader2, AlertCircle } from "lucide-react"
+import { Clock, Users, Award, CheckCircle, Loader2, AlertCircle, X } from "lucide-react"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
 import { getCourses, Course } from "@/lib/admin"
+import { useToast } from "@/hooks/use-toast"
+
+interface EnrollmentForm {
+  firstName: string
+  lastName: string
+  email: string
+  phone: string
+}
 
 export default function CoursesPage() {
   const [courses, setCourses] = useState<Course[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState("")
+  const [selectedCourse, setSelectedCourse] = useState<Course | null>(null)
+  const [enrollmentForm, setEnrollmentForm] = useState<EnrollmentForm>({
+    firstName: '',
+    lastName: '',
+    email: '',
+    phone: '',
+  })
+  const [enrollmentLoading, setEnrollmentLoading] = useState(false)
+  const [showThankYou, setShowThankYou] = useState(false)
+  const [enrolledCourseName, setEnrolledCourseName] = useState('')
+  const { toast } = useToast()
 
   useEffect(() => {
     const fetchCourses = async () => {
@@ -29,6 +50,58 @@ export default function CoursesPage() {
 
     fetchCourses()
   }, [])
+
+  const handleEnrollmentInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { id, value } = e.target
+    setEnrollmentForm(prev => ({ ...prev, [id]: value }))
+  }
+
+  const handleEnrollmentSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!selectedCourse) return
+
+    setEnrollmentLoading(true)
+    try {
+      const response = await fetch('/api/course-enrollment', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ...enrollmentForm,
+          courseId: selectedCourse.id,
+          courseName: selectedCourse.title,
+        }),
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to submit enrollment')
+      }
+
+      // Show thank you modal with course name
+      setEnrolledCourseName(selectedCourse.title)
+      setShowThankYou(true)
+
+      // Reset form and close modal
+      setEnrollmentForm({
+        firstName: '',
+        lastName: '',
+        email: '',
+        phone: '',
+      })
+      setSelectedCourse(null)
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: error instanceof Error ? error.message : 'Failed to submit enrollment. Please try again.',
+        variant: 'destructive',
+      })
+    } finally {
+      setEnrollmentLoading(false)
+    }
+  }
 
   if (loading) {
     return (
@@ -152,7 +225,7 @@ export default function CoursesPage() {
 
                     <Button 
                       className="w-full" 
-                      onClick={() => window.open("https://wa.me/918383811977", "_blank")}
+                      onClick={() => setSelectedCourse(course)}
                     >
                       Enroll Now
                     </Button>
@@ -221,6 +294,124 @@ export default function CoursesPage() {
           </div>
         </div>
       </section>
+
+      {/* Enrollment Modal */}
+      {selectedCourse && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"
+          onClick={() => setSelectedCourse(null)}
+        >
+          <Card className="w-full max-w-md" onClick={(e) => e.stopPropagation()}>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
+              <div>
+                <CardTitle>Enroll in {selectedCourse.title}</CardTitle>
+                <CardDescription>Fill in your details to get started</CardDescription>
+              </div>
+              <button
+                onClick={() => setSelectedCourse(null)}
+                className="text-gray-500 hover:text-gray-700"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </CardHeader>
+            <CardContent>
+              <form onSubmit={handleEnrollmentSubmit} className="space-y-4">
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-2">
+                    <Label htmlFor="firstName">First Name</Label>
+                    <Input
+                      id="firstName"
+                      placeholder="First Name"
+                      value={enrollmentForm.firstName}
+                      onChange={handleEnrollmentInputChange}
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="lastName">Last Name</Label>
+                    <Input
+                      id="lastName"
+                      placeholder="Last Name"
+                      value={enrollmentForm.lastName}
+                      onChange={handleEnrollmentInputChange}
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="email">Email</Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="your@email.com"
+                    value={enrollmentForm.email}
+                    onChange={handleEnrollmentInputChange}
+                    required
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="phone">Phone (Optional)</Label>
+                  <Input
+                    id="phone"
+                    type="tel"
+                    placeholder="Your phone number"
+                    value={enrollmentForm.phone}
+                    onChange={handleEnrollmentInputChange}
+                  />
+                </div>
+
+                <Button type="submit" className="w-full" disabled={enrollmentLoading}>
+                  {enrollmentLoading ? 'Submitting...' : 'Submit Enrollment'}
+                </Button>
+              </form>
+            </CardContent>
+          </Card>
+        </div>
+      )}
+
+      {/* Thank You Modal */}
+      {showThankYou && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"
+          onClick={() => setShowThankYou(false)}
+        >
+          <Card className="w-full max-w-md" onClick={(e) => e.stopPropagation()}>
+            <CardHeader className="text-center">
+              <button
+                onClick={() => setShowThankYou(false)}
+                className="absolute top-4 right-4 text-gray-500 hover:text-gray-700"
+              >
+                <X className="h-5 w-5" />
+              </button>
+              <div className="flex justify-center mb-4">
+                <div className="bg-green-100 p-3 rounded-full">
+                  <CheckCircle className="h-12 w-12 text-green-600" />
+                </div>
+              </div>
+              <CardTitle className="text-2xl">Thank You!</CardTitle>
+              <CardDescription className="text-base mt-2">
+                Enrollment request received
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="text-center space-y-4">
+              <p className="text-gray-600">
+                Thank you for your interest in our <span className="font-semibold">{enrolledCourseName}</span> course!
+              </p>
+              <p className="text-sm text-gray-500">
+                We've received your enrollment request and will contact you shortly to confirm your registration and discuss the course details.
+              </p>
+              <Button
+                onClick={() => setShowThankYou(false)}
+                className="w-full"
+              >
+                Got it, thanks!
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+      )}
     </div>
   )
 }

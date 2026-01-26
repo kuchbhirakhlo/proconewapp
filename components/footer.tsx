@@ -22,10 +22,6 @@ export default function Footer() {
             </p>
             <div className="space-y-2">
               <div className="flex items-center space-x-2">
-                <Phone className="h-4 w-4 text-red-400" />
-                <span className="text-gray-300">+91 8383811977</span>
-              </div>
-              <div className="flex items-center space-x-2">
                 <Mail className="h-4 w-4 text-red-400" />
                 <span className="text-gray-300">avi.sr00@gmail.com</span>
               </div>

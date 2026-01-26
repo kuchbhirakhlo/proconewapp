@@ -5,8 +5,9 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Badge } from "@/components/ui/badge"
-import { MapPin, Phone, Mail, Clock } from "lucide-react"
+import { MapPin, Phone, Mail, Clock, CheckCircle, X } from "lucide-react"
 import { useState } from "react"
+import { useToast } from "@/hooks/use-toast"
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
@@ -17,18 +18,55 @@ export default function ContactPage() {
     subject: '',
     message: ''
   })
+  const [isLoading, setIsLoading] = useState(false)
+  const [showThankYou, setShowThankYou] = useState(false)
+  const { toast } = useToast()
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { id, value } = e.target
     setFormData(prev => ({ ...prev, [id]: value }))
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    const { firstName, lastName, email, phone, subject, message } = formData
-    const whatsappMessage = `*Contact Inquiry*%0A%0A*Name:* ${firstName} ${lastName}%0A*Email:* ${email}%0A*Phone:* ${phone}%0A*Subject:* ${subject}%0A*Message:* ${message}`
-    const whatsappUrl = `https://wa.me/918383811977?text=${whatsappMessage}`
-    window.open(whatsappUrl, '_blank')
+    setIsLoading(true)
+
+    try {
+      const response = await fetch('/api/contact-inquiry', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to submit inquiry')
+      }
+
+      // Show thank you modal
+      setShowThankYou(true)
+
+      // Reset form
+      setFormData({
+        firstName: '',
+        lastName: '',
+        email: '',
+        phone: '',
+        subject: '',
+        message: ''
+      })
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: error instanceof Error ? error.message : 'Failed to submit inquiry. Please try again.',
+        variant: 'destructive',
+      })
+    } finally {
+      setIsLoading(false)
+    }
   }
   return (
     <div className="flex flex-col">
@@ -96,8 +134,8 @@ export default function ContactPage() {
                     />
                   </div>
 
-                  <Button type="submit" className="w-full">
-                    Send Message
+                  <Button type="submit" className="w-full" disabled={isLoading}>
+                    {isLoading ? 'Sending...' : 'Send Message'}
                   </Button>
                 </form>
               </CardContent>
@@ -134,22 +172,6 @@ export default function ContactPage() {
                     </div>
                   </div>
 
-                  <div className="flex items-start space-x-4">
-                    <div className="bg-green-100 p-3 rounded-lg">
-                      <Phone className="h-6 w-6 text-green-600" />
-                    </div>
-                    <div className="flex space-x-[11rem]">
-                      <div>
-                        <h3 className="font-semibold text-gray-900">Phone</h3>
-                        <p className="text-gray-600">+91 8383811977</p>
-                      </div>
-                      <div>
-                        <h3 className="font-semibold text-gray-900">Phone</h3>
-                        <p className="text-gray-600">+91 9057513693</p>
-                      </div>
-                    </div>
-                  </div>
-
 
                   <div className="flex items-start space-x-4">
                     <div className="bg-purple-100 p-3 rounded-lg">
@@ -157,7 +179,7 @@ export default function ContactPage() {
                     </div>
                     <div>
                       <h3 className="font-semibold text-gray-900">Email</h3>
-                      <p className="text-gray-600">avi.sr00@gmail.com</p>                    </div>
+                      <p className="text-gray-600">theprocotech@gmail.com</p>                    </div>
                   </div>
 
                   <div className="flex items-start space-x-4">
@@ -271,6 +293,48 @@ export default function ContactPage() {
           </div>
         </div>
       </section>
+
+      {/* Thank You Modal */}
+      {showThankYou && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"
+          onClick={() => setShowThankYou(false)}
+        >
+          <Card className="w-full max-w-md" onClick={(e) => e.stopPropagation()}>
+            <CardHeader className="text-center">
+              <button
+                onClick={() => setShowThankYou(false)}
+                className="absolute top-4 right-4 text-gray-500 hover:text-gray-700"
+              >
+                <X className="h-5 w-5" />
+              </button>
+              <div className="flex justify-center mb-4">
+                <div className="bg-green-100 p-3 rounded-full">
+                  <CheckCircle className="h-12 w-12 text-green-600" />
+                </div>
+              </div>
+              <CardTitle className="text-2xl">Thank You!</CardTitle>
+              <CardDescription className="text-base mt-2">
+                Your inquiry has been received
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="text-center space-y-4">
+              <p className="text-gray-600">
+                Thank you for reaching out to us. We appreciate your interest and will review your inquiry shortly.
+              </p>
+              <p className="text-sm text-gray-500">
+                Our team will contact you within 24 hours at the email and phone number you provided.
+              </p>
+              <Button
+                onClick={() => setShowThankYou(false)}
+                className="w-full"
+              >
+                Got it, thanks!
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+      )}
     </div>
   )
 }
