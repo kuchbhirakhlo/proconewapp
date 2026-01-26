@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation"
 import Navbar from "@/components/navbar"
 import Footer from "@/components/footer"
 import Gallery from "@/components/gallery"
+import Chatbot from "@/components/chatbot"
 
 export default function ClientLayout({
   children,
@@ -33,6 +34,7 @@ export default function ClientLayout({
           <Footer />
         </>
       )}
+      <Chatbot />
     </>
   )
 }
