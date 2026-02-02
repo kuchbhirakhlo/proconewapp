@@ -69,7 +69,7 @@ export const hindiQwertyLayout: { [key: string]: KeyMapping } = {
 "m": { normal: "स", shift: "श" },
 ",": { normal: ",", shift: "<" },
 ".": { normal: "।", shift: ">" },
-"/": { normal: "/", shift: "?" }
+"/": { normal: "य", shift: "?" }
 ,
 
   // Spaces and special keys remain the same
