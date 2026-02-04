@@ -16,15 +16,159 @@ import TypingPractice from "@/components/typing-practice";
 
 const typingTexts: { english: { beginner: string[]; intermediate: string[]; pro: string[] }; hindi: { beginner: string[]; intermediate: string[]; pro: string[] } } = {
   english: {
-    beginner: ["The quick brown fox jumps over the lazy dog.", "A journey of a thousand miles begins with a single step.", "Practice makes perfect in everything we do.", "Time and tide wait for no one in life.", "Where there is a will there is always a way.", "Success comes to those who work hard daily.", "Every master was once a disaster in beginning.", "Learning typing is fun and useful skill."],
-    intermediate: ["The only way to do great work is to love what you do every single day.", "Success is not final, failure is not fatal: it is the courage to continue that counts.", "The future belongs to those who believe in the beauty of their dreams completely.", "In the middle of difficulty lies opportunity for those who seek it with dedication.", "Your time is limited, so don't waste it living someone else's life wisely.", "The pursuit of excellence in any skill demonstrates dedication and commitment.", "With consistent practice and proper technique anyone can achieve great results.", "Remember that mastery requires patience, persistence and continuous improvement."],
-    pro: ["Technology is best when it brings people together and bridges the gap between different cultures.", "In the digital age keyboard proficiency is not just a skill but a fundamental literacy that empowers individuals.", "The pursuit of excellence in typing speed and accuracy demonstrates dedication discipline and commitment.", "With consistent practice and proper technique anyone can achieve remarkable proficiency in touch typing.", "Remember that true mastery is not about speed alone but also about precision efficiency and maintaining wellness."],
+    beginner: [
+      "The quick brown fox jumps over the lazy dog.",
+      "A journey of a thousand miles begins with a single step.",
+      "Practice makes perfect in everything we do.",
+      "Time and tide wait for no one in life.",
+      "Where there is a will there is always a way.",
+      "Success comes to those who work hard daily.",
+      "Every master was once a disaster in beginning.",
+      "Learning typing is fun and useful skill.",
+      "The sun rises in the east every morning.",
+      "Water is essential for all living things.",
+      "Books are our best friends forever.",
+      "Honesty is the best policy always.",
+      "Friendship is a beautiful relationship in life.",
+      "Nature is the most beautiful gift of God.",
+      "Music makes our heart happy and calm.",
+      "Sports keep us healthy and strong daily.",
+    ],
+    intermediate: [
+      "The only way to do great work is to love what you do every single day.",
+      "Success is not final, failure is not fatal: it is the courage to continue that counts.",
+      "The future belongs to those who believe in the beauty of their dreams completely.",
+      "In the middle of difficulty lies opportunity for those who seek it with dedication.",
+      "Your time is limited, so don't waste it living someone else's life wisely.",
+      "The pursuit of excellence in any skill demonstrates dedication and commitment.",
+      "With consistent practice and proper technique anyone can achieve great results.",
+      "Remember that mastery requires patience, persistence and continuous improvement.",
+      "Education is the most powerful weapon which you can use to change the world.",
+      "The greatest glory in living lies not in never falling, but in rising every time we fall.",
+      "Life is what happens when you're busy making other plans for the future.",
+      "The way to get started is to quit talking and begin doing immediately.",
+      "Your limitation—it's only your imagination that sets your potential limits.",
+      "Success is not in what you have, but who you are and what you become.",
+      "Dream big and dare to fail to achieve extraordinary results in life.",
+      "Be the positive change you wish to see in the world around you today.",
+      "Knowledge is power and information is the key to unlock that power.",
+      "Every expert was once a beginner who never gave up on their dreams.",
+    ],
+    pro: [
+      "Technology is best when it brings people together and bridges the gap between different cultures.",
+      "In the digital age keyboard proficiency is not just a skill but a fundamental literacy that empowers individuals.",
+      "The pursuit of excellence in typing speed and accuracy demonstrates dedication discipline and commitment.",
+      "With consistent practice and proper technique anyone can achieve remarkable proficiency in touch typing.",
+      "Remember that true mastery is not about speed alone but also about precision efficiency and maintaining wellness.",
+      "Innovation distinguishes between a leader and a follower in any competitive field.",
+      "The best way to predict the future is to create it with vision and purpose.",
+      "Excellence is not a destination but a continuous journey of improvement and growth.",
+      "Leadership is not about being in charge but about taking care of those in your charge.",
+      "The greatest enemy of knowledge is not ignorance, it is the illusion of knowledge.",
+      "Those who cannot remember the past are condemned to repeat the mistakes of history.",
+      "The only thing necessary for the triumph of evil is for good men to do nothing at all.",
+      "In the end, it's not the years in your life that count but the life in your years.",
+      "The true sign of intelligence is not knowledge but imagination and creative thinking.",
+      "Be yourself everyone else is already taken and uniqueness is your greatest strength.",
+    ],
   },
   hindi: {
-    beginner: ["मैं स्कूल जाता हूँ। मेरा नाम राज है। यह एक किताब है। बिल्ली घर में है। कुत्ता सो रहा है।", "पानी ठंडा है। आसमान नीला है। फूल सुंदर हैं। पक्षी उड़ रहे हैं। सूरज चमकता है।", "बच्चे खेल रहे हैं। माँ खाना बना रही है। पिता काम कर रहे हैं। दादा-दादी बैठे हैं। भाई पढ़ रहा है।", "यह घर बड़ा है। वह पेड़ पुराना है। मेरी किताब लाल है। तुम्हारी पेंसिल नीली है। उसका कपड़ा सफेद है।", "मुझे खेलना पसंद है। उसे पढ़ना पसंद है। हमें गाना पसंद है। आपको क्या पसंद है। वे नाचना पसंद करते हैं।", "आज मौसम अच्छा है। कल बारिश हुई थी। परसों धूप होगी। इस हफ्ते ठंड रहेगी। अगले महीने गर्मी आएगी।", "सड़क पर कार है। बाग में गुलाब हैं। घर के आगे बेंच है। पार्क में झूले हैं। स्कूल के पास दुकान है।", "मेरे पास पेन है। तुम्हारे पास किताब है। उसके पास पैसे हैं। हमारे पास समय है। आपके पास घर है।"],
-    intermediate: ["शिक्षा मनुष्य के विकास का मूल आधार है। यह हमारे ज्ञान, कौशल और व्यक्तित्व को निखारती है। पुस्तकें मानव की सबसे अच्छी मित्र हैं। ये हमें ज्ञान और आनंद प्रदान करती हैं।", "हमारा भारत देश बहुत सुंदर है। यहाँ विविध संस्कृतियों का मिलन होता है। प्रकृति की सुंदरता हर ओर दिखाई देती है। हरे-भरे पहाड़ और नदियों की सुंदरता मन मोह लेती है।", "कठिन परिश्रम सफलता की कुंजी है। जो मेहनत करते हैं उन्हें अवश्य सफलता मिलती है। धैर्य और लगन से कोई भी लक्ष्य प्राप्त किया जा सकता है। समय का सदुपयोग करना बहुत महत्वपूर्ण है।", "टाइपिंग एक महत्वपूर्ण कौशल है आजकल। कंप्यूटर पर तेजी से टाइप करना व्यावहारिक जीवन में बहुत जरूरी है। नियमित अभ्यास से टाइपिंग की गति बढ़ाई जा सकती है। सटीकता और गति दोनों ही महत्वपूर्ण हैं।", "प्रौद्योगिकी ने हमारे जीवन को बदल दिया है। डिजिटल युग में हर काम कंप्यूटर पर होता है। इंटरनेट से दुनिया की जानकारी मिलती है। तकनीकी ज्ञान आजकल आवश्यक हो गया है।", "स्वास्थ्य सबसे बड़ा धन है। नियमित व्यायाम से शरीर स्वस्थ रहता है। संतुलित आहार बहुत महत्वपूर्ण है। पर्याप्त नींद लेना आवश्यक है। मानसिक शांति भी स्वास्थ्य का अंग है।"],
-    pro: ["भारतीय संस्कृति विश्व की सबसे प्राचीन और समृद्ध संस्कृतियों में से एक है। योग, आयुर्वेद और दर्शन का ज्ञान हमारी संस्कृति की विशेषता है। राष्ट्रीय विकास और सामाजिक प्रगति के लिए शिक्षा, स्वास्थ्य और तकनीकी कौशल आवश्यक है।", "कंप्यूटर और टाइपिंग की दक्षता आधुनिक समय में एक मौलिक आवश्यकता बन गई है। डिजिटल साक्षरता से ही व्यक्तिगत और व्यावसायिक विकास संभव है। नियमित अभ्यास और सही तकनीक से कोई भी उत्कृष्ट परिणाम प्राप्त कर सकता है।", "सामाजिक परिवर्तन का दायित्व प्रत्येक नागरिक का है। शिक्षा और जागरूकता का प्रसार समाज के विकास का मूल मंत्र है। लोकतांत्रिक मूल्यों का संरक्षण और प्रसार आवश्यक है। सामूहिक प्रयास से ही राष्ट्रीय लक्ष्य को प्राप्त किया जा सकता है।", "पर्यावरण संरक्षण और सतत विकास आधुनिक युग की प्रमुख चुनौतियाँ हैं। प्राकृतिक संसाधनों का सुरक्षित उपयोग आवश्यक है। प्रदूषण को कम करने के लिए सामूहिक प्रयास करना चाहिए। हरी पृथ्वी के लिए वृक्षारोपण अति आवश्यक है।", "अंतर्राष्ट्रीय स्तर पर भारत का महत्व निरंतर बढ़ रहा है। भारतीय युवाओं की प्रतिभा विश्व में स्वीकृत है। वैज्ञानिक और तकनीकी क्षेत्र में भारत तेजी से आगे बढ़ रहा है। भारत की आर्थिक वृद्धि विश्व में अग्रणी है।"],
+    beginner: [
+      "मैं स्कूल जाता हूँ। मेरा नाम राज है। यह एक किताब है। बिल्ली घर में है। कुत्ता सो रहा है।",
+      "पानी ठंडा है। आसमान नीला है। फूल सुंदर हैं। पक्षी उड़ रहे हैं। सूरज चमकता है।",
+      "बच्चे खेल रहे हैं। माँ खाना बना रही है। पिता काम कर रहे हैं। दादा-दादी बैठे हैं। भाई पढ़ रहा है।",
+      "यह घर बड़ा है। वह पेड़ पुराना है। मेरी किताब लाल है। तुम्हारी पेंसिल नीली है। उसका कपड़ा सफेद है।",
+      "मुझे खेलना पसंद है। उसे पढ़ना पसंद है। हमें गाना पसंद है। आपको क्या पसंद है। वे नाचना पसंद करते हैं।",
+      "आज मौसम अच्छा है। कल बारिश हुई थी। परसों धूप होगी। इस हफ्ते ठंड रहेगी। अगले महीने गर्मी आएगी।",
+      "सड़क पर कार है। बाग में गुलाब हैं। घर के आगे बेंच है। पार्क में झूले हैं। स्कूल के पास दुकान है।",
+      "मेरे पास पेन है। तुम्हारे पास किताब है। उसके पास पैसे हैं। हमारे पास समय है। आपके पास घर है।",
+      "आम फल मीठा होता है। नारियल पानी ठंडा होता है। केला पीला होता है। अंगूर बैंगनी होते हैं।",
+      "हाथी बड़ा जानवर है। चिड़िया छोटा पक्षी है। शेर शक्तिशाली होता है। हिरण शांत स्वभाव का होता है।",
+      "सोमवार सप्ताह का पहला दिन है। शुक्रवार का अंतिम कार्यदिवस है। रविवार साप्ताहिक अवकाश होता है।",
+      "दिल्ली भारत की राजधानी है। मुंबई आर्थिक राजधानी है। कोलकाता सांस्कृतिक नगरी है। चेन्नई दक्षिण का गहना है।",
+      "हिंदी भाषा मधुर और सरल है। संस्कृत ज्ञान की भाषा है। अंग्रेजी अंतर्राष्ट्रीय भाषा है।",
+      "झंडा तिरंगा होता है। राष्ट्रगान जन गण मन है। राष्ट्रीय पक्षी मोर है। राष्ट्रीय पशु बाघ है।",
+      "समुद्र नीला और गहरा है। पर्वत ऊँचे और विशाल हैं। नदियाँ प्राकृतिक जलस्रोत हैं। झरने सुंदर दृश्य बनाते हैं।",
+      "बसंत ऋतु में फूल खिलते हैं। ग्रीष्म में गर्मी बढ़ती है। शरद में पत्ते गिरते हैं। शीत में ठंड कड़ाके की होती है।",
+    ],
+    intermediate: [
+      "शिक्षा मनुष्य के विकास का मूल आधार है। यह हमारे ज्ञान, कौशल और व्यक्तित्व को निखारती है। पुस्तकें मानव की सबसे अच्छी मित्र हैं। ये हमें ज्ञान और आनंद प्रदान करती हैं।",
+      "हमारा भारत देश बहुत सुंदर है। यहाँ विविध संस्कृतियों का मिलन होता है। प्रकृति की सुंदरता हर ओर दिखाई देती है। हरे-भरे पहाड़ और नदियों की सुंदरता मन मोह लेती है।",
+      "कठिन परिश्रम सफलता की कुंजी है। जो मेहनत करते हैं उन्हें अवश्य सफलता मिलती है। धैर्य और लगन से कोई भी लक्ष्य प्राप्त किया जा सकता है। समय का सदुपयोग करना बहुत महत्वपूर्ण है।",
+      "टाइपिंग एक महत्वपूर्ण कौशल है आजकल। कंप्यूटर पर तेजी से टाइप करना व्यावहारिक जीवन में बहुत जरूरी है। नियमित अभ्यास से टाइपिंग की गति बढ़ाई जा सकती है। सटीकता और गति दोनों ही महत्वपूर्ण हैं।",
+      "प्रौद्योगिकी ने हमारे जीवन को बदल दिया है। डिजिटल युग में हर काम कंप्यूटर पर होता है। इंटरनेट से दुनिया की जानकारी मिलती है। तकनीकी ज्ञान आजकल आवश्यक हो गया है।",
+      "स्वास्थ्य सबसे बड़ा धन है। नियमित व्यायाम से शरीर स्वस्थ रहता है। संतुलित आहार बहुत महत्वपूर्ण है। पर्याप्त नींद लेना आवश्यक है। मानसिक शांति भी स्वास्थ्य का अंग है।",
+      "पर्यावरण संरक्षण हमारा कर्तव्य है। पेड़ों को बचाना अति आवश्यक है। जल संरक्षण जीवन रक्षा का मार्ग है। कूड़ा न फैलाना सभ्यता का चिह्न है।",
+      "कंप्यूटर आधुनिक युग की उपहार है। इंटरनेट ने दुनिया को जोड़ दिया है। मोबाइल तकनीक ने सुविधाएँ बढ़ाई हैं। डिजिटल भुगतान आसान हो गया है।",
+      "भारतीय संस्कृति विश्व में अद्वितीय है। योग और ध्यान विश्व प्रसिद्ध हैं। त्योहार रंग और उल्लास से भरे हैं। परंपराएँ हमें जोड़ती हैं।",
+      "खेल और खिलाड़ी देश का गौरव हैं। क्रिकेट भारत का सबसे लोकप्रिय खेल है। ओलंपिक में पदक गर्व की बात है। खेल से स्वास्थ्य भी सुधरता है।",
+      "समाचार पत्र जागरूकता का साधन हैं। टेलीविजन मनोरंजन का साधन है। रेडियो सूचना का माध्यम है। सोशल मीडिया जोड़ने का साधन है।",
+      "किसान देश का अन्नदाता है। उनकी मेहनत सराहनीय है। कृषि भारत की अर्थव्यवस्था का आधार है। फसलों की रक्षा करना सभी का कर्तव्य है।",
+      "डॉक्टर मरीजों के उपचारक हैं। नर्सें देखभाल का कार्य करती हैं। अस्पताल उपचार केंद्र हैं। दवाइयाँ रोगों से लड़ती हैं।",
+      "शिक्षक ज्ञान के वाहक हैं। विद्यालय शिक्षा के केंद्र हैं। किताबें ज्ञान भंडार हैं। परीक्षाएँ ज्ञान की कसौटी हैं।",
+      "बैंक वित्तीय सेवाएँ प्रदान करते हैं। बचत भविष्य की नींव है। निवेश समृद्धि का मार्ग है। ऋण आवश्यकता पूर्ति का साधन है।",
+    ],
+    pro: [
+      "भारतीय संस्कृति विश्व की सबसे प्राचीन और समृद्ध संस्कृतियों में से एक है। योग, आयुर्वेद और दर्शन का ज्ञान हमारी संस्कृति की विशेषता है। राष्ट्रीय विकास और सामाजिक प्रगति के लिए शिक्षा, स्वास्थ्य और तकनीकी कौशल आवश्यक है।",
+      "कंप्यूटर और टाइपिंग की दक्षता आधुनिक समय में एक मौलिक आवश्यकता बन गई है। डिजिटल साक्षरता से ही व्यक्तिगत और व्यावसायिक विकास संभव है। नियमित अभ्यास और सही तकनीक से कोई भी उत्कृष्ट परिणाम प्राप्त कर सकता है।",
+      "सामाजिक परिवर्तन का दायित्व प्रत्येक नागरिक का है। शिक्षा और जागरूकता का प्रसार समाज के विकास का मूल मंत्र है। लोकतांत्रिक मूल्यों का संरक्षण और प्रसार आवश्यक है। सामूहिक प्रयास से ही राष्ट्रीय लक्ष्य को प्राप्त किया जा सकता है।",
+      "पर्यावरण संरक्षण और सतत विकास आधुनिक युग की प्रमुख चुनौतियाँ हैं। प्राकृतिक संसाधनों का सुरक्षित उपयोग आवश्यक है। प्रदूषण को कम करने के लिए सामूहिक प्रयास करना चाहिए। हरी पृथ्वी के लिए वृक्षारोपण अति आवश्यक है।",
+      "अंतर्राष्ट्रीय स्तर पर भारत का महत्व निरंतर बढ़ रहा है। भारतीय युवाओं की प्रतिभा विश्व में स्वीकृत है। वैज्ञानिक और तकनीकी क्षेत्र में भारत तेजी से आगे बढ़ रहा है। भारत की आर्थिक वृद्धि विश्व में अग्रणी है।",
+      "जलवायु परिवर्तन वैश्विक चुनौती बन गया है। कार्बन उत्सर्जन कम करना आवश्यक है। नवीकरणीय ऊर्जा स्रोतों का विकास महत्वपूर्ण है। सतत विकास भविष्य की रक्षा का मार्ग है।",
+      "कृत्रिम बुद्धिमत्ता और मशीन लर्निंग ने तकनीक क्षेत्र में क्रांति ला दी है। स्वचालन और रोबोटिक्स भविष्य को आकार दे रहे हैं। डेटा एनालिटिक्स निर्णय लेने में सहायता कर रहा है।",
+      "वैश्वीकरण ने विश्व को एक गाँव बना दिया है। अंतर्राष्ट्रीय व्यापार और सहयोग बढ़ा है। सांस्कृतिक आदान-प्रदान ने विविधता को समृद्ध किया है।",
+      "डिजिटल भुगतान ने लेनदेन को सरल और सुरक्षित बना दिया है। UPI और नेट बैंकिंग ने सुविधाएँ बढ़ाई हैं। क्रिप्टोकरेंसी ने वित्तीय क्षेत्र में नए अवसर खोले हैं।",
+      "शिक्षा प्रणाली में सुधार आवश्यक है। डिजिटल शिक्षण ने नए आयाम खोले हैं। ऑनलाइन पाठ्यक्रम सर्वसुलभ हो रहे हैं। कौशल विकास रोजगार की कुंजी है।",
+    ],
   },
+};
+
+// Helper function to get text index based on date (changes daily)
+const getDailyIndex = (arrayLength: number, seed?: number): number => {
+  const now = new Date();
+  const dateString = `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}`;
+  let hash = 0;
+  for (let i = 0; i < dateString.length; i++) {
+    hash = ((hash << 5) - hash) + dateString.charCodeAt(i);
+    hash = hash & hash; // Convert to 32bit integer
+  }
+  const adjustedHash = seed !== undefined ? (hash + seed) % arrayLength : Math.abs(hash) % arrayLength;
+  return Math.abs(adjustedHash) % arrayLength;
+};
+
+// Helper function to get text index based on time of day (changes every 4 hours)
+const getTimeBasedIndex = (arrayLength: number): number => {
+  const now = new Date();
+  const hours = now.getHours();
+  const timeSlot = Math.floor(hours / 4); // 0, 1, 2, 3, 4, 5
+  return timeSlot % arrayLength;
+};
+
+// Helper function to shuffle array (Fisher-Yates algorithm)
+const shuffleArray = <T,>(array: T[]): T[] => {
+  const shuffled = [...array];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
+};
+
+// Get texts based on current date and time - ensures variety while maintaining fairness
+const getTextsForDate = (language: "english" | "hindi", level: "beginner" | "intermediate" | "pro") => {
+  const texts = typingTexts[language][level];
+  const dailyIndex = getDailyIndex(texts.length);
+  const timeIndex = getTimeBasedIndex(texts.length);
+  
+  // Combine indices and create a rotated version of the array
+  const rotation = (dailyIndex + timeIndex) % texts.length;
+  const rotatedTexts = [...texts.slice(rotation), ...texts.slice(0, rotation)];
+  
+  // Shuffle a portion of texts to add variety
+  const portionToShuffle = Math.min(5, texts.length);
+  const shuffledPortion = shuffleArray(rotatedTexts.slice(0, portionToShuffle));
+  
+  return [...shuffledPortion, ...rotatedTexts.slice(portionToShuffle)];
 };
 
 interface TestResult { wpm: number; accuracy: number; errors: number; timeTaken: number; level: string; language: string; passed: boolean; }
@@ -72,10 +216,15 @@ export default function TypingTestOnline() {
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
-  const getRandomText = useCallback(() => {
-    const texts = typingTexts[language][currentLevel as "beginner" | "intermediate" | "pro"];
-    return texts[Math.floor(Math.random() * texts.length)];
+  // Get texts based on current date for daily variety
+  const getDailyTexts = useCallback(() => {
+    return getTextsForDate(language, currentLevel as "beginner" | "intermediate" | "pro");
   }, [language, currentLevel]);
+
+  const getRandomText = useCallback(() => {
+    const dailyTexts = getDailyTexts();
+    return dailyTexts[Math.floor(Math.random() * dailyTexts.length)];
+  }, [getDailyTexts]);
 
   const initializeTest = useCallback(() => {
     setCurrentText(getRandomText());
