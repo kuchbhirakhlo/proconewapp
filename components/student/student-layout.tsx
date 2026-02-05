@@ -127,7 +127,7 @@ export default function StudentLayout({ children, title }: StudentLayoutProps) {
         <div className="flex flex-col h-screen">
           <div className="flex items-center justify-center h-20 px-4 text-white flex-shrink-0">
             <Image
-              src="/proco-admin.png"
+              src="/proco-student.png"
               alt="Proco Technologies Logo"
               width={160}
               height={55}
