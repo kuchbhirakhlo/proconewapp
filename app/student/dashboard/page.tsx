@@ -7,9 +7,10 @@ import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
-import { BookOpen, Award, Clock, TrendingUp, Calendar, Cake, PartyPopper } from "lucide-react"
+import { BookOpen, Award, Clock, TrendingUp, Calendar, Cake, PartyPopper, BookMarked, GraduationCap } from "lucide-react"
 import { useStudent } from "@/hooks/useStudent"
 import { getEnrolledCourses, getAllStudents } from "@/lib/student"
+import Link from "next/link"
 
 export default function StudentDashboard() {
   const { studentData } = useStudent()
@@ -91,24 +92,27 @@ export default function StudentDashboard() {
       value: enrolledCourses.length,
       description: "Active enrollments",
       icon: BookOpen,
-      color: "text-blue-600",
-      bgColor: "bg-blue-100",
+      color: "text-violet-600",
+      bgColor: "bg-violet-100",
+      borderColor: "border-violet-200",
     },
     {
       title: "Completed Courses",
       value: enrolledCourses.filter((course: any) => course.status === "completed").length,
       description: "Successfully finished",
       icon: Award,
-      color: "text-green-600",
-      bgColor: "bg-green-100",
+      color: "text-emerald-600",
+      bgColor: "bg-emerald-100",
+      borderColor: "border-emerald-200",
     },
     {
       title: "In Progress",
       value: enrolledCourses.filter((course: any) => course.status === "active").length,
       description: "Currently studying",
       icon: Clock,
-      color: "text-orange-600",
-      bgColor: "bg-orange-100",
+      color: "text-amber-600",
+      bgColor: "bg-amber-100",
+      borderColor: "border-amber-200",
     },
     {
       title: "Average Progress",
@@ -121,9 +125,40 @@ export default function StudentDashboard() {
           : 0,
       description: "Overall completion",
       icon: TrendingUp,
-      color: "text-purple-600",
-      bgColor: "bg-purple-100",
+      color: "text-rose-600",
+      bgColor: "bg-rose-100",
+      borderColor: "border-rose-200",
       suffix: "%",
+    },
+  ]
+
+  const quickActionCards = [
+    {
+      title: "My Courses",
+      description: "View and continue your enrolled courses",
+      icon: BookMarked,
+      color: "text-violet-600",
+      bgColor: "bg-violet-50",
+      badge: `${enrolledCourses.length} courses`,
+      href: "/student/courses",
+    },
+    {
+      title: "Learning Materials",
+      description: "Access course PDFs and study materials",
+      icon: BookOpen,
+      color: "text-emerald-600",
+      bgColor: "bg-emerald-50",
+      badge: "Study materials",
+      href: "/student/course-pdfs",
+    },
+    {
+      title: "Certificates",
+      description: "View and download your certificates",
+      icon: GraduationCap,
+      color: "text-amber-600",
+      bgColor: "bg-amber-50",
+      badge: `${enrolledCourses.filter((c: any) => c.status === "completed").length} earned`,
+      href: "/student/certificates",
     },
   ]
 
@@ -131,9 +166,29 @@ export default function StudentDashboard() {
     return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)
   }
 
+  if (loading) {
+    return (
+      <StudentLayout title="Dashboard">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {[1, 2, 3, 4].map((i) => (
+            <Card key={i} className="animate-pulse">
+              <CardHeader className="pb-2">
+                <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+              </CardHeader>
+              <CardContent>
+                <div className="h-8 bg-gray-200 rounded w-1/2 mb-2"></div>
+                <div className="h-3 bg-gray-200 rounded w-2/3"></div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </StudentLayout>
+    )
+  }
+
   return (
     <StudentLayout title="Dashboard">
-      <div className="space-y-6">
+      <div className="space-y-8">
         {/* Birthday Celebration Popup */}
         {isBirthday && (
           <Card className="bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 text-white animate-pulse">
@@ -189,6 +244,69 @@ export default function StudentDashboard() {
           </CardContent>
         </Card>
 
+        {/* Stats Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {stats.map((stat, index) => {
+            const Icon = stat.icon
+            return (
+              <Card 
+                key={index} 
+                className={`hover:shadow-lg transition-all duration-300 border-2 ${stat.borderColor} bg-gradient-to-br from-white to-${stat.bgColor.split('bg-')[1].split('-')[0]}-50`}
+              >
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-semibold text-gray-600">{stat.title}</CardTitle>
+                  <div className={`p-2.5 rounded-xl ${stat.bgColor} shadow-sm`}>
+                    <Icon className={`h-5 w-5 ${stat.color}`} />
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-3xl font-bold text-gray-800">
+                    {stat.value}
+                    {stat.suffix || ""}
+                  </div>
+                  <p className="text-xs text-gray-500 mt-1">{stat.description}</p>
+                </CardContent>
+              </Card>
+            )
+          })}
+        </div>
+
+        {/* Quick Actions */}
+        <div>
+          <h2 className="text-xl font-bold text-gray-800 mb-4">Quick Actions</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {quickActionCards.map((action, index) => {
+              const Icon = action.icon
+              return (
+                <Link key={index} href={action.href}>
+                  <Card 
+                    className="hover:shadow-lg transition-all duration-300 cursor-pointer group border-l-4 h-full"
+                    style={{ borderLeftColor: action.color.split('-')[1] === 'violet' ? '#7c3aed' : action.color.split('-')[1] === 'emerald' ? '#10b981' : '#f59e0b' }}
+                  >
+                    <CardHeader>
+                      <CardTitle className="flex items-center text-lg group-hover:scale-105 transition-transform">
+                        <div className={`p-2 rounded-lg ${action.bgColor} mr-3`}>
+                          <Icon className={`h-5 w-5 ${action.color}`} />
+                        </div>
+                        {action.title}
+                      </CardTitle>
+                      <CardDescription className="mt-2">{action.description}</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <Badge 
+                        variant="secondary" 
+                        className={`${action.bgColor} ${action.color.replace('text-', 'text-')}`}
+                      >
+                        {action.badge}
+                      </Badge>
+                    </CardContent>
+                  </Card>
+                </Link>
+              )
+            })}
+          </div>
+        </div>
+
         {/* Today's Birthdays Section */}
         {todaysBirthdays.length > 0 && (
           <Card className="border-2 border-pink-200 bg-gradient-to-r from-pink-50 to-rose-50">
@@ -226,34 +344,13 @@ export default function StudentDashboard() {
           </Card>
         )}
 
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {stats.map((stat, index) => {
-            const Icon = stat.icon
-            return (
-              <Card key={index}>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">{stat.title}</CardTitle>
-                  <div className={`p-2 rounded-lg ${stat.bgColor}`}>
-                    <Icon className={`h-4 w-4 ${stat.color}`} />
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">
-                    {stat.value}
-                    {stat.suffix || ""}
-                  </div>
-                  <p className="text-xs text-muted-foreground">{stat.description}</p>
-                </CardContent>
-              </Card>
-            )
-          })}
-        </div>
-
         {/* Enrolled Courses */}
         <Card>
           <CardHeader>
-            <CardTitle>My Courses</CardTitle>
+            <CardTitle className="flex items-center">
+              <BookMarked className="h-5 w-5 mr-2 text-blue-600" />
+              My Courses
+            </CardTitle>
             <CardDescription>Your current course enrollments and progress</CardDescription>
           </CardHeader>
           <CardContent>
@@ -285,6 +382,7 @@ export default function StudentDashboard() {
                               ? "secondary"
                               : "outline"
                         }
+                        className={enrollment.status === "completed" ? "bg-green-100 text-green-800" : ""}
                       >
                         {enrollment.status}
                       </Badge>
@@ -315,43 +413,6 @@ export default function StudentDashboard() {
             )}
           </CardContent>
         </Card>
-
-        {/* Quick Actions */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <Card className="hover:shadow-md transition-shadow">
-            <CardHeader>
-              <CardTitle className="flex items-center">
-                <BookOpen className="h-5 w-5 mr-2 text-blue-600" />
-                Continue Learning
-              </CardTitle>
-              <CardDescription>Pick up where you left off</CardDescription>
-            </CardHeader>
-            <CardContent>
-              {enrolledCourses.length > 0 ? (
-                <p className="text-sm text-gray-600">
-                  You have {enrolledCourses.filter((c) => c.status === "active").length} active courses
-                </p>
-              ) : (
-                <p className="text-sm text-gray-600">No active courses</p>
-              )}
-            </CardContent>
-          </Card>
-
-          <Card className="hover:shadow-md transition-shadow">
-            <CardHeader>
-              <CardTitle className="flex items-center">
-                <Award className="h-5 w-5 mr-2 text-green-600" />
-                Achievements
-              </CardTitle>
-              <CardDescription>Your learning milestones</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-gray-600">
-                {enrolledCourses.filter((c) => c.status === "completed").length} courses completed
-              </p>
-            </CardContent>
-          </Card>
-        </div>
       </div>
     </StudentLayout>
   )
