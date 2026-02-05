@@ -596,3 +596,133 @@ export const updateStudentFee = async (studentId: string, feeData: {
     updatedAt: Timestamp.now(),
   })
 }
+
+// Inquiry Management
+export interface Inquiry {
+  id: string
+  name: string
+  email: string
+  phone: string
+  course?: string
+  message: string
+  status: string
+  createdAt?: any
+  updatedAt?: any
+}
+
+export const getInquiries = async (): Promise<Inquiry[]> => {
+  try {
+    const inquiriesRef = collection(db, "inquiries")
+    const q = query(inquiriesRef, orderBy("createdAt", "desc"))
+    const snapshot = await getDocs(q)
+    return snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() } as Inquiry))
+  } catch (error) {
+    console.error("Error fetching inquiries:", error)
+    return []
+  }
+}
+
+export const updateInquiryStatus = async (inquiryId: string, status: string) => {
+  const inquiryRef = doc(db, "inquiries", inquiryId)
+  return await updateDoc(inquiryRef, {
+    status,
+    updatedAt: Timestamp.now(),
+  })
+}
+
+// Notification Management
+// Interface for notifications
+export interface Notification {
+  id: string
+  userId: string
+  title: string
+  message: string
+  type: 'birthday' | 'course_completion' | 'certificate' | 'general'
+  read: boolean
+  createdAt: any
+}
+
+// Send notification to student
+export const sendStudentNotification = async (
+  studentId: string, 
+  title: string, 
+  message: string, 
+  type: Notification['type'] = 'general'
+) => {
+  try {
+    const notificationsRef = collection(db, "notifications")
+    await addDoc(notificationsRef, {
+      userId: studentId,
+      title,
+      message,
+      type,
+      read: false,
+      createdAt: Timestamp.now(),
+    })
+    return { success: true, message: "Notification sent successfully" }
+  } catch (error) {
+    console.error("Error sending notification:", error)
+    throw new Error("Failed to send notification")
+  }
+}
+
+// Send birthday wishes to student
+export const sendBirthdayWish = async (studentId: string, studentName: string) => {
+  return sendStudentNotification(
+    studentId,
+    "🎂 Happy Birthday!",
+    `Dear ${studentName}, we wish you a very Happy Birthday! Enjoy your special day!`,
+    'birthday'
+  )
+}
+
+// Send course completion congratulations
+export const sendCompletionCongratulations = async (studentId: string, studentName: string, courseName: string) => {
+  return sendStudentNotification(
+    studentId,
+    "🏆 Course Completed!",
+    `Congratulations ${studentName}! You have successfully completed the course "${courseName}". Keep up the great work!`,
+    'course_completion'
+  )
+}
+
+// Send certificate approval notification
+export const sendCertificateApprovalNotification = async (
+  studentId: string, 
+  studentName: string, 
+  courseName: string,
+  certificateId: string
+) => {
+  return sendStudentNotification(
+    studentId,
+    "📜 Certificate Approved!",
+    `Congratulations ${studentName}! Your certificate for "${courseName}" has been approved. Certificate ID: ${certificateId}`,
+    'certificate'
+  )
+}
+
+// Get notifications for a student
+export const getStudentNotifications = async (studentId: string): Promise<Notification[]> => {
+  try {
+    const notificationsRef = collection(db, "notifications")
+    const q = query(
+      notificationsRef,
+      where("userId", "==", studentId),
+      orderBy("createdAt", "desc")
+    )
+    const snapshot = await getDocs(q)
+    return snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() } as Notification))
+  } catch (error) {
+    console.error("Error fetching notifications:", error)
+    return []
+  }
+}
+
+// Mark notification as read
+export const markNotificationAsRead = async (notificationId: string) => {
+  const notificationRef = doc(db, "notifications", notificationId)
+  return await updateDoc(notificationRef, {
+    read: true,
+    updatedAt: Timestamp.now(),
+  })
+}

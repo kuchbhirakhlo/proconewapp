@@ -9,29 +9,65 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { BookOpen, Award, Clock, TrendingUp, Calendar, Cake, PartyPopper } from "lucide-react"
 import { useStudent } from "@/hooks/useStudent"
-import { getEnrolledCourses } from "@/lib/student"
+import { getEnrolledCourses, getAllStudents } from "@/lib/student"
 
 export default function StudentDashboard() {
   const { studentData } = useStudent()
   const [enrolledCourses, setEnrolledCourses] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [isBirthday, setIsBirthday] = useState(false)
+  const [todaysBirthdays, setTodaysBirthdays] = useState<any[]>([])
 
   useEffect(() => {
-    const fetchEnrolledCourses = async () => {
+    const fetchData = async () => {
       if (studentData?.uid) {
         try {
           const courses = await getEnrolledCourses(studentData.uid)
           setEnrolledCourses(courses)
+          
+          // Fetch all students to find today's birthdays
+          const allStudents = await getAllStudents()
+          
+          // Find students with birthdays today
+          const today = new Date()
+          const todayMonth = today.getMonth() + 1
+          const todayDay = today.getDate()
+          
+          const birthdays = allStudents.filter((student: any) => {
+            if (!student.dateOfBirth) return false
+            
+            const dob = student.dateOfBirth.trim()
+            let month: number, day: number
+            
+            if (/^\d{1,2}\/\d{1,2}\/\d{4}$/.test(dob)) {
+              const parts = dob.split('/')
+              day = parseInt(parts[0])
+              month = parseInt(parts[1])
+            } else if (/^\d{4}-\d{1,2}-\d{1,2}$/.test(dob)) {
+              const parts = dob.split('-')
+              month = parseInt(parts[1])
+              day = parseInt(parts[2])
+            } else if (/^\d{1,2}-\d{1,2}-\d{4}$/.test(dob)) {
+              const parts = dob.split('-')
+              day = parseInt(parts[0])
+              month = parseInt(parts[1])
+            } else {
+              return false
+            }
+            
+            return month === todayMonth && day === todayDay
+          })
+          
+          setTodaysBirthdays(birthdays)
         } catch (error) {
-          console.error("Error fetching enrolled courses:", error)
+          console.error("Error fetching data:", error)
         } finally {
           setLoading(false)
         }
       }
     }
 
-    fetchEnrolledCourses()
+    fetchData()
   }, [studentData])
 
   // Check if it's the student's birthday
@@ -152,6 +188,43 @@ export default function StudentDashboard() {
             </div>
           </CardContent>
         </Card>
+
+        {/* Today's Birthdays Section */}
+        {todaysBirthdays.length > 0 && (
+          <Card className="border-2 border-pink-200 bg-gradient-to-r from-pink-50 to-rose-50">
+            <CardHeader className="pb-3">
+              <CardTitle className="flex items-center text-xl text-pink-700">
+                <Cake className="h-6 w-6 mr-2" />
+                🎉 Today's Birthdays!
+              </CardTitle>
+              <CardDescription className="text-pink-600">
+                {todaysBirthdays.length} student{todaysBirthdays.length > 1 ? 's' : ''} celebrating birthday today
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                {todaysBirthdays.map((student: any) => (
+                  <div 
+                    key={student.id}
+                    className="flex flex-col items-center p-4 bg-white rounded-xl shadow-sm border border-pink-100 hover:shadow-md transition-shadow"
+                  >
+                    <Avatar className="h-16 w-16 ring-4 ring-pink-100 mb-2">
+                      <AvatarImage src={student.profilePicture} alt={student.fullName} />
+                      <AvatarFallback className="bg-gradient-to-br from-pink-400 to-rose-400 text-white font-bold text-lg">
+                        {student.fullName?.charAt(0)?.toUpperCase() || 'S'}
+                      </AvatarFallback>
+                    </Avatar>
+                    <p className="text-sm font-semibold text-gray-800 text-center truncate w-full">{student.fullName}</p>
+                    <p className="text-xs text-pink-600 flex items-center mt-1">
+                      <Cake className="h-3 w-3 mr-1" />
+                      Happy Birthday!
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">

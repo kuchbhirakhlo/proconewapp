@@ -22,6 +22,9 @@ export default function AdminLayout({ children, title }: AdminLayoutProps) {
   const router = useRouter()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
+  // Get current pathname for active tab highlighting
+  const pathname = typeof window !== 'undefined' ? window.location.pathname : ''
+
   useEffect(() => {
     if (!loading && (!user || !isAdmin)) {
       router.push("/admin/login")
@@ -87,43 +90,54 @@ export default function AdminLayout({ children, title }: AdminLayoutProps) {
 
       {/* Sidebar */}
       <div className={`
-        fixed lg:sticky inset-y-0 left-0 z-50 w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out flex flex-col
+        fixed lg:sticky inset-y-0 left-0 z-50 w-64 bg-blue-900 shadow-lg transform transition-transform duration-300 ease-in-out flex flex-col
         ${mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}
         lg:translate-x-0
       `}>
-        <div className="flex flex-col h-full">
-          <div className="flex items-center justify-center h-16 px-4 bg-blue-600 text-white">
-            <h1 className="text-xl font-bold">ProcoTech Admin</h1>
+        <div className="flex flex-col h-screen">
+          <div className="flex items-center justify-center h-20 px-4  text-white flex-shrink-0">
+            <Image
+              src="/proco-admin.png"
+              alt="Proco Technologies Logo"
+              width={160}
+              height={55}
+              className="object-contain rounded-xl h-[70px] w-auto"
+            />
           </div>
 
-          <nav className="flex-1 px-4 py-6 space-y-2">
+          <nav className="flex-1 px-4 py-6 space-y-2 bg-blue-900">
             {navigation.map((item) => {
               const Icon = item.icon
+              const isActive = pathname === item.href || pathname.startsWith(item.href + '/')
               return (
                 <Link
                   key={item.name}
                   href={item.href}
                   onClick={() => setMobileMenuOpen(false)}
-                  className="flex items-center px-4 py-2 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors"
+                  className={`flex items-center px-4 py-2 rounded-lg transition-colors ${
+                    isActive 
+                      ? 'bg-blue-600 text-white shadow-md' 
+                      : 'text-blue-100 hover:bg-blue-800'
+                  }`}
                 >
-                  <Icon className="h-5 w-5 mr-3" />
+                  <Icon className={`h-5 w-5 mr-3 ${isActive ? 'text-white' : 'text-blue-300'}`} />
                   {item.name}
                 </Link>
               )
             })}
           </nav>
 
-          <div className="p-4 border-t">
+          <div className="p-4 border-t border-blue-800 flex-shrink-0">
             <div className="flex items-center mb-4">
               <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white text-sm font-bold">
                 {user.email?.charAt(0).toUpperCase()}
               </div>
               <div className="ml-3">
-                <p className="text-sm font-medium text-gray-900">Admin</p>
-                <p className="text-xs text-gray-500">{user.email}</p>
+                <p className="text-sm font-medium text-white">Admin</p>
+                <p className="text-xs text-blue-300">{user.email}</p>
               </div>
             </div>
-            <Button onClick={handleSignOut} variant="outline" className="w-full justify-start bg-transparent">
+            <Button onClick={handleSignOut} variant="outline" className="w-full justify-start bg-blue-800 text-blue-100 hover:bg-blue-700 border-blue-700">
               <LogOut className="h-4 w-4 mr-2" />
               Sign Out
             </Button>

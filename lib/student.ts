@@ -253,3 +253,16 @@ export const checkStudentStatus = async (uid: string) => {
     return false
   }
 }
+
+// Get all students (for admin and birthday features)
+export const getAllStudents = async (): Promise<StudentData[]> => {
+  try {
+    const studentsRef = collection(db, "students")
+    const q = query(studentsRef, orderBy("createdAt", "desc"))
+    const snapshot = await getDocs(q)
+    return snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() } as StudentData))
+  } catch (error) {
+    console.error("Error fetching all students:", error)
+    return []
+  }
+}
