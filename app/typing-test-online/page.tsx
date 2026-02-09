@@ -83,7 +83,7 @@ const typingTexts: { english: { beginner: string[]; intermediate: string[]; pro:
       "Hash: SHA-256: a5f8c3e... | Salt: NaCl$2024 | Key: [locked]",
       "Config: DEBUG=true, ENV=prod, LOG_LEVEL=info@host:8080",
       "Timestamp: 2024-02-06T13:28:00Z | UTC Offset: +05:30",
-      "Logic: A ∧ B + ¬C → D | If (A = B) ∧ ¬C then D else E",
+      "Logic: A ∧ B + _C → D | If (A = B) ∧ -C then D else E",
     ],
   },
   hindi: {
