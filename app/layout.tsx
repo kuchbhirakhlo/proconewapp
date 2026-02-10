@@ -173,14 +173,44 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        {/* Google Analytics - optimized with Next.js Script */}
+        {/* Preconnect to external domains for faster connection */}
+        <link rel="preconnect" href="https://www.procotech.in" />
+        <link rel="dns-prefetch" href="https://www.procotech.in" />
+        <link rel="preconnect" href="https://www.googletagmanager.com" crossOrigin="anonymous" />
+        <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
+        <link rel="preconnect" href="https://pagead2.googlesyndication.com" crossOrigin="anonymous" />
+        <link rel="dns-prefetch" href="https://pagead2.googlesyndication.com" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
+        {/* Defer non-critical scripts to reduce render blocking */}
         <Script
-          strategy="afterInteractive"
+          strategy="lazyOnload"
+          src="https://www.procotech.in/__/firebase/8.7.0/firebase-app.js"
+        />
+        <Script
+          strategy="lazyOnload"
+          src="https://www.procotech.in/__/firebase/8.7.0/firebase-auth.js"
+        />
+        <Script
+          strategy="lazyOnload"
+          dangerouslySetInnerHTML={{
+            __html: `
+              if (typeof firebase !== 'undefined') {
+                firebase.initializeApp(firebaseConfig);
+              }
+            `,
+          }}
+        />
+        {/* Google Analytics - deferred for performance */}
+        <Script
+          strategy="lazyOnload"
           src="https://www.googletagmanager.com/gtag/js?id=G-7LMD5WF7XW"
         />
         <Script
           id="google-analytics"
-          strategy="afterInteractive"
+          strategy="lazyOnload"
           dangerouslySetInnerHTML={{
             __html: `
               window.dataLayer = window.dataLayer || [];
@@ -190,7 +220,7 @@ export default function RootLayout({
             `,
           }}
         />
-        {/* ✅ Google AdSense Script - Lazy load for better performance */}
+        {/* Google AdSense Script - Already using lazyOnload */}
         <Script
           id="google-adsense-script"
           async

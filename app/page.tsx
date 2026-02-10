@@ -141,8 +141,11 @@ export default function HomePage() {
   return (
     <div className="flex flex-col">
       {/* Typing Test Challenge Banner */}
-      <section className="py-4 bg-gradient-to-r from-red-600 via-purple-600 to-green-600 text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section 
+        className="py-4 bg-gradient-to-r from-red-600 via-purple-600 to-green-600 text-white"
+        aria-label="Typing Test Challenge Banner"
+      >
+        <div className="min-h-[60px] max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-3">
               <div className="bg-white/20 p-2 rounded-lg">
@@ -303,6 +306,7 @@ export default function HomePage() {
                 width={600}
                 height={500}
                 priority
+                fetchPriority="high"
                 className="rounded-lg shadow-2xl relative z-10 hover:scale-105 transition-transform duration-500"
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 600px"
               />
@@ -460,7 +464,7 @@ export default function HomePage() {
                     height={400}
                     loading="lazy"
                     className="relative rounded-xl shadow-lg"
-                    sizes="(max-width: 1024px) 100vw, 500px"
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 400px"
                   />
                 </div>
               </div>

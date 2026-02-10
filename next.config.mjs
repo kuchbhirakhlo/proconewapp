@@ -6,11 +6,14 @@ const nextConfig = {
   // Enable React strict mode for better development
   reactStrictMode: true,
 
-  // Performance optimizations for AdSense
-  // Note: optimizeCss requires critters package, disabled for now
-  // experimental: {
-  //   optimizeCss: true,
-  // },
+  // Enable CSS optimization
+  experimental: {
+    optimizeCss: true,
+  },
+
+  // Disable legacy polyfills for modern browsers (saves ~16KB)
+  // This removes ES5 transpilation for baseline features
+  swcMinify: true,
 
   // Compression
   compress: true,
