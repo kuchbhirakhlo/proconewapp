@@ -11,7 +11,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { toast } from "sonner";
 import { generateCertificateId, generateCertificatePDF, type CertificateData } from "@/lib/certificate-generator";
 import { mapQwertyToHindi, isDevanagari, mapQwertyToHindiWithShift } from "@/lib/hindi-transliteration";
-import { Trophy, Clock, Target, BookOpen, RefreshCw, Star, Award, ChevronRight, AlertCircle } from "lucide-react";
+import { Trophy, Clock, Target, BookOpen, RefreshCw, Star, Award, ChevronRight, AlertCircle, Info, Users, Zap } from "lucide-react";
 import TypingPractice from "@/components/typing-practice";
 
 const typingTexts: { english: { beginner: string[]; intermediate: string[]; pro: string[] }; hindi: { beginner: string[]; intermediate: string[]; pro: string[] } } = {
@@ -650,6 +650,90 @@ export default function TypingTestOnline() {
             </div>
           </CardContent>
         </Card>
+
+        {/* Guide Sections Below the Tool */}
+        <div className="grid md:grid-cols-2 gap-6 mb-8">
+          {/* How to Use Typing Test */}
+          <Card className="bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-blue-950 dark:to-cyan-950 border-blue-200">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-blue-700 dark:text-blue-300">
+                <Info className="w-5 h-5" />How to Use Typing Test
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ol className="list-decimal list-inside space-y-2 text-gray-600 dark:text-gray-400 text-sm">
+                <li>Select your preferred language (English or Hindi)</li>
+                <li>Read the text displayed in the gray box above</li>
+                <li>Click "Start Test" when you are ready</li>
+                <li>Type the text exactly as shown in the textarea below</li>
+                <li>Complete the text before time runs out</li>
+                <li>Meet the minimum WPM and Accuracy to pass</li>
+                <li>Pass all 3 levels to earn your certificate!</li>
+              </ol>
+            </CardContent>
+          </Card>
+
+          {/* What is WPM and Accuracy */}
+          <Card className="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-950 dark:to-emerald-950 border-green-200">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-green-700 dark:text-green-300">
+                <Zap className="w-5 h-5" />What is WPM and Accuracy
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3 text-gray-600 dark:text-gray-400 text-sm">
+                <p><strong>WPM (Words Per Minute):</strong> Measures how many words you can type in one minute. A standard word is considered 5 characters including spaces.</p>
+                <p><strong>Accuracy:</strong> The percentage of correctly typed characters. Calculated as: (Correct Characters ÷ Total Characters) × 100</p>
+                <p><strong>Passing Criteria:</strong></p>
+                <ul className="list-disc list-inside ml-4">
+                  <li>Beginner: 20+ WPM with 90%+ Accuracy</li>
+                  <li>Intermediate: 25+ WPM with 95%+ Accuracy</li>
+                  <li>Pro: 30+ WPM with 100% Accuracy</li>
+                </ul>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Who Should Use This Test */}
+          <Card className="bg-gradient-to-br from-purple-50 to-violet-50 dark:from-purple-950 dark:to-violet-950 border-purple-200">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-purple-700 dark:text-purple-300">
+                <Users className="w-5 h-5" />Who Should Use This Test
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ul className="list-disc list-inside space-y-2 text-gray-600 dark:text-gray-400 text-sm">
+                <li><strong>Students:</strong> Improve typing speed for assignments and exams</li>
+                <li><strong>Job Seekers:</strong> Add typing proficiency to your resume</li>
+                <li><strong>Professionals:</strong> Increase productivity in office work</li>
+                <li><strong>Competitive Exam Aspirants:</strong> Many exams require typing tests</li>
+                <li><strong>Content Writers:</strong> Write faster and more efficiently</li>
+                <li><strong>Anyone Learning Computers:</strong> Build fundamental computer skills</li>
+                <li><strong>Hindi Learners:</strong> Practice Devanagari typing with ease</li>
+              </ul>
+            </CardContent>
+          </Card>
+
+          {/* Typing Tips for Beginners */}
+          <Card className="bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-950 dark:to-orange-950 border-amber-200">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-amber-700 dark:text-amber-300">
+                <Star className="w-5 h-5" />Typing Tips for Beginners
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ul className="list-disc list-inside space-y-2 text-gray-600 dark:text-gray-400 text-sm">
+                <li><strong>Position Your Hands:</strong> Keep fingers on home row (ASDF JKL;)</li>
+                <li><strong>Do not Look at Keys:</strong> Train your muscle memory by avoiding keyboard glances</li>
+                <li><strong>Maintain Good Posture:</strong> Sit straight with eyes at screen level</li>
+                <li><strong>Start Slow:</strong> Accuracy first, speed will come with practice</li>
+                <li><strong>Practice Daily:</strong> Even 15-20 minutes daily shows improvement</li>
+                <li><strong>Use All Fingers:</strong> Do not rely on just a few fingers</li>
+                <li><strong>Take Breaks:</strong> Prevent fatigue with short breaks every 30 minutes</li>
+              </ul>
+            </CardContent>
+          </Card>
+        </div>
 
         {/* Results Popup Dialog */}
         <Dialog open={showResultDialog} onOpenChange={setShowResultDialog}>

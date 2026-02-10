@@ -23,7 +23,7 @@ export default function Footer() {
             <div className="space-y-2">
               <div className="flex items-center space-x-2">
                 <Mail className="h-4 w-4 text-red-400" />
-                <span className="text-gray-300">avi.sr00@gmail.com</span>
+                <span className="text-gray-300">theprocotech@gmail.com</span>
               </div>
               <div className="flex items-center space-x-2">
                 <MapPin className="h-4 w-4 text-red-400" />
@@ -60,6 +60,16 @@ export default function Footer() {
               <li>
                 <Link href="/contact" className="text-gray-300 hover:text-white transition-colors">
                   Contact
+                </Link>
+              </li>
+              <li>
+                <Link href="/privacy-policy" className="text-gray-300 hover:text-white transition-colors">
+                  Privacy Policy
+                </Link>
+              </li>
+              <li>
+                <Link href="/terms-conditions" className="text-gray-300 hover:text-white transition-colors">
+                  Terms & Conditions
                 </Link>
               </li>
             </ul>

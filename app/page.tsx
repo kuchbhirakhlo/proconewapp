@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge"
 import { Code, GraduationCap, Users, Award, Smartphone, Database, Cloud, ArrowRight, CheckCircle, Download } from "lucide-react"
 import AnimatedBackground from "@/components/animated-background"
+import ReviewsSection from "@/components/reviews-section"
 
 export default function HomePage() {
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null)
@@ -988,6 +989,9 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
+      {/* Reviews Section */}
+      <ReviewsSection />
 
     </div>
   )

@@ -13,10 +13,8 @@ export default function Navbar() {
   const navigation = [
     { name: "Home", href: "/" },
     { name: "Blog", href: "https://blog.procotech.in" },
-    { name: "About", href: "/about" },
     { name: "Courses", href: "/courses" },
     { name: "Portfolio", href: "/portfolio" },
-    { name: "Contact", href: "/contact" },
     { name: "Certificate", href: "/verify-certificate" },
     { name: "Typing Test", href: "/typing-test-online" },
   ]
@@ -27,11 +25,11 @@ export default function Navbar() {
         <div className="flex justify-between items-center h-16">
           <Link href="/" className="flex items-center space-x-2">
             <Image 
-              src="/proco_tech.jpg" 
+              src="/logo.png" 
               alt="Proco Technologies Logo" 
               width={100} 
-              height={35} 
-              className="object-contain h-8 w-auto"
+              height={70} 
+              className="object-contain h-24 w-auto"
             />
           </Link>
 

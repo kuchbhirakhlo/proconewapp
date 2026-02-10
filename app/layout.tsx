@@ -43,17 +43,17 @@ export const metadata: Metadata = {
     "database management course",
     "cloud computing training",
     "diploma in computer application",
-    "ADCA course",
-    "DCA course",
+    "ADCA course in lucknow",
+    "DCA course in lucknow",
     "professional IT courses",
     "job oriented training",
-    "best computer institute",
+    "best computer institute in lucknow",
     "affordable coding course",
     "online programming course",
-    "computer certification course",
-    "Proco Technologies",
+    "computer certification course in lucknow",
+    "Proco Technologies lucknow",
     "software solutions provider",
-    "custom software development",
+    "custom software development in lucknow",
     "business software solutions",
   ],
   authors: [{ name: "Proco Technologies" }],
@@ -168,9 +168,14 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        {/* <!-- Google tag (gtag.js) --> */}
-        <script async src="https://www.googletagmanager.com/gtag/js?id=G-7LMD5WF7XW"></script>
-        <script
+        {/* Google Analytics - optimized with Next.js Script */}
+        <Script
+          strategy="afterInteractive"
+          src="https://www.googletagmanager.com/gtag/js?id=G-7LMD5WF7XW"
+        />
+        <Script
+          id="google-analytics"
+          strategy="afterInteractive"
           dangerouslySetInnerHTML={{
             __html: `
               window.dataLayer = window.dataLayer || [];
