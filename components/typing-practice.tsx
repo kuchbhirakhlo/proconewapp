@@ -7,12 +7,15 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Toaster } from "@/components/ui/sonner";
 import { AlertCircle, ChevronRight, Clock, Zap, Award, BookOpen, CheckCircle, AlertTriangle } from "lucide-react";
+import { toast } from "sonner";
 import {
   getLessonsByLanguageAndLevel,
   getLessonsByLanguage,
   type Lesson,
 } from "@/lib/typing-lessons";
+import { validateTypingInput } from "@/lib/prohibited-words";
 import {
   useTypingMetrics,
   useProgressTracking,
@@ -127,6 +130,19 @@ export default function TypingPractice() {
     let value = e.target.value;
 
     // Allow backspace for practice (disabled backspace removed)
+    
+    // Check for prohibited words before processing input
+    const validation = validateTypingInput(value);
+    if (!validation.isValid) {
+      toast.error("Inappropriate content not allowed", {
+        description: validation.warning,
+      });
+      // Prevent the input by keeping the old value
+      e.target.value = userInput;
+      setUserInput(userInput);
+      return;
+    }
+
     setUserInput(value);
 
     // Auto-start test on first input
@@ -171,6 +187,15 @@ export default function TypingPractice() {
     // Map the key to Hindi character (using code for accurate key mapping with shift)
     const mappedChar = mapQwertyToHindiWithShift("", key, isShift, code);
     const newValue = before + mappedChar + after;
+    
+    // Check for prohibited words before processing input
+    const validation = validateTypingInput(newValue);
+    if (!validation.isValid) {
+      toast.error("Inappropriate content not allowed", {
+        description: validation.warning,
+      });
+      return;
+    }
     
     setUserInput(newValue);
     
@@ -700,6 +725,7 @@ export default function TypingPractice() {
           </CardContent>
         </Card>
       )}
+      <Toaster />
     </div>
   );
 }

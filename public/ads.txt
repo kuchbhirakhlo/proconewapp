@@ -1,0 +1,4 @@
+# AdSense Authorized Digital Sellers
+# This file is used by Google to verify authorized sellers
+
+google.com, pub-8434537394521880, DIRECT, f08c47fec0942fa0

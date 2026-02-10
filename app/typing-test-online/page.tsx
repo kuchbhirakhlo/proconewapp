@@ -11,6 +11,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { toast } from "sonner";
 import { generateCertificateId, generateCertificatePDF, type CertificateData } from "@/lib/certificate-generator";
 import { mapQwertyToHindi, isDevanagari, mapQwertyToHindiWithShift } from "@/lib/hindi-transliteration";
+import { containsProhibitedWords, validateTypingInput } from "@/lib/prohibited-words";
 import { Trophy, Clock, Target, BookOpen, RefreshCw, Star, Award, ChevronRight, AlertCircle, Info, Users, Zap } from "lucide-react";
 import TypingPractice from "@/components/typing-practice";
 
@@ -77,7 +78,7 @@ const typingTexts: { english: { beginner: string[]; intermediate: string[]; pro:
       "Phone: +91-98765-43210 | WhatsApp: 91-9876-543-210",
       "Rate: ₹1,234 | Discount: 25% | Coupon: SAVE25*2024",
       "Temperature: 36.5C | Humidity: 78% | Pressure: 1013 hPa",
-      "Coordinates: 28.6139° N, 77.2090° E | Altitude: 216m",
+      "Coordinates: 28.6139 N, 77.2090 E | Altitude: 216m",
       "ISBN: 978-3-16-148410-0 | ISSN: 1234-5678 | DOI: 10.1000/xyz",
       "MAC Address: 00:1B:44:11:3A:B7 | IP: 192.168.1.1/24",
       "Hash: SHA-256: a5f8c3e... | Salt: NaCl$2024 | Key: [locked]",
@@ -344,6 +345,18 @@ export default function TypingTestOnline() {
       return; // Ignore backspace/delete
     }
 
+    // Check for prohibited words before processing input
+    const validation = validateTypingInput(value);
+    if (!validation.isValid) {
+      toast.error("Inappropriate content not allowed", {
+        description: validation.warning,
+      });
+      // Prevent the input by keeping the old value
+      e.target.value = userInput;
+      setUserInput(userInput);
+      return;
+    }
+
     // Hindi language - automatic QWERTY to Devanagari keyboard mapping
     if (language === "hindi" && value.length > userInput.length) {
       // Get the newly added character
@@ -381,6 +394,15 @@ export default function TypingTestOnline() {
     // Map the key to Hindi character (using code for accurate key mapping with shift)
     const mappedChar = mapQwertyToHindiWithShift("", key, isShift, code);
     const newValue = before + mappedChar + after;
+    
+    // Check for prohibited words before processing input
+    const validation = validateTypingInput(newValue);
+    if (!validation.isValid) {
+      toast.error("Inappropriate content not allowed", {
+        description: validation.warning,
+      });
+      return;
+    }
     
     setUserInput(newValue);
     

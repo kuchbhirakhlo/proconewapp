@@ -68,6 +68,31 @@
   }
 }
 
+/* Core Web Vitals optimizations */
+@layer utilities {
+  /* Improve rendering performance */
+  .will-change-transform {
+    will-change: transform;
+  }
+
+  /* Content visibility for below-fold sections */
+  .content-visibility-auto {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 500px;
+  }
+
+  /* Reduce layout shifts */
+  .aspect-video {
+    aspect-ratio: 16 / 9;
+  }
+
+  /* Backdrop filter optimizations */
+  .backdrop-blur-smooth {
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+}
+
 /* Custom animations and utilities */
 @layer utilities {
   .scrollbar-hide {

@@ -6,7 +6,12 @@ import "./globals.css"
 import ClientLayout from "./ClientLayout"
 import SplashScreen from "@/components/splash-screen"
 
-const inter = Inter({ subsets: ["latin"] })
+const inter = Inter({
+  subsets: ["latin"],
+  display: "swap",
+  preload: true,
+  variable: "--font-inter",
+})
 
 export const metadata: Metadata = {
   title: {
@@ -185,11 +190,11 @@ export default function RootLayout({
             `,
           }}
         />
-        {/* ✅ Google AdSense Script */}
+        {/* ✅ Google AdSense Script - Lazy load for better performance */}
         <Script
           id="google-adsense-script"
           async
-          strategy="afterInteractive"
+          strategy="lazyOnload"
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8434537394521880"
           crossOrigin="anonymous"
         />

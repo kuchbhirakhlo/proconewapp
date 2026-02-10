@@ -302,7 +302,9 @@ export default function HomePage() {
                 alt="Proco Technologies Office"
                 width={600}
                 height={500}
+                priority
                 className="rounded-lg shadow-2xl relative z-10 hover:scale-105 transition-transform duration-500"
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 600px"
               />
               {/* Floating tech icons around the image */}
               <div className="absolute -top-4 -left-4 w-12 h-12 bg-red-500 rounded-full flex items-center justify-center text-white animate-bounce shadow-lg">
@@ -456,7 +458,9 @@ export default function HomePage() {
                     alt="Proco Technologies"
                     width={500}
                     height={400}
+                    loading="lazy"
                     className="relative rounded-xl shadow-lg"
+                    sizes="(max-width: 1024px) 100vw, 500px"
                   />
                 </div>
               </div>
@@ -655,7 +659,9 @@ export default function HomePage() {
                 alt="Students Learning"
                 width={500}
                 height={400}
+                loading="lazy"
                 className="rounded-lg shadow-xl"
+                sizes="(max-width: 1024px) 100vw, 500px"
               />
             </div>
           </div>
