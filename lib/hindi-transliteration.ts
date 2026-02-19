@@ -11,71 +11,69 @@ interface KeyMapping {
 // QWERTY to Devanagari Keyboard Layout with Shift support
 // Format: key: { normal: "character without shift", shift: "character with shift" }
 export const hindiQwertyLayout: { [key: string]: KeyMapping } = {
- "`": { normal: "़", shift: "ऍ" }
-,
+
+  // Top symbol row
+  "`": { normal: "ॊ", shift: "ॊ" },
 
   // Number row
-  "1": { normal: "१", shift: "!" },
-"2": { normal: "२", shift: "@" },
-"3": { normal: "३", shift: "#" },
-"4": { normal: "४", shift: "$" },
-"5": { normal: "५", shift: "%" },
-"6": { normal: "६", shift: "^" },
-"7": { normal: "७", shift: "&" },
-"8": { normal: "८", shift: "*" },
-"9": { normal: "९", shift: "(" },
-"0": { normal: "०", shift: ")" },
-"-": { normal: "-", shift: "_" },
-"=": { normal: "=", shift: "+" }
-,
+  "1": { normal: "१", shift: "ऍ" },
+  "2": { normal: "२", shift: "ॅ" },
+  "3": { normal: "३", shift: "्र" },
+  "4": { normal: "४", shift: "र्" },
+  "5": { normal: "५", shift: "ज्ञ" },
+  "6": { normal: "६", shift: "त्र" },
+  "7": { normal: "७", shift: "क्ष" },
+  "8": { normal: "८", shift: "श्र" },
+  "9": { normal: "९", shift: "(" },
+  "0": { normal: "०", shift: ")" },
+  "-": { normal: "-", shift: "_" },
+  "=": { normal: "ृ", shift: "ॄ" },
 
-  // Top row (QWERTY)
- "q": { normal: "ौ", shift: "औ" },
-"w": { normal: "ै", shift: "ऐ" },
-"e": { normal: "ा", shift: "आ" },
-"r": { normal: "ी", shift: "ई" },
-"t": { normal: "ू", shift: "ऊ" },
-"y": { normal: "ब", shift: "भ" },
-"u": { normal: "ह", shift: "ङ" },
-"i": { normal: "ग", shift: "घ" },
-"o": { normal: "द", shift: "ध" },
-"p": { normal: "ज", shift: "झ" },
-"[": { normal: "ड", shift: "ढ" },
-"]": { normal: "़", shift: "ञ" },
-"\\": { normal: "ॉ", shift: "ऑ" }
-,
+  // Top Row (QWERTY)
+  "q": { normal: "ौ", shift: "औ" },
+  "w": { normal: "ै", shift: "ऐ" },
+  "e": { normal: "ा", shift: "आ" },
+  "r": { normal: "ी", shift: "ई" },
+  "t": { normal: "ू", shift: "ऊ" },
+  "y": { normal: "ब", shift: "भ" },
+  "u": { normal: "ह", shift: "ङ" },
+  "i": { normal: "ग", shift: "घ" },
+  "o": { normal: "द", shift: "ध" },
+  "p": { normal: "ज", shift: "झ" },
+  "[": { normal: "ड", shift: "ढ" },
+  "]": { normal: "़", shift: "ञ" },
+  "\\": { normal: "ॉ", shift: "ऑ" },
 
-  // Middle row (ASDFGH...)
+  // Middle Row (ASDFGH...)
   "a": { normal: "ो", shift: "ओ" },
-"s": { normal: "े", shift: "ए" },
-"d": { normal: "ि", shift: "अ" },
-"f": { normal: "ी", shift: "इ" },
-"g": { normal: "ु", shift: "उ" },
-"h": { normal: "प", shift: "फ" },
-"j": { normal: "र", shift: "ऋ" },
-"k": { normal: "क", shift: "ख" },
-"l": { normal: "त", shift: "थ" },
-";": { normal: "च", shift: "छ" },
-"'": { normal: "ट", shift: "ठ" }
-,
+  "s": { normal: "े", shift: "ए" },
+  "d": { normal: "्", shift: "अ" },
+  "f": { normal: "ि", shift: "इ" },
+  "g": { normal: "ु", shift: "उ" },
+  "h": { normal: "प", shift: "फ" },
+  "j": { normal: "र", shift: "ऱ" },
+  "k": { normal: "क", shift: "ख" },
+  "l": { normal: "त", shift: "थ" },
+  ";": { normal: "च", shift: "छ" },
+  "'": { normal: "ट", shift: "ठ" },
 
-  // Bottom row (ZXCVBN...)
- "z": { normal: "्", shift: "ँ" },
-"x": { normal: "ं", shift: "ः" },
-"c": { normal: "म", shift: "ण" },
-"v": { normal: "न", shift: "ञ" },
-"b": { normal: "व", shift: "ॅ" },
-"n": { normal: "ल", shift: "ळ" },
-"m": { normal: "स", shift: "श" },
-",": { normal: ",", shift: "<" },
-".": { normal: "।", shift: ">" },
-"/": { normal: "य", shift: "?" }
-,
+  // Bottom Row (ZXCVBN...)
+  "z": { normal: "ँ", shift: "ॐ" },
+  "x": { normal: "ं", shift: "ः" },
+  "c": { normal: "म", shift: "ण" },
+  "v": { normal: "न", shift: "ञ" },
+  "b": { normal: "व", shift: "ऩ" },
+  "n": { normal: "ल", shift: "ळ" },
+  "m": { normal: "स", shift: "श" },
+  ",": { normal: ",", shift: "ष" },
+  ".": { normal: "।", shift: "॥" },
+  "/": { normal: "य", shift: "?" },
 
-  // Spaces and special keys remain the same
- " ": { normal: " ", shift: " " }
-,
+  // Space
+  " ": { normal: " ", shift: " " }
+
 };
+
 
 // Map keyboard codes to character keys (handles shift issue with special chars)
 // e.code gives us the physical key location, not the character produced
