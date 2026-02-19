@@ -227,12 +227,24 @@ export default function TypingPractice() {
     setShowResults(false);
     setCurrentResult(null);
     timerMode.reset();
+    // Auto-focus the input when resetting
+    setTimeout(() => {
+      if (inputRef.current) {
+        inputRef.current.focus();
+      }
+    }, 100);
   };
 
   const nextLesson = () => {
     if (currentLessonIndex < lessons.length - 1) {
       setCurrentLessonIndex(currentLessonIndex + 1);
       resetLesson();
+      // Auto-focus the input when moving to next lesson
+      setTimeout(() => {
+        if (inputRef.current) {
+          inputRef.current.focus();
+        }
+      }, 100);
     }
   };
 
@@ -240,6 +252,12 @@ export default function TypingPractice() {
     if (currentLessonIndex > 0) {
       setCurrentLessonIndex(currentLessonIndex - 1);
       resetLesson();
+      // Auto-focus the input when moving to previous lesson
+      setTimeout(() => {
+        if (inputRef.current) {
+          inputRef.current.focus();
+        }
+      }, 100);
     }
   };
 
@@ -247,6 +265,12 @@ export default function TypingPractice() {
     setLevel(newLevel);
     setCurrentLessonIndex(0);
     resetLesson();
+    // Auto-focus the input when changing level
+    setTimeout(() => {
+      if (inputRef.current) {
+        inputRef.current.focus();
+      }
+    }, 100);
   };
 
   const changeLanguage = (newLang: "english" | "hindi") => {
@@ -254,6 +278,12 @@ export default function TypingPractice() {
     setLevel("beginner");
     setCurrentLessonIndex(0);
     resetLesson();
+    // Auto-focus the input when changing language
+    setTimeout(() => {
+      if (inputRef.current) {
+        inputRef.current.focus();
+      }
+    }, 100);
   };
 
   const renderTypingDisplay = () => {

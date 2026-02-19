@@ -58,15 +58,15 @@ export const hindiQwertyLayout: { [key: string]: KeyMapping } = {
   "'": { normal: "ट", shift: "ठ" },
 
   // Bottom Row (ZXCVBN...)
-  "z": { normal: "ँ", shift: "ॐ" },
-  "x": { normal: "ं", shift: "ः" },
+  "z": { normal: "z", shift: "Z" },
+  "x": { normal: "ं", shift: "ँ", },
   "c": { normal: "म", shift: "ण" },
   "v": { normal: "न", shift: "ञ" },
   "b": { normal: "व", shift: "ऩ" },
   "n": { normal: "ल", shift: "ळ" },
   "m": { normal: "स", shift: "श" },
   ",": { normal: ",", shift: "ष" },
-  ".": { normal: "।", shift: "॥" },
+  ".": { normal: ".", shift: "।" },
   "/": { normal: "य", shift: "?" },
 
   // Space

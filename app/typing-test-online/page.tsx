@@ -268,12 +268,24 @@ export default function TypingTestOnline() {
     setIsTestActive(false);
     setIsTestComplete(false);
     setResults(null);
+    // Auto-focus the input when initializing test
+    setTimeout(() => {
+      if (inputRef.current) {
+        inputRef.current.focus();
+      }
+    }, 100);
   }, [getRandomText]);
 
   const resetToBeginner = useCallback(() => {
     setCurrentLevel("beginner");
     setCertificates([]);
     initializeTest();
+    // Auto-focus the input when resetting to beginner
+    setTimeout(() => {
+      if (inputRef.current) {
+        inputRef.current.focus();
+      }
+    }, 100);
   }, [initializeTest]);
 
   useEffect(() => { initializeTest(); }, [currentLevel, initializeTest]);
@@ -334,7 +346,17 @@ export default function TypingTestOnline() {
   }, [isTestActive, isTestComplete]);
 
   const handleStart = () => { setIsTestActive(true); setStartTime(Date.now()); if (inputRef.current) inputRef.current.focus(); };
-  const handleReset = () => { setIsResetClicked(true); if (currentLevel === "completed") resetToBeginner(); else initializeTest(); };
+  const handleReset = () => { 
+    setIsResetClicked(true); 
+    if (currentLevel === "completed") resetToBeginner(); 
+    else initializeTest();
+    // Auto-focus the input when resetting
+    setTimeout(() => {
+      if (inputRef.current) {
+        inputRef.current.focus();
+      }
+    }, 100);
+  };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     if (!isTestActive) handleStart();
@@ -487,6 +509,12 @@ export default function TypingTestOnline() {
         } else {
           setCertificates(prev => [...prev, currentLevel]);
           setCurrentLevel(config.nextLevel);
+          // Auto-focus the input when moving to next level after passing
+          setTimeout(() => {
+            if (inputRef.current) {
+              inputRef.current.focus();
+            }
+          }, 100);
         }
       } else {
         resetToBeginner();
@@ -543,10 +571,98 @@ export default function TypingTestOnline() {
           }
         }
       `}</style>
-      <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-12">
-        <div className="container mx-auto px-4 text-center">
-          <h1 className="text-4xl font-bold mb-4 flex items-center justify-center gap-3"><BookOpen className="w-10 h-10" />Online Typing Practice</h1>
-          <p className="text-xl opacity-90">Master your typing skills step by step!</p>
+      {/* Typing Challenge Banner - Colorful Informative Poster */}
+      <div className="relative overflow-hidden bg-gradient-to-r from-violet-600 via-purple-600 to-pink-500 text-white py-16">
+        {/* Animated Background Elements */}
+        <div className="absolute inset-0 overflow-hidden">
+          <div className="absolute -top-4 -left-4 w-24 h-24 bg-yellow-400 rounded-full opacity-20 animate-pulse"></div>
+          <div className="absolute top-8 right-12 w-16 h-16 bg-blue-400 rounded-full opacity-20 animate-pulse" style={{ animationDelay: '0.5s' }}></div>
+          <div className="absolute bottom-4 left-1/4 w-12 h-12 bg-green-400 rounded-full opacity-20 animate-pulse" style={{ animationDelay: '1s' }}></div>
+          <div className="absolute -bottom-6 -right-6 w-32 h-32 bg-orange-400 rounded-full opacity-15 animate-pulse" style={{ animationDelay: '1.5s' }}></div>
+          <div className="absolute top-1/2 left-10 w-8 h-8 bg-cyan-400 rounded-full opacity-20 animate-pulse" style={{ animationDelay: '0.3s' }}></div>
+        </div>
+        
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="text-center">
+            {/* Challenge Badge */}
+            <div className="inline-flex items-center gap-2 bg-yellow-400 text-purple-900 px-6 py-2 rounded-full font-bold text-sm mb-6 shadow-lg transform -rotate-2 hover:rotate-0 transition-transform duration-300">
+              <Trophy className="w-5 h-5" />
+              TYPING CHALLENGE 2026
+            </div>
+            
+            {/* Main Heading */}
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4 flex flex-col md:flex-row items-center justify-center gap-4">
+              <span className="bg-clip-text text-transparent bg-gradient-to-r from-yellow-300 via-pink-300 to-cyan-300">
+                🎯 Typing Challenge
+              </span>
+            </h1>
+            
+            {/* Subtitle */}
+            <p className="text-xl md:text-2xl opacity-95 mb-8 max-w-2xl mx-auto">
+              Complete the challenge & <span className="font-bold text-yellow-300">Unlock Your Free Future!</span>
+            </p>
+            
+            {/* Prize Cards */}
+            <div className="grid md:grid-cols-2 gap-6 max-w-3xl mx-auto mb-8">
+              {/* Free Course Card */}
+              <div className="bg-white/15 backdrop-blur-sm border-2 border-white/30 rounded-2xl p-6 hover:bg-white/25 transition-all duration-300 transform hover:scale-105">
+                <div className="w-16 h-16 bg-gradient-to-r from-green-400 to-emerald-500 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
+                  <BookOpen className="w-8 h-8 text-white" />
+                </div>
+                <h3 className="text-2xl font-bold mb-2">📚 Free Course</h3>
+                <p className="text-lg font-semibold text-green-200">1 Month Access</p>
+                <p className="text-sm opacity-80 mt-2">Complete any advanced level with 35+ WPM & 95% Accuracy</p>
+              </div>
+              
+              {/* Certificate Card */}
+              <div className="bg-white/15 backdrop-blur-sm border-2 border-white/30 rounded-2xl p-6 hover:bg-white/25 transition-all duration-300 transform hover:scale-105">
+                <div className="w-16 h-16 bg-gradient-to-r from-amber-400 to-orange-500 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
+                  <Award className="w-8 h-8 text-white" />
+                </div>
+                <h3 className="text-2xl font-bold mb-2">🏆 Certificate</h3>
+                <p className="text-lg font-semibold text-yellow-200">Official Certificate</p>
+                <p className="text-sm opacity-80 mt-2">Verified certificate with unique ID for your resume</p>
+              </div>
+            </div>
+            
+            {/* How to Participate */}
+            <div className="bg-purple-900/50 backdrop-blur-sm rounded-xl p-6 max-w-2xl mx-auto mb-6">
+              <h3 className="text-lg font-bold mb-4 flex items-center justify-center gap-2">
+                <Star className="w-5 h-5 text-yellow-400" />
+                How to Participate
+              </h3>
+              <div className="grid md:grid-cols-3 gap-4 text-sm">
+                <div className="flex items-start gap-2">
+                  <span className="flex items-center justify-center w-6 h-6 rounded-full bg-pink-500 font-bold text-xs shrink-0">1</span>
+                  <p>Start the typing test below</p>
+                </div>
+                <div className="flex items-start gap-2">
+                  <span className="flex items-center justify-center w-6 h-6 rounded-full bg-blue-500 font-bold text-xs shrink-0">2</span>
+                  <p>Pass all 3 levels (Beginner → Pro)</p>
+                </div>
+                <div className="flex items-start gap-2">
+                  <span className="flex items-center justify-center w-6 h-6 rounded-full bg-green-500 font-bold text-xs shrink-0">3</span>
+                  <p>Complete Pro level with 35+ WPM</p>
+                </div>
+              </div>
+            </div>
+            
+            {/* CTA */}
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+              <a href="#typing-test" className="inline-flex items-center gap-2 bg-gradient-to-r from-yellow-400 to-orange-500 text-purple-900 px-8 py-4 rounded-full font-bold text-lg hover:from-yellow-300 hover:to-orange-400 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl">
+                <Zap className="w-6 h-6" />
+                Start Challenge Now
+              </a>
+              <span className="text-sm opacity-80">✨ Completely Free - No Registration Required</span>
+            </div>
+            
+            {/* Trust Badges */}
+            <div className="flex items-center justify-center gap-6 mt-8 text-sm opacity-70">
+              <span className="flex items-center gap-1">✓ 100% Free</span>
+              <span className="flex items-center gap-1">✓ Instant Access</span>
+              <span className="flex items-center gap-1">✓ Verified Certificate</span>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -595,8 +711,8 @@ export default function TypingTestOnline() {
             <CardHeader><CardTitle className="flex items-center gap-2"><Target className="w-5 h-5 text-blue-500" />Select Language</CardTitle></CardHeader>
             <CardContent>
               <div className="flex gap-4">
-                <Button variant={language === "english" ? "default" : "outline"} onClick={() => { setLanguage("english"); setCurrentLevel("beginner"); }} className="flex-1">English</Button>
-                <Button variant={language === "hindi" ? "default" : "outline"} onClick={() => { setLanguage("hindi"); setCurrentLevel("beginner"); }} className="flex-1">Hindi</Button>
+                <Button variant={language === "english" ? "default" : "outline"} onClick={() => { setLanguage("english"); setCurrentLevel("beginner"); setTimeout(() => { if (inputRef.current) inputRef.current.focus(); }, 100); }} className="flex-1">English</Button>
+                <Button variant={language === "hindi" ? "default" : "outline"} onClick={() => { setLanguage("hindi"); setCurrentLevel("beginner"); setTimeout(() => { if (inputRef.current) inputRef.current.focus(); }, 100); }} className="flex-1">Hindi</Button>
               </div>
             </CardContent>
           </Card>
@@ -628,7 +744,7 @@ export default function TypingTestOnline() {
           </Card>
         )}
 
-        <Card className="mb-8">
+        <Card className="mb-8" id="typing-test">
           <CardHeader>
             <CardTitle className="flex items-center justify-between">
               <span className="flex items-center gap-2"><RefreshCw className="w-5 h-5 text-purple-500" />Typing Test - {language.charAt(0).toUpperCase() + language.slice(1)}</span>

@@ -301,7 +301,7 @@ export default function HomePage() {
             <div className="relative">
               <div className="absolute inset-0 bg-gradient-to-r from-red-400 to-green-400 rounded-lg blur-xl opacity-30 animate-pulse"></div>
               <Image
-                src="main-pic.png"
+                src="/main-pic.png"
                 alt="Proco Technologies Office"
                 width={600}
                 height={500}
