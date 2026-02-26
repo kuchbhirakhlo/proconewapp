@@ -20,6 +20,7 @@ interface PortfolioItem {
   year: string
   status?: string
   liveUrl?: string
+  projectUrl?: string
   githubUrl?: string
 }
 
@@ -132,6 +133,10 @@ export default function PortfolioPage() {
                       width={400}
                       height={300}
                       className="w-full h-48 object-cover"
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        target.src = "/placeholder.svg";
+                      }}
                     />
                     <div className="absolute top-4 left-4">
                       <Badge>{project.category}</Badge>
@@ -159,8 +164,12 @@ export default function PortfolioPage() {
                         size="sm" 
                         variant="outline" 
                         className="flex-1 bg-transparent"
-                        onClick={() => project.liveUrl ? window.open(project.liveUrl, "_blank") : alert("Live URL not available")}
-                        disabled={!project.liveUrl}
+                        onClick={() => {
+                          const url = project.liveUrl || project.projectUrl;
+                          if (url) window.open(url, "_blank");
+                          else alert("Live URL not available");
+                        }}
+                        disabled={!project.liveUrl && !project.projectUrl}
                       >
                         <ExternalLink className="h-4 w-4 mr-2" />
                         View Live
