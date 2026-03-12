@@ -42,7 +42,7 @@ export default function AdminDashboard() {
         ])
 
         // Fetch course enrollments (public enrollment requests)
-        const courseEnrollmentsRef = collection(db, "enrollments")
+        const courseEnrollmentsRef = collection(db, "course_enrollments")
         const courseEnrollmentsQuery = query(courseEnrollmentsRef, orderBy("createdAt", "desc"))
         const courseEnrollmentsSnapshot = await getDocs(courseEnrollmentsQuery)
         const courseEnrollmentsData = courseEnrollmentsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))

@@ -35,7 +35,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Add to Firestore
-    const enrollmentsCollection = collection(db, 'enrollments')
+    const enrollmentsCollection = collection(db, 'course_enrollments')
     const docRef = await addDoc(enrollmentsCollection, {
       firstName,
       lastName,
