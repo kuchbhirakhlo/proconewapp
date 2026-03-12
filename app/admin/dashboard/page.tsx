@@ -9,6 +9,8 @@ import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Users, BookOpen, Briefcase, TrendingUp, Cake, Mail, Phone, Calendar, GraduationCap, Award, Medal } from "lucide-react"
 import { getCourses, getStudents, getPortfolioItems, getEnrollments, getInquiries, sendBirthdayWish, sendCompletionCongratulations, sendCertificateApprovalNotification } from "@/lib/admin"
+import { db } from "@/lib/firebase"
+import { collection, query, orderBy, getDocs } from "firebase/firestore"
 
 export default function AdminDashboard() {
   const [stats, setStats] = useState({
@@ -24,6 +26,7 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(true)
   const [studentsWithBirthdays, setStudentsWithBirthdays] = useState<any[]>([])
   const [recentEnrollmentsList, setRecentEnrollmentsList] = useState<any[]>([])
+  const [recentCourseEnrollmentsList, setRecentCourseEnrollmentsList] = useState<any[]>([])
   const [completedStudents, setCompletedStudents] = useState<any[]>([])
   const [approvedCertificateStudents, setApprovedCertificateStudents] = useState<any[]>([])
 
@@ -38,7 +41,13 @@ export default function AdminDashboard() {
           getInquiries(),
         ])
 
-        // Calculate recent enrollments (last 30 days)
+        // Fetch course enrollments (public enrollment requests)
+        const courseEnrollmentsRef = collection(db, "enrollments")
+        const courseEnrollmentsQuery = query(courseEnrollmentsRef, orderBy("createdAt", "desc"))
+        const courseEnrollmentsSnapshot = await getDocs(courseEnrollmentsQuery)
+        const courseEnrollmentsData = courseEnrollmentsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
+
+        // Calculate recent enrollments (last 30 days) - includes both student enrollments and course enrollment requests
         const thirtyDaysAgo = new Date()
         thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
 
@@ -46,6 +55,14 @@ export default function AdminDashboard() {
           const enrolledAt = enrollment.enrolledAt?.toDate()
           return enrolledAt !== undefined && enrolledAt > thirtyDaysAgo
         }).length
+
+        // Add recent course enrollment requests
+        const recentCourseEnrollments = courseEnrollmentsData.filter((enrollment: any) => {
+          const createdAt = enrollment.createdAt?.toDate()
+          return createdAt !== undefined && createdAt > thirtyDaysAgo
+        }).length
+
+        const totalRecentEnrollments = recentEnrollments + recentCourseEnrollments
 
         const activeStudents = students.filter((student) => student.status === "active").length
 
@@ -113,8 +130,8 @@ export default function AdminDashboard() {
           totalStudents: students.length,
           totalCourses: courses.length,
           totalProjects: portfolio.length,
-          totalEnrollments: enrollments.length,
-          recentEnrollments,
+          totalEnrollments: enrollments.length + courseEnrollmentsData.length,
+          recentEnrollments: totalRecentEnrollments,
           activeStudents,
           totalInquiries: inquiries.length,
           pendingInquiries,
@@ -122,6 +139,15 @@ export default function AdminDashboard() {
 
         setStudentsWithBirthdays(studentsWithBirthdays)
         setRecentEnrollmentsList(recentEnrollmentsWithStudents)
+        
+        // Get recent course enrollment requests
+        const recentCourseEnrollmentsData = courseEnrollmentsData
+          .filter((enrollment: any) => {
+            const createdAt = enrollment.createdAt?.toDate()
+            return createdAt !== undefined && createdAt > thirtyDaysAgo
+          })
+          .slice(0, 5)
+        setRecentCourseEnrollmentsList(recentCourseEnrollmentsData)
         
         // Find students who completed their courses
         const completedStudentsData = students.filter((student) => student.status === "completed")
@@ -496,7 +522,7 @@ export default function AdminDashboard() {
             <CardDescription>Latest course enrollments from the past 30 days</CardDescription>
           </CardHeader>
           <CardContent>
-            {recentEnrollmentsList.length > 0 ? (
+            {recentEnrollmentsList.length > 0 || recentCourseEnrollmentsList.length > 0 ? (
               <div className="space-y-4">
                 {recentEnrollmentsList.map((enrollment) => (
                   <div 
@@ -521,6 +547,35 @@ export default function AdminDashboard() {
                       </Badge>
                       <p className="text-xs text-gray-400 mt-1">
                         {enrollment.enrolledAt?.toDate()?.toLocaleDateString() || 'Recent'}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+                {recentCourseEnrollmentsList.map((enrollment: any) => (
+                  <div 
+                    key={enrollment.id}
+                    className="flex items-center justify-between p-4 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors"
+                  >
+                    <div className="flex items-center space-x-4">
+                      <Avatar>
+                        <AvatarFallback className="bg-gradient-to-br from-blue-400 to-indigo-400 text-white">
+                          {enrollment.firstName?.charAt(0)?.toUpperCase() || 'E'}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div>
+                        <p className="font-medium text-gray-800">{enrollment.firstName} {enrollment.lastName}</p>
+                        <p className="text-sm text-gray-500">{enrollment.courseName || 'Course Inquiry'}</p>
+                        {enrollment.phone && (
+                          <p className="text-xs text-blue-600">{enrollment.phone}</p>
+                        )}
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
+                        Inquiry
+                      </Badge>
+                      <p className="text-xs text-gray-400 mt-1">
+                        {enrollment.createdAt?.toDate()?.toLocaleDateString() || 'Recent'}
                       </p>
                     </div>
                   </div>

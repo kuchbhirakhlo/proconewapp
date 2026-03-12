@@ -27,7 +27,7 @@ export async function POST(request: NextRequest) {
     const { firstName, lastName, email, phone, courseId, courseName } = body
 
     // Validate required fields
-    if (!firstName || !lastName || !email || !courseId || !courseName) {
+    if (!firstName || !lastName || !phone || !courseId || !courseName) {
       return NextResponse.json(
         { error: 'Missing required fields' },
         { status: 400 }
@@ -35,7 +35,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Add to Firestore
-    const enrollmentsCollection = collection(db, 'course_enrollments')
+    const enrollmentsCollection = collection(db, 'enrollments')
     const docRef = await addDoc(enrollmentsCollection, {
       firstName,
       lastName,
@@ -43,6 +43,7 @@ export async function POST(request: NextRequest) {
       phone: phone || '',
       courseId,
       courseName,
+      enrolledAt: serverTimestamp(),
       createdAt: serverTimestamp(),
       status: 'pending',
       read: false,

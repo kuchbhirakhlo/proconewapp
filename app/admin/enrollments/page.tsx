@@ -53,7 +53,7 @@ export default function EnrollmentsPage() {
 
     if (!isAdmin) return
 
-    const enrollmentsCollection = collection(db, 'course_enrollments')
+    const enrollmentsCollection = collection(db, 'enrollments')
     let q = query(enrollmentsCollection, orderBy('createdAt', 'desc'))
 
     if (filter === 'new') {

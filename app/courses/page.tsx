@@ -340,24 +340,24 @@ export default function CoursesPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="email">Email</Label>
+                  <Label htmlFor="phone">Mobile Number</Label>
                   <Input
-                    id="email"
-                    type="email"
-                    placeholder="your@email.com"
-                    value={enrollmentForm.email}
+                    id="phone"
+                    type="tel"
+                    placeholder="Your mobile number"
+                    value={enrollmentForm.phone}
                     onChange={handleEnrollmentInputChange}
                     required
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="phone">Phone (Optional)</Label>
+                  <Label htmlFor="email">Email (Optional)</Label>
                   <Input
-                    id="phone"
-                    type="tel"
-                    placeholder="Your phone number"
-                    value={enrollmentForm.phone}
+                    id="email"
+                    type="email"
+                    placeholder="your@email.com"
+                    value={enrollmentForm.email}
                     onChange={handleEnrollmentInputChange}
                   />
                 </div>

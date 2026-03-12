@@ -35,7 +35,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Add to Firestore
-    const inquiriesCollection = collection(db, 'contact_inquiries')
+    const inquiriesCollection = collection(db, 'inquiries')
     const docRef = await addDoc(inquiriesCollection, {
       firstName,
       lastName,
@@ -44,7 +44,7 @@ export async function POST(request: NextRequest) {
       subject,
       message,
       createdAt: serverTimestamp(),
-      status: 'new',
+      status: 'pending',
       read: false,
     })
 
