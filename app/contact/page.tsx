@@ -215,20 +215,16 @@ export default function ContactPage() {
             </p>
           </div>
 
-          {/* Placeholder for map */}
-          <div className="bg-gray-200 h-96 rounded-lg">
-            <div className="h-[100%] w-full rounded-lg overflow-hidden">
-              <iframe
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3557.3223038250117!2d80.92241527549284!3d26.924994976639855!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3999565edfcb41f1%3A0x135bdd0d8b44ed44!2sD%20N%20SINGH%20COMPLEX!5e0!3m2!1sen!2sin!4v1745611371761!5m2!1sen!2sin%22"
-                width="100%"
-                height="100%"
-                style={{ border: 0, borderRadius: "0.5rem" }}
-                allowFullScreen
-                loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
-                title="Google Maps"
-              ></iframe>
-            </div>
+          {/* Map */}
+          <div className="h-[500px] rounded-lg overflow-hidden">
+            <iframe
+              src="https://storage.googleapis.com/maps-solutions-hqsefb7w5c/locator-plus/wfwd/locator-plus.html"
+              width="100%"
+              height="100%"
+              style={{ border: 0 }}
+              loading="lazy"
+              title="Google Maps Locator"
+            ></iframe>
           </div>
         </div>
       </section>

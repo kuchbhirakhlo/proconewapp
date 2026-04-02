@@ -1,9 +1,13 @@
 "use client"
 
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect, useRef, useCallback } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
-import { ZoomIn, ZoomOut, RotateCw, X, Lock, AlertCircle, ChevronLeft, ChevronRight } from "lucide-react"
+import { ZoomIn, ZoomOut, RotateCw, X, Lock, AlertCircle, ChevronLeft, ChevronRight, ExternalLink } from "lucide-react"
+import * as pdfjsLib from "pdfjs-dist"
+
+// Set the worker source to the bundled worker
+pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`
 
 interface PDFViewerProps {
     pdfUrl: string
@@ -20,58 +24,17 @@ export default function PDFViewer({ pdfUrl, pdfId, title, onClose, className = "
     const [currentPage, setCurrentPage] = useState(1)
     const [totalPages, setTotalPages] = useState(0)
     const [loading, setLoading] = useState(true)
-    const [pdfJsLoaded, setPdfJsLoaded] = useState(false)
+    const containerRef = useRef<HTMLDivElement>(null)
     const canvasRef = useRef<HTMLCanvasElement>(null)
-    const pdfDocRef = useRef<any>(null)
-    const pdfjsLibRef = useRef<any>(null)
-    const initialRenderDone = useRef(false)
-
-    // Load PDF.js from CDN
-    useEffect(() => {
-        const loadPdfJs = async () => {
-            try {
-                // Load PDF.js library
-                const pdfjsScript = document.createElement('script')
-                pdfjsScript.src = 'https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.min.js'
-                pdfjsScript.onload = async () => {
-                    // Load the worker
-                    const workerScript = document.createElement('script')
-                    workerScript.src = 'https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js'
-                    workerScript.onload = () => {
-                        // @ts-ignore
-                        pdfjsLibRef.current = window.pdfjsLib
-                        pdfjsLibRef.current.GlobalWorkerOptions.workerSrc = 'https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js'
-                        setPdfJsLoaded(true)
-                    }
-                    workerScript.onerror = () => {
-                        setError("Failed to load PDF worker")
-                    }
-                    document.body.appendChild(workerScript)
-                }
-                pdfjsScript.onerror = () => {
-                    setError("Failed to load PDF.js library")
-                }
-                document.body.appendChild(pdfjsScript)
-            } catch (err) {
-                console.error('Error loading PDF.js:', err)
-                setError("Failed to initialize PDF viewer")
-            }
-        }
-
-        loadPdfJs()
-
-        return () => {
-            // Cleanup scripts if needed
-        }
-    }, [])
+    const pdfDocRef = useRef<pdfjsLib.PDFDocumentProxy | null>(null)
+    const renderTaskRef = useRef<pdfjsLib.RenderTask | null>(null)
 
     // Extract PDF ID and token from Firebase Storage URL
-    const getProxyUrl = () => {
+    const getProxyUrl = useCallback(() => {
         try {
             const url = new URL(pdfUrl)
             const pathParts = url.pathname.split('/o/')[1]?.split('%2F')
             if (pathParts && pathParts.length > 0) {
-                // Get the filename (last part after course_pdfs/)
                 const fileName = decodeURIComponent(pathParts[pathParts.length - 1])
                 const token = url.searchParams.get('token')
                 return `/api/pdf-proxy?pdfId=${encodeURIComponent(fileName)}${token ? `&token=${token}` : ''}`
@@ -79,33 +42,20 @@ export default function PDFViewer({ pdfUrl, pdfId, title, onClose, className = "
         } catch (e) {
             console.error('Error parsing PDF URL:', e)
         }
-        // Fallback: just use the original URL
         return pdfUrl
-    }
+    }, [pdfUrl])
 
     const proxyUrl = getProxyUrl()
 
     // Load PDF document
     useEffect(() => {
+        let cancelled = false
+
         const loadPDF = async () => {
             try {
                 setLoading(true)
                 setError("")
 
-                // Wait for pdfjsLib to be loaded
-                if (!pdfjsLibRef.current || !pdfJsLoaded) {
-                    // Give it a moment to load
-                    await new Promise(resolve => setTimeout(resolve, 500))
-                    if (!pdfjsLibRef.current) {
-                        setError("PDF viewer not available in this environment")
-                        setLoading(false)
-                        return
-                    }
-                }
-
-                const pdfjsLib = pdfjsLibRef.current
-
-                // Fetch PDF through proxy to avoid CORS issues
                 const response = await fetch(proxyUrl)
                 if (!response.ok) {
                     const errorText = await response.text()
@@ -113,101 +63,118 @@ export default function PDFViewer({ pdfUrl, pdfId, title, onClose, className = "
                 }
 
                 const arrayBuffer = await response.arrayBuffer()
-                const loadingTask = pdfjsLib.getDocument({ data: arrayBuffer })
+                if (cancelled) return
+
+                const loadingTask = pdfjsLib.getDocument({
+                    data: arrayBuffer,
+                    // Limit memory usage on mobile
+                    maxImageSize: 16777216, // 4096x4096 max
+                })
                 const pdf = await loadingTask.promise
+
+                if (cancelled) {
+                    pdf.destroy()
+                    return
+                }
 
                 pdfDocRef.current = pdf
                 setTotalPages(pdf.numPages)
+                setCurrentPage(1)
             } catch (err) {
+                if (cancelled) return
                 console.error('PDF loading error:', err)
                 setError(`Failed to load PDF: ${err instanceof Error ? err.message : 'Unknown error'}`)
             } finally {
-                setLoading(false)
+                if (!cancelled) setLoading(false)
             }
         }
 
-        if (pdfJsLoaded) {
-            loadPDF()
-        }
-    }, [proxyUrl, pdfJsLoaded])
+        loadPDF()
 
-    // Render first page when PDF is loaded and canvas is available
-    useEffect(() => {
-        if (!pdfDocRef.current || loading || initialRenderDone.current) return
-
-        const renderInitialPage = async () => {
-            initialRenderDone.current = true
-            // Wait for canvas to be available in DOM
-            let attempts = 0
-            while (!canvasRef.current && attempts < 20) {
-                await new Promise(resolve => setTimeout(resolve, 50))
-                attempts++
+        return () => {
+            cancelled = true
+            // Cancel any in-flight render task
+            if (renderTaskRef.current) {
+                renderTaskRef.current.cancel()
+                renderTaskRef.current = null
             }
-            if (canvasRef.current) {
-                await renderPage(1, pdfDocRef.current, true)
+            // Clean up PDF document
+            if (pdfDocRef.current) {
+                pdfDocRef.current.destroy()
+                pdfDocRef.current = null
             }
         }
-
-        renderInitialPage()
-    }, [pdfDocRef.current, loading])
+    }, [proxyUrl])
 
     // Render a specific page
-    const renderPage = async (pageNum: number, pdf?: any, isInitial = false) => {
+    const renderPage = useCallback(async (pageNum: number) => {
         try {
-            const pdfDoc = pdf || pdfDocRef.current
-            if (!pdfDoc || !canvasRef.current) return
+            const pdfDoc = pdfDocRef.current
+            if (!pdfDoc || !canvasRef.current || !containerRef.current) return
 
-            // Ensure canvas is in DOM before rendering
-            if (isInitial && !canvasRef.current.offsetParent) {
-                await new Promise(resolve => setTimeout(resolve, 100))
+            // Cancel any existing render task
+            if (renderTaskRef.current) {
+                renderTaskRef.current.cancel()
+                renderTaskRef.current = null
             }
 
             const page = await pdfDoc.getPage(pageNum)
+            const viewport = page.getViewport({ scale: 1, rotation })
 
-            // Calculate optimal scale for mobile devices on initial load
-            let finalZoom = zoom
+            // Calculate optimal scale for container
+            const container = containerRef.current
+            const containerWidth = container.clientWidth - 16 // padding
+            const containerHeight = container.clientHeight - 16
 
-            if (isInitial && canvasRef.current.offsetParent) {
-                const containerWidth = (canvasRef.current.offsetParent as HTMLElement).clientWidth
-                const isMobile = containerWidth < 768
-
-                if (isMobile) {
-                    // Get base viewport to calculate fit-to-screen scale
-                    const baseViewport = page.getViewport({ scale: 1, rotation })
-                    const padding = 40 // padding on mobile for controls
-                    const maxWidth = containerWidth - padding
-                    const scaleX = maxWidth / baseViewport.width
-                    // Use the smaller of fit-to-width or current zoom
-                    finalZoom = Math.min(scaleX, zoom)
-                }
+            let scale = zoom
+            // Auto-fit to width on mobile for initial load
+            if (containerWidth < 768) {
+                const fitToWidthScale = containerWidth / viewport.width
+                scale = Math.min(zoom, fitToWidthScale)
             }
 
-            // Apply rotation through PDF.js viewport so the canvas size matches
-            // the rotated page, preventing the content from being cut off.
-            const viewport = page.getViewport({ scale: finalZoom, rotation })
+            const scaledViewport = page.getViewport({ scale, rotation })
 
-            canvasRef.current.width = viewport.width
-            canvasRef.current.height = viewport.height
+            // Clamp canvas dimensions to prevent mobile browser crashes
+            const maxCanvasSize = 4096
+            let finalWidth = scaledViewport.width
+            let finalHeight = scaledViewport.height
+
+            if (finalWidth > maxCanvasSize || finalHeight > maxCanvasSize) {
+                const ratio = Math.min(maxCanvasSize / finalWidth, maxCanvasSize / finalHeight)
+                finalWidth = Math.floor(finalWidth * ratio)
+                finalHeight = Math.floor(finalHeight * ratio)
+            }
+
+            const canvas = canvasRef.current
+            canvas.width = finalWidth
+            canvas.height = finalHeight
 
             const renderContext = {
-                canvasContext: canvasRef.current.getContext('2d')!,
-                viewport: viewport,
+                canvasContext: canvas.getContext('2d')!,
+                viewport: scaledViewport,
+                canvas: canvas,
             }
 
-            await page.render(renderContext).promise
+            const renderTask = page.render(renderContext)
+            renderTaskRef.current = renderTask
+            await renderTask.promise
+            renderTaskRef.current = null
+
             setCurrentPage(pageNum)
-        } catch (err) {
+        } catch (err: any) {
+            if (err?.name === 'RenderingCancelledException') return
             console.error('Page render error:', err)
             setError("Failed to render page")
         }
-    }
+    }, [zoom, rotation])
 
-    // Re-render when zoom or rotation changes
+    // Render when PDF is loaded or page/zoom/rotation changes
     useEffect(() => {
-        if (pdfDocRef.current && currentPage > 0) {
+        if (pdfDocRef.current && !loading) {
             renderPage(currentPage)
         }
-    }, [zoom, rotation, currentPage])
+    }, [pdfDocRef.current, loading, currentPage, zoom, rotation, renderPage])
 
     // Prevent right-click context menu on the PDF viewer
     const handleContextMenu = (e: React.MouseEvent) => {
@@ -217,11 +184,9 @@ export default function PDFViewer({ pdfUrl, pdfId, title, onClose, className = "
     // Prevent keyboard shortcuts for printing and saving
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
-            // Prevent Ctrl+S / Cmd+S (Save)
             if ((e.ctrlKey || e.metaKey) && e.key === 's') {
                 e.preventDefault()
             }
-            // Prevent Ctrl+P / Cmd+P (Print)
             if ((e.ctrlKey || e.metaKey) && e.key === 'p') {
                 e.preventDefault()
             }
@@ -243,14 +208,18 @@ export default function PDFViewer({ pdfUrl, pdfId, title, onClose, className = "
         setRotation(prev => (prev + 90) % 360)
     }
 
-    const handlePrevPage = async () => {
+    const handlePrevPage = () => {
         const newPage = Math.max(1, currentPage - 1)
-        await renderPage(newPage)
+        setCurrentPage(newPage)
     }
 
-    const handleNextPage = async () => {
+    const handleNextPage = () => {
         const newPage = Math.min(totalPages, currentPage + 1)
-        await renderPage(newPage)
+        setCurrentPage(newPage)
+    }
+
+    const handleOpenInNewTab = () => {
+        window.open(proxyUrl, '_blank')
     }
 
     return (
@@ -259,26 +228,28 @@ export default function PDFViewer({ pdfUrl, pdfId, title, onClose, className = "
                 {error && (
                     <div className="p-3 sm:p-4 bg-yellow-50 border-b border-yellow-200 flex items-start gap-2">
                         <AlertCircle className="h-4 w-4 sm:h-5 sm:w-5 text-yellow-600 mt-0.5 flex-shrink-0" />
-                        <div className="text-xs sm:text-sm text-yellow-700">
+                        <div className="text-xs sm:text-sm text-yellow-700 flex-1">
                             <p className="font-semibold">PDF Loading Issue</p>
                             <p className="break-words">{error}</p>
-                            {!pdfJsLoaded && (
-                                <p className="mt-2 text-[10px] sm:text-xs">If this persists, please check your internet connection.</p>
-                            )}
+                            <Button
+                                variant="link"
+                                size="sm"
+                                className="h-auto p-0 mt-1 text-xs text-yellow-700 underline"
+                                onClick={handleOpenInNewTab}
+                            >
+                                <ExternalLink className="h-3 w-3 mr-1" />
+                                Open PDF in new tab instead
+                            </Button>
                         </div>
                     </div>
                 )}
                 <div
+                    ref={containerRef}
                     className="relative flex-1 bg-gray-100 overflow-auto touch-pan-y touch-pan-x"
                     onContextMenu={handleContextMenu}
                     style={{ WebkitOverflowScrolling: 'touch' }}
                 >
-                    {!pdfJsLoaded && !error && (
-                        <div className="absolute inset-0 flex items-center justify-center text-gray-500 p-4">
-                            <p className="text-sm sm:text-base">Initializing PDF viewer...</p>
-                        </div>
-                    )}
-                    {loading && pdfJsLoaded && (
+                    {loading && (
                         <div className="absolute inset-0 flex items-center justify-center text-gray-500 p-4">
                             <p className="text-sm sm:text-base">Loading PDF...</p>
                         </div>

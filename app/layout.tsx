@@ -5,6 +5,7 @@ import Script from "next/script"
 import "./globals.css"
 import ClientLayout from "./ClientLayout"
 import SplashScreen from "@/components/splash-screen"
+import { ThemeProvider } from "@/components/theme-provider"
 
 const inter = Inter({
   subsets: ["latin"],
@@ -171,7 +172,7 @@ export default function RootLayout({
   }
 
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
         {/* Preconnect to external domains for faster connection */}
         <link rel="preconnect" href="https://www.procotech.in" />
@@ -235,8 +236,15 @@ export default function RootLayout({
         />
       </head>
       <body className={inter.className}>
-        <SplashScreen />
-        <ClientLayout>{children}</ClientLayout>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <SplashScreen />
+          <ClientLayout>{children}</ClientLayout>
+        </ThemeProvider>
       </body>
     </html>
   )

@@ -12,6 +12,7 @@ import { useStudent } from "@/hooks/useStudent"
 import { signOutStudent } from "@/lib/student"
 import { BookOpen, User, Award, LogOut, Home, AlertCircle, Menu, X, FileText, LayoutDashboard } from "lucide-react"
 import Image from "next/image"
+import { ThemeToggle } from "@/components/ui/theme-toggle"
 
 interface StudentLayoutProps {
   children: React.ReactNode
@@ -47,10 +48,10 @@ export default function StudentLayout({ children, title }: StudentLayoutProps) {
   // Show loading state
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-950">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading your dashboard...</p>
+          <p className="text-gray-600 dark:text-gray-400">Loading your dashboard...</p>
         </div>
       </div>
     )
@@ -59,7 +60,7 @@ export default function StudentLayout({ children, title }: StudentLayoutProps) {
   // Show error state
   if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-950 p-4">
         <div className="max-w-md w-full">
           <Alert variant="destructive">
             <AlertCircle className="h-4 w-4" />
@@ -76,9 +77,9 @@ export default function StudentLayout({ children, title }: StudentLayoutProps) {
   // Redirect if not authenticated (this should be handled by useEffect, but as backup)
   if (!user || !isStudent || !studentData) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-950">
         <div className="text-center">
-          <p className="text-gray-600 mb-4">Redirecting to login...</p>
+          <p className="text-gray-600 dark:text-gray-400 mb-4">Redirecting to login...</p>
           <Button onClick={() => router.push("/login")}>Go to Login</Button>
         </div>
       </div>
@@ -97,14 +98,14 @@ export default function StudentLayout({ children, title }: StudentLayoutProps) {
   ]
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex">
       {/* Mobile menu button */}
       <div className="lg:hidden fixed top-4 left-4 z-50">
         <Button
           variant="outline"
           size="icon"
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          className="bg-white shadow-md"
+          className="bg-white dark:bg-gray-800 shadow-md"
         >
           {mobileMenuOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
         </Button>
@@ -120,7 +121,7 @@ export default function StudentLayout({ children, title }: StudentLayoutProps) {
 
       {/* Sidebar */}
       <div className={`
-        fixed lg:sticky inset-y-0 left-0 z-50 w-64 bg-blue-900 shadow-lg transform transition-transform duration-300 ease-in-out flex flex-col
+        fixed lg:sticky inset-y-0 left-0 z-50 w-64 bg-blue-900 dark:bg-gray-900 shadow-lg transform transition-transform duration-300 ease-in-out flex flex-col
         ${mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}
         lg:translate-x-0
       `}>
@@ -135,7 +136,7 @@ export default function StudentLayout({ children, title }: StudentLayoutProps) {
             />
           </div>
 
-          <nav className="flex-1 px-4 py-6 space-y-2 bg-blue-900">
+          <nav className="flex-1 px-4 py-6 space-y-2 bg-blue-900 dark:bg-gray-900">
             {navigation.map((item) => {
               const Icon = item.icon
               const isActive = pathname === item.href || pathname.startsWith(item.href + '/')
@@ -145,32 +146,35 @@ export default function StudentLayout({ children, title }: StudentLayoutProps) {
                   href={item.href}
                   onClick={() => setMobileMenuOpen(false)}
                   className={`flex items-center px-4 py-2 rounded-lg transition-colors ${
-                    isActive 
-                      ? 'bg-blue-600 text-white shadow-md' 
-                      : 'text-blue-100 hover:bg-blue-800'
+                    isActive
+                      ? 'bg-blue-600 dark:bg-blue-700 text-white shadow-md'
+                      : 'text-blue-100 dark:text-gray-300 hover:bg-blue-800 dark:hover:bg-gray-800'
                   }`}
                 >
-                  <Icon className={`h-5 w-5 mr-3 ${isActive ? 'text-white' : 'text-blue-300'}`} />
+                  <Icon className={`h-5 w-5 mr-3 ${isActive ? 'text-white' : 'text-blue-300 dark:text-gray-400'}`} />
                   {item.name}
                 </Link>
               )
             })}
           </nav>
 
-          <div className="p-4 border-t border-blue-800 flex-shrink-0">
-            <div className="flex items-center mb-4">
-              <Avatar className="h-10 w-10">
-                <AvatarImage src={studentData.profilePicture} alt={studentData.fullName} />
-                <AvatarFallback className="bg-blue-600 text-white text-sm font-bold">
-                  {getInitials(studentData.fullName)}
-                </AvatarFallback>
-              </Avatar>
-              <div className="ml-3 flex-1 min-w-0">
-                <p className="text-sm font-medium text-white truncate">{studentData.fullName}</p>
-                <p className="text-xs text-blue-300 truncate">{studentData.email}</p>
+          <div className="p-4 border-t border-blue-800 dark:border-gray-700 flex-shrink-0">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center min-w-0">
+                <Avatar className="h-10 w-10">
+                  <AvatarImage src={studentData.profilePicture} alt={studentData.fullName} />
+                  <AvatarFallback className="bg-blue-600 text-white text-sm font-bold">
+                    {getInitials(studentData.fullName)}
+                  </AvatarFallback>
+                </Avatar>
+                <div className="ml-3 flex-1 min-w-0">
+                  <p className="text-sm font-medium text-white truncate">{studentData.fullName}</p>
+                  <p className="text-xs text-blue-300 dark:text-gray-400 truncate">{studentData.email}</p>
+                </div>
               </div>
+              <ThemeToggle />
             </div>
-            <Button onClick={handleSignOut} variant="outline" className="w-full justify-start bg-blue-800 text-blue-100 hover:bg-blue-700 border-blue-700">
+            <Button onClick={handleSignOut} variant="outline" className="w-full justify-start bg-blue-800 dark:bg-gray-800 text-blue-100 dark:text-gray-300 hover:bg-blue-700 dark:hover:bg-gray-700 border-blue-700 dark:border-gray-600">
               <LogOut className="h-4 w-4 mr-2" />
               Sign Out
             </Button>

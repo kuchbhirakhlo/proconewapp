@@ -132,6 +132,14 @@ const nextConfig = {
 
   // Webpack optimization
   webpack: (config, { isServer }) => {
+    // Resolve pdfjs-dist canvas issue on server
+    if (isServer) {
+      config.resolve.alias = {
+        ...config.resolve.alias,
+        canvas: false,
+      }
+    }
+
     if (!isServer) {
       config.optimization = {
         ...config.optimization,
