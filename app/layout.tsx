@@ -1,3 +1,4 @@
+
 import type React from "react"
 import type { Metadata } from "next"
 import { Inter } from "next/font/google"
@@ -5,11 +6,10 @@ import Script from "next/script"
 import "./globals.css"
 import ClientLayout from "./ClientLayout"
 import SplashScreen from "@/components/splash-screen"
-import { ThemeProvider } from "@/components/theme-provider"
 
 const inter = Inter({
   subsets: ["latin"],
-  display: "swap",
+  display: "swap", 
   preload: true,
   variable: "--font-inter",
 })
@@ -236,15 +236,8 @@ export default function RootLayout({
         />
       </head>
       <body className={inter.className}>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <SplashScreen />
-          <ClientLayout>{children}</ClientLayout>
-        </ThemeProvider>
+        <SplashScreen />
+        <ClientLayout>{children}</ClientLayout>
       </body>
     </html>
   )

@@ -88,17 +88,17 @@ export default function HomePage() {
       description: "Custom web applications using modern technologies like React, Next.js, and Node.js",
     },
     {
-      icon: <Smartphone className="h-8 w-8 text-green-600" />,
+      icon: <Smartphone className="h-8 w-8 text-red-600" />,
       title: "Mobile Development",
       description: "Native and cross-platform mobile apps for iOS and Android",
     },
     {
-      icon: <Database className="h-8 w-8 text-purple-600" />,
+      icon: <Database className="h-8 w-8 text-red-600" />,
       title: "Database Solutions",
       description: "Database design, optimization, and management services",
     },
     {
-      icon: <Cloud className="h-8 w-8 text-orange-600" />,
+      icon: <Cloud className="h-8 w-8 text-red-600" />,
       title: "Cloud Services",
       description: "Cloud migration, deployment, and infrastructure management",
     },
@@ -140,35 +140,35 @@ export default function HomePage() {
 
   return (
     <div className="flex flex-col">
-      {/* Typing Test Challenge Banner */}
-      <section 
-        className="py-4 bg-gradient-to-r from-red-600 via-purple-600 to-green-600 text-white"
-        aria-label="Typing Test Challenge Banner"
+      {/* Anniversary Offer Banner */}
+      <section
+        className="py-4 bg-red-600 text-white"
+        aria-label="Anniversary Offer Banner"
       >
         <div className="min-h-[60px] max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-3">
               <div className="bg-white/20 p-2 rounded-lg">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 15.546c-.523 0-1.046.151-1.5.454a2.704 2.704 0 01-3 0 2.704 2.704 0 00-3 0 2.704 2.704 0 01-3 0 2.704 2.704 0 00-3 0 2.704 2.704 0 01-3 0 2.701 2.701 0 00-1.5-.454M9 6v2m3-2v2m3-2v2M9 3h.01M12 3h.01M15 3h.01M21 21v-7a2 2 0 00-2-2H5a2 2 0 00-2 2v7h18zm-3-9v-2a2 2 0 00-2-2H8a2 2 0 00-2 2v2.01" />
                 </svg>
               </div>
               <div>
-                <p className="text-sm font-medium text-red-100">New Student Challenge</p>
-                <p className="font-bold text-lg">🎯 Typing Test Challenge - Win 1 Month FREE Classes!</p>
+                <p className="text-sm font-medium text-red-100">1st Anniversary Celebration</p>
+                <p className="font-bold text-lg">🎉 Proco Technologies 1st Anniversary - 1000rs OFF for All Students!</p>
               </div>
             </div>
             <div className="flex items-center gap-3">
               <div className="hidden sm:flex items-center gap-2 text-sm text-red-100">
-                <span>⏱️ 5 Minutes</span>
+                <span>💰 ₹1000 Discount</span>
                 <span>•</span>
-                <span>🏆 Prize: 1 Month Free</span>
+                <span>🎓 All Students</span>
                 <span>•</span>
-                <span>📊 All Levels</span>
+                <span>📅 Limited Time</span>
               </div>
               <Button asChild size="sm" className="bg-white text-purple-600 hover:bg-red-100 font-semibold">
-                <Link href="/typing-test-online">
-                  Start Challenge
+                <Link href="/courses">
+                  Claim Offer
                 </Link>
               </Button>
             </div>
@@ -673,7 +673,7 @@ export default function HomePage() {
       </section>
 
       {/* Services Section - Unique Design */}
-      <section className="py-20 bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 relative overflow-hidden">
+      <section className="py-20 bg-gradient-to-br from-black via-red-900 to-black relative overflow-hidden">
         {/* Animated Background Elements */}
         <div className="absolute inset-0 overflow-hidden">
           <div className="absolute top-10 left-10 w-64 h-64 bg-purple-500/20 rounded-full blur-3xl animate-pulse"></div>
@@ -717,11 +717,11 @@ export default function HomePage() {
                 {/* Card */}
                 <div className="relative bg-white/5 backdrop-blur-md rounded-2xl p-8 border border-white/10 hover:border-white/30 transition-all duration-500 hover:bg-white/10 hover:-translate-y-2">
                   {/* Gradient Border Glow */}
-                  <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-red-500/50 via-purple-500/50 to-green-500/50 opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-lg -z-10"></div>
+                  <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-red-500/50 via-red-500/50 to-red-500/50 opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-lg -z-10"></div>
                   
                   {/* Icon Container */}
                   <div className="relative mb-6">
-                    <div className={`absolute inset-0 rounded-xl blur-lg opacity-50 group-hover:opacity-100 transition-opacity duration-500 ${index === 0 ? "bg-red-500" : index === 1 ? "bg-green-500" : index === 2 ? "bg-purple-500" : "bg-orange-500"}`}></div>
+                    <div className="absolute inset-0 rounded-xl blur-lg opacity-50 group-hover:opacity-100 transition-opacity duration-500 bg-red-500"></div>
                     <div className="relative w-16 h-16 rounded-xl bg-white/10 border border-white/20 flex items-center justify-center group-hover:scale-110 group-hover:rotate-6 transition-all duration-300">
                       {service.icon}
                     </div>
@@ -788,7 +788,7 @@ export default function HomePage() {
       </section>
 
       {/* Courses Section - Unique Design */}
-      <section className="py-24 bg-gradient-to-br from-slate-50 via-white to-red-50 relative overflow-hidden">
+      <section className="py-24 bg-gradient-to-br from-black via-red-900 to-black relative overflow-hidden">
         {/* Decorative Background Elements */}
         <div className="absolute inset-0 overflow-hidden">
           <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-red-100/50 rounded-full blur-3xl"></div>
@@ -801,17 +801,17 @@ export default function HomePage() {
           <div className="text-center mb-16">
             <div className="inline-flex items-center gap-2 mb-4">
               <div className="h-px w-12 bg-gradient-to-r from-transparent to-red-500"></div>
-              <Badge className="bg-red-100 text-red-700 hover:bg-red-200 px-4 py-1">🎓 Academic Programs</Badge>
+              <Badge className="bg-red-900 text-red-300 px-4 py-1">🎓 Academic Programs</Badge>
               <div className="h-px w-12 bg-gradient-to-l from-transparent to-red-500"></div>
             </div>
-            <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
+            <h2 className="text-4xl lg:text-5xl font-bold text-white mb-4">
               <span className="relative inline-block">
                 Popular
                 <span className="absolute -bottom-2 left-0 w-full h-3 bg-yellow-400/40 -z-10 transform -rotate-1"></span>
               </span>{" "}
               <span className="text-transparent bg-gradient-to-r from-red-600 to-green-600 bg-clip-text">Courses</span>
             </h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto mt-6 leading-relaxed">
+            <p className="text-xl text-gray-300 max-w-2xl mx-auto mt-6 leading-relaxed">
               Master in-demand skills with our comprehensive curriculum designed by industry experts to boost your career.
             </p>
           </div>
@@ -826,7 +826,7 @@ export default function HomePage() {
             ].map((stat, i) => (
               <div key={i} className="flex items-center gap-3 bg-white/80 backdrop-blur-sm px-5 py-3 rounded-full shadow-lg border border-white/50">
                 <span className="text-2xl font-bold text-red-600">{stat.value}</span>
-                <span className="text-gray-600 font-medium">{stat.label}</span>
+                <span className="text-gray-300 font-medium">{stat.label}</span>
               </div>
             ))}
           </div>
@@ -842,7 +842,7 @@ export default function HomePage() {
                 <div className="absolute -inset-0.5 bg-gradient-to-r from-red-500 via-purple-500 to-green-500 rounded-2xl opacity-30 group-hover:opacity-100 transition-opacity duration-500 blur-sm"></div>
                 
                 {/* Main Card */}
-                <div className="relative h-full bg-white rounded-2xl p-6 border border-gray-100 group-hover:border-transparent transition-all duration-500 group-hover:-translate-y-2 group-hover:shadow-2xl">
+                <div className="relative h-full bg-black rounded-2xl p-6 border border-gray-800 group-hover:border-transparent transition-all duration-500 group-hover:-translate-y-2 group-hover:shadow-2xl">
                   {/* Course Icon/Image Placeholder */}
                   <div className="relative mb-4">
                     <div className={`w-14 h-14 rounded-xl flex items-center justify-center text-white font-bold text-xl transition-transform duration-500 group-hover:scale-110 group-hover:rotate-3 ${
@@ -868,33 +868,33 @@ export default function HomePage() {
                   </div>
 
                   {/* Course Title */}
-                  <h3 className="text-lg font-bold text-gray-900 mb-3 leading-tight group-hover:text-red-600 transition-colors duration-300">
+                  <h3 className="text-lg font-bold text-white mb-3 leading-tight group-hover:text-red-600 transition-colors duration-300">
                     {course.title}
                   </h3>
 
-                  {/* Course Details */}
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="flex items-center gap-1 text-sm text-gray-500">
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                      </svg>
-                      {course.duration}
-                    </div>
-                    <div className="w-1 h-1 bg-gray-300 rounded-full"></div>
-                    <div className="flex items-center gap-1 text-sm text-gray-500">
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                      </svg>
-                      {course.level}
-                    </div>
-                  </div>
+                   {/* Course Details */}
+                   <div className="flex items-center gap-3 mb-4">
+                     <div className="flex items-center gap-1 text-sm text-gray-400">
+                       <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                       </svg>
+                       {course.duration}
+                     </div>
+                     <div className="w-1 h-1 bg-gray-300 rounded-full"></div>
+                     <div className="flex items-center gap-1 text-sm text-gray-400">
+                       <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                       </svg>
+                       {course.level}
+                     </div>
+                   </div>
 
                   {/* Price */}
                   <div className="flex items-baseline gap-2 mb-4">
                     <span className="text-2xl font-bold bg-gradient-to-r from-red-600 to-purple-600 bg-clip-text text-transparent">
                       {course.price}
                     </span>
-                    <span className="text-sm text-gray-400 line-through">₹12,999</span>
+                     <span className="text-sm text-gray-300 line-through">₹12,999</span>
                     <span className="text-xs text-green-600 font-medium bg-green-100 px-2 py-0.5 rounded-full">
                       Save 23%
                     </span>
@@ -906,7 +906,7 @@ export default function HomePage() {
                   {/* Features */}
                   <div className="space-y-2 mb-4">
                     {["Live Projects", "Certificate", "Job Support"].map((feature, i) => (
-                      <div key={i} className="flex items-center gap-2 text-sm text-gray-600">
+                      <div key={i} className="flex items-center gap-2 text-sm text-gray-300">
                         <div className="w-4 h-4 rounded-full bg-green-100 flex items-center justify-center">
                           <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
@@ -956,11 +956,11 @@ export default function HomePage() {
               { icon: "👨‍🏫", title: "Expert Mentors", desc: "Learn from professionals with 10+ years of experience" },
               { icon: "🚀", title: "Career Support", desc: "Resume building, mock interviews & job placement assistance" }
             ].map((item, i) => (
-              <div key={i} className="flex items-start gap-4 p-6 bg-white/60 backdrop-blur-sm rounded-xl border border-white/50 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+              <div key={i} className="flex items-start gap-4 p-6 bg-black/60 backdrop-blur-sm rounded-xl border border-gray-700 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
                 <div className="text-4xl">{item.icon}</div>
                 <div>
-                  <h4 className="font-bold text-gray-900 mb-1">{item.title}</h4>
-                  <p className="text-gray-600 text-sm">{item.desc}</p>
+                  <h4 className="font-bold text-white mb-1">{item.title}</h4>
+                  <p className="text-gray-300 text-sm">{item.desc}</p>
                 </div>
               </div>
             ))}

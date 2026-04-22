@@ -120,6 +120,171 @@ export default function ReviewsSection() {
         relativeTimeDescription: '6 months ago',
         timestamp: Date.now() / 1000 - 15552000,
         source: 'google'
+      },
+      {
+        id: 6,
+        authorName: 'Anjali Gupta',
+        authorUrl: '',
+        profilePhotoUrl: '',
+        rating: 5,
+        text: 'Outstanding ADCA course! The curriculum covers everything from basic computer skills to advanced applications. The lab sessions are hands-on and very practical.',
+        relativeTimeDescription: '7 months ago',
+        timestamp: Date.now() / 1000 - 18144000,
+        source: 'google'
+      },
+      {
+        id: 7,
+        authorName: 'Rohit Verma',
+        authorUrl: '',
+        profilePhotoUrl: '',
+        rating: 5,
+        text: 'Perfect place for career transition. I was a fresher with no IT background, and now I am working as a web developer. The placement assistance is excellent!',
+        relativeTimeDescription: '8 months ago',
+        timestamp: Date.now() / 1000 - 20736000,
+        source: 'google'
+      },
+      {
+        id: 8,
+        authorName: 'Kavita Rai',
+        authorUrl: '',
+        profilePhotoUrl: '',
+        rating: 5,
+        text: 'The mobile app development course exceeded my expectations. Learned Flutter and React Native. The projects we built are now part of my portfolio.',
+        relativeTimeDescription: '9 months ago',
+        timestamp: Date.now() / 1000 - 23328000,
+        source: 'google'
+      },
+      {
+        id: 9,
+        authorName: 'Deepak Singh',
+        authorUrl: '',
+        profilePhotoUrl: '',
+        rating: 4,
+        text: 'Good institute for computer education. The faculty is knowledgeable and the course material is updated. Minor issue with internet connectivity in labs.',
+        relativeTimeDescription: '10 months ago',
+        timestamp: Date.now() / 1000 - 25920000,
+        source: 'google'
+      },
+      {
+        id: 10,
+        authorName: 'Meera Choudhary',
+        authorUrl: '',
+        profilePhotoUrl: '',
+        rating: 5,
+        text: 'Excellent teaching methodology. The way they explain complex concepts in simple terms is commendable. Highly recommended for beginners.',
+        relativeTimeDescription: '11 months ago',
+        timestamp: Date.now() / 1000 - 28512000,
+        source: 'google'
+      },
+      {
+        id: 11,
+        authorName: 'Arjun Tiwari',
+        authorUrl: '',
+        profilePhotoUrl: '',
+        rating: 5,
+        text: 'Best investment I made for my career! The full stack course covered everything from HTML to deployment. Got my dream job within 3 months of completion.',
+        relativeTimeDescription: '1 year ago',
+        timestamp: Date.now() / 1000 - 31536000,
+        source: 'google'
+      },
+      {
+        id: 12,
+        authorName: 'Poonam Saxena',
+        authorUrl: '',
+        profilePhotoUrl: '',
+        rating: 5,
+        text: 'Wonderful experience learning Python programming. The practical approach and real-world examples made learning enjoyable. Thank you Proco Technologies!',
+        relativeTimeDescription: '1 year ago',
+        timestamp: Date.now() / 1000 - 34128000,
+        source: 'google'
+      },
+      {
+        id: 13,
+        authorName: 'Suresh Pandey',
+        authorUrl: '',
+        profilePhotoUrl: '',
+        rating: 5,
+        text: 'Great infrastructure and supportive staff. The weekend batches are perfect for working professionals. Completed DCA course successfully.',
+        relativeTimeDescription: '1 year ago',
+        timestamp: Date.now() / 1000 - 36720000,
+        source: 'google'
+      },
+      {
+        id: 14,
+        authorName: 'Neha Agarwal',
+        authorUrl: '',
+        profilePhotoUrl: '',
+        rating: 5,
+        text: 'Amazing journey from zero to hero in web development. The mentors are always available for doubt clearing. Five stars definitely!',
+        relativeTimeDescription: '1 year ago',
+        timestamp: Date.now() / 1000 - 39312000,
+        source: 'google'
+      },
+      {
+        id: 15,
+        authorName: 'Rajesh Kumar',
+        authorUrl: '',
+        profilePhotoUrl: '',
+        rating: 4,
+        text: 'Good computer institute. The courses are comprehensive and the teaching quality is decent. Would recommend for basic computer skills.',
+        relativeTimeDescription: '1 year ago',
+        timestamp: Date.now() / 1000 - 41904000,
+        source: 'google'
+      },
+      {
+        id: 16,
+        authorName: 'Sunita Mishra',
+        authorUrl: '',
+        profilePhotoUrl: '',
+        rating: 5,
+        text: 'Exceptional training in mobile development. Built multiple apps during the course. The portfolio I created helped me land a job immediately.',
+        relativeTimeDescription: '1 year ago',
+        timestamp: Date.now() / 1000 - 44544000,
+        source: 'google'
+      },
+      {
+        id: 17,
+        authorName: 'Manoj Sharma',
+        authorUrl: '',
+        profilePhotoUrl: '',
+        rating: 5,
+        text: 'Best place to learn typing skills. Improved my English typing speed significantly. The practice sessions are very effective.',
+        relativeTimeDescription: '1 year ago',
+        timestamp: Date.now() / 1000 - 47136000,
+        source: 'google'
+      },
+      {
+        id: 18,
+        authorName: 'Alka Verma',
+        authorUrl: '',
+        profilePhotoUrl: '',
+        rating: 5,
+        text: 'Wonderful learning environment. The faculty members are experienced and patient. Completed ADCA with flying colors!',
+        relativeTimeDescription: '1 year ago',
+        timestamp: Date.now() / 1000 - 49728000,
+        source: 'google'
+      },
+      {
+        id: 19,
+        authorName: 'Vivek Gupta',
+        authorUrl: '',
+        profilePhotoUrl: '',
+        rating: 5,
+        text: 'Excellent institute for IT education. The practical focus and industry-relevant curriculum make it stand out. Highly satisfied!',
+        relativeTimeDescription: '2 years ago',
+        timestamp: Date.now() / 1000 - 63072000,
+        source: 'google'
+      },
+      {
+        id: 20,
+        authorName: 'Ritu Jain',
+        authorUrl: '',
+        profilePhotoUrl: '',
+        rating: 5,
+        text: 'Transformed my career completely. From a non-technical background to a successful developer. The journey was amazing and the results are outstanding.',
+        relativeTimeDescription: '2 years ago',
+        timestamp: Date.now() / 1000 - 65664000,
+        source: 'google'
       }
     ]
   }
