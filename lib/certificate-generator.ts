@@ -66,7 +66,7 @@ export const generateCertificatePDF = async (data: CertificateData): Promise<voi
             <!-- Logo -->
             <div style="margin-top: 40px; text-align: center;">
                 <div style="display: inline-block; text-align: center; margin: 0 40px;">
-                    <img src="/logo.png" alt="Organization Logo" style="height: 60px; width: auto; margin-bottom: 10px; object-fit: contain;" />
+                    <img src="/proco_tech.jpg" alt="Organization Logo" style="height: 60px; width: auto; margin-bottom: 10px; object-fit: contain;" />
                     <p style="font-size: 14px; color: #6b7280; margin: 5px 0;">Certified by</p>
                     <p style="font-size: 16px; color: #1f2937; font-weight: bold;">Proco Technologies</p>
                 </div>
@@ -259,7 +259,7 @@ export const previewCertificate = (data: CertificateData): void => {
                 ` : ''}
 
                 <div class="signature">
-                    <img src="/logo.png" alt="Organization Logo" style="height: 60px; width: auto; margin: 0 auto 10px; object-fit: contain; display: block;" />
+                    <img src="/proco_tech.jpg" alt="Organization Logo" style="height: 60px; width: auto; margin: 0 auto 10px; object-fit: contain; display: block;" />
                     <div class="detail-label">Certified by</div>
                     <div class="detail-value">Proco Technologies</div>
                 </div>

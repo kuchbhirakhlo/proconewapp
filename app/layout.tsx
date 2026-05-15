@@ -85,13 +85,13 @@ export const metadata: Metadata = {
     description: "Premier computer institute offering web development, mobile app development, and IT training courses. Build your career with industry-expert instructors.",
     images: [
       {
-        url: "/logo.png",
+        url: "/proco_tech.jpg",
         width: 192,
         height: 192,
         alt: "Proco Technologies Logo",
       },
       {
-        url: "/main-pic.png",
+        url: "/proco_tech.jpg",
         width: 1200,
         height: 630,
         alt: "Proco Technologies Office",
@@ -102,7 +102,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Proco Technologies - Best Computer Institute & Software Development",
     description: "Learn web development, mobile apps, and IT skills from industry experts. 95% job placement rate.",
-    images: ["/main-pic.png"],
+    images: ["/proco_tech.jpg"],
     creator: "@procotech",
   },
   verification: {
@@ -121,8 +121,8 @@ export default function RootLayout({
     "name": "Proco Technologies",
     "description": "Premier computer institute and software development company offering professional IT training and custom software solutions.",
     "url": "https://procotech.in",
-    "logo": "https://procotech.in/logo.png",
-    "image": "https://procotech.in/main-pic.png",
+    "logo": "https://procotech.in/proco_tech.jpg",
+    "image": "https://procotech.in/proco_tech.jpg",
     "telephone": "+91-XXXXXXXXXX",
     "address": {
       "@type": "PostalAddress",

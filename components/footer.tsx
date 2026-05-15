@@ -4,21 +4,20 @@ import Image from "next/image"
 
 export default function Footer() {
   return (
-    <footer className="bg-gray-900 text-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <footer className="bg-gray-900 text-white py-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Company Info */}
           <div className="col-span-1 md:col-span-2">
             <Link href="/" className="flex items-center space-x-2 mb-4">
               <div className="flex items-center space-x-1">
-                <Code className="h-9 w-9 text-red-400" />
-                <GraduationCap className="h-9 w-9 text-green-400" />
+                <Code className="h-8 w-8 text-red-400" />
+                <GraduationCap className="h-8 w-8 text-green-400" />
               </div>
-              <span className="font-bold text-xl">Proco Technologies</span>
+              <span className="font-bold text-lg">Proco Technologies</span>
             </Link>
             <p className="text-gray-300 mb-4 max-w-md">
-              Leading computer institute and software development company providing quality education and innovative
-              solutions.
+              Leading computer institute and software development company providing quality education and innovative solutions.
             </p>
             <div className="space-y-2">
               <div className="flex items-center space-x-2">
@@ -27,14 +26,8 @@ export default function Footer() {
               </div>
               <div className="flex items-center space-x-2">
                 <MapPin className="h-4 w-4 text-red-400" />
-                <span className="text-gray-300">Maharishi Nagar 
-                Lucknow Uttar Pradesh 226020</span>
+                <span className="text-gray-300">Lucknow, Uttar Pradesh & Jaipur, Rajasthan</span>
               </div>
-              <div className="flex items-center space-x-2">
-              <MapPin className="h-4 w-4 text-red-400" />
-              <span className="text-gray-300">Jaisinghpura Khor
-                Jaipur Rajasthan 302027</span>
-                </div>
             </div>
           </div>
 
@@ -43,54 +36,26 @@ export default function Footer() {
             <h3 className="font-semibold text-lg mb-4">Quick Links</h3>
             <ul className="space-y-2">
               <li>
-                <Link href="/about" className="text-gray-300 hover:text-white transition-colors">
-                  About Us
-                </Link>
-              </li>
-              <li>
-                <Link href="/courses" className="text-gray-300 hover:text-white transition-colors">
+                <Link href="/courses" className="text-gray-300 hover:text-white">
                   Courses
                 </Link>
               </li>
               <li>
-                <Link href="/portfolio" className="text-gray-300 hover:text-white transition-colors">
+                <Link href="/portfolio" className="text-gray-300 hover:text-white">
                   Portfolio
                 </Link>
               </li>
               <li>
-                <Link href="/contact" className="text-gray-300 hover:text-white transition-colors">
+                <Link href="/contact" className="text-gray-300 hover:text-white">
                   Contact
                 </Link>
               </li>
               <li>
-                <Link href="/privacy-policy" className="text-gray-300 hover:text-white transition-colors">
-                  Privacy Policy
-                </Link>
-              </li>
-              <li>
-                <Link href="/terms-conditions" className="text-gray-300 hover:text-white transition-colors">
-                  Terms & Conditions
+                <Link href="/about" className="text-gray-300 hover:text-white">
+                  About Us
                 </Link>
               </li>
             </ul>
-            {/* Social Media */}
-          <div className="mt-8">
-            <h3 className="font-semibold text-lg mb-4">Follow Us</h3>
-            <div className="flex space-x-4">
-              <Link href="https://www.facebook.com/procotechnologies" target="_blank" className="text-gray-300 hover:text-white transition-colors">
-                <Image src="/icons/facebook.svg" alt="Facebook" width={24} height={24} />
-              </Link>
-              <Link href="https://www.instagram.com/proco_technologies" target="_blank" className="text-gray-300 hover:text-white transition-colors">
-                <Image src="/icons/instagram.svg" alt="Instagram" width={24} height={24} />
-              </Link>
-              <Link href="https://www.linkedin.com/company/procotechnologies" target="_blank" className="text-gray-300 hover:text-white transition-colors">
-                <Image src="/icons/linkedin.svg" alt="LinkedIn" width={24} height={24} />
-              </Link>
-              <Link href="https://www.youtube.com/@procotechnologies" target="_blank" className="text-gray-300 hover:text-white transition-colors">
-                <Image src="/icons/youtube.svg" alt="YouTube" width={24} height={24} />
-              </Link>
-              </div>
-              </div>
           </div>
 
           {/* Services */}
@@ -102,9 +67,25 @@ export default function Footer() {
               <li className="text-gray-300">Software Training</li>
               <li className="text-gray-300">IT Consulting</li>
             </ul>
-             <Image src={"/msme.png"} alt="Proco Technologies Logo" width={150} height={50} className="bg-white text-right mt-4" />
+            {/* Social Media */}
+            <div className="mt-6">
+              <h3 className="font-semibold text-lg mb-4">Follow Us</h3>
+              <div className="flex space-x-4">
+                <Link href="https://www.facebook.com/procotechnologies" target="_blank" className="text-gray-300 hover:text-white">
+                  <Image src="/icons/facebook.svg" alt="Facebook" width={24} height={24} />
+                </Link>
+                <Link href="https://www.instagram.com/proco_technologies" target="_blank" className="text-gray-300 hover:text-white">
+                  <Image src="/icons/instagram.svg" alt="Instagram" width={24} height={24} />
+                </Link>
+                <Link href="https://www.linkedin.com/company/procotechnologies" target="_blank" className="text-gray-300 hover:text-white">
+                  <Image src="/icons/linkedin.svg" alt="LinkedIn" width={24} height={24} />
+                </Link>
+                <Link href="https://www.youtube.com/@procotechnologies" target="_blank" className="text-gray-300 hover:text-white">
+                  <Image src="/icons/youtube.svg" alt="YouTube" width={24} height={24} />
+                </Link>
+              </div>
+            </div>
           </div>
-          
         </div>
 
         <div className="border-t border-gray-800 mt-8 pt-8 text-center">

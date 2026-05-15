@@ -7,9 +7,11 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { Menu, Code, GraduationCap } from "lucide-react"
 import Image from "next/image"
 import { ThemeToggle } from "@/components/ui/theme-toggle"
+import { useTheme } from "next-themes"
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
+  const { theme } = useTheme()
 
   const navigation = [
     { name: "Home", href: "/" },
@@ -20,33 +22,36 @@ export default function Navbar() {
     { name: "Typing Test", href: "/typing-test-online" },
   ]
 
+  const logoSrc = theme === "dark" ? "/proco-dark.png" : "/proco-light.png"
+
   return (
-    <nav className="border-b bg-white/95 dark:bg-gray-950/95 backdrop-blur supports-[backdrop-filter]:bg-white/60 sticky top-0 z-50">
+    <nav className="border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 shadow-sm sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-          <Link href="/" className="flex items-center space-x-2">
-            <Image 
-              src="/logo.png" 
-              alt="Proco Technologies Logo" 
-              width={100} 
-              height={70} 
-              className="object-contain h-24 w-auto"
+          <Link href="/" className="flex items-center">
+            <Image
+              src={logoSrc}
+              alt="Proco Technologies Logo"
+              width={100}
+              height={60}
+              className="object-contain rounded-full h-14 w-auto"
             />
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-4">
+          <div className="hidden md:flex items-center space-x-6">
             {navigation.map((item) => (
               <Link
                 key={item.name}
                 href={item.href}
-                className="text-gray-700 dark:text-gray-200 hover:text-red-600 px-2 py-2 text-sm font-medium transition-colors"
+                className="text-gray-700 dark:text-gray-200 hover:text-red-600 px-3 py-2 text-sm font-medium transition-colors duration-200"
               >
                 {item.name}
               </Link>
             ))}
+            <div className="h-6 w-px bg-gray-300 dark:bg-gray-600"></div>
             <ThemeToggle />
-            <Button asChild>
+            <Button asChild size="sm" className="bg-red-600 hover:bg-red-700">
               <Link href="/login">Student Login</Link>
             </Button>
           </div>
@@ -54,29 +59,31 @@ export default function Navbar() {
           {/* Mobile Navigation */}
           <Sheet open={isOpen} onOpenChange={setIsOpen}>
             <SheetTrigger asChild className="md:hidden">
-              <Button variant="ghost" size="icon">
+              <Button variant="ghost" size="icon" className="text-gray-700 dark:text-gray-200">
                 <Menu className="h-6 w-6" />
               </Button>
             </SheetTrigger>
-            <SheetContent side="right" className="w-[300px] sm:w-[400px]">
-              <div className="flex flex-col space-y-4 mt-8">
+            <SheetContent side="right" className="w-[300px] sm:w-[350px] bg-white dark:bg-gray-900">
+              <div className="flex flex-col space-y-1 mt-8">
                 {navigation.map((item) => (
                   <Link
                     key={item.name}
                     href={item.href}
-                    className="text-gray-700 dark:text-gray-200 hover:text-red-600 px-3 py-2 text-lg font-medium transition-colors"
+                    className="text-gray-700 dark:text-gray-200 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/20 px-4 py-3 text-base font-medium transition-all duration-200 rounded-lg"
                     onClick={() => setIsOpen(false)}
                   >
                     {item.name}
                   </Link>
                 ))}
-                <div className="flex items-center gap-2 pt-4">
-                  <ThemeToggle />
-                  <Button asChild className="flex-1">
-                    <Link href="/login" onClick={() => setIsOpen(false)}>
-                      Student Login
-                    </Link>
-                  </Button>
+                <div className="border-t border-gray-200 dark:border-gray-700 mt-6 pt-6">
+                  <div className="flex items-center gap-3">
+                    <ThemeToggle />
+                    <Button asChild className="flex-1 bg-red-600 hover:bg-red-700">
+                      <Link href="/login" onClick={() => setIsOpen(false)}>
+                        Student Login
+                      </Link>
+                    </Button>
+                  </div>
                 </div>
               </div>
             </SheetContent>

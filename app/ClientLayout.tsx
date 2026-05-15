@@ -5,7 +5,6 @@ import { usePathname } from "next/navigation"
 import dynamic from "next/dynamic"
 import Navbar from "@/components/navbar"
 import Footer from "@/components/footer"
-import Gallery from "@/components/gallery"
 import Chatbot from "@/components/chatbot"
 
 const ThemeProvider = dynamic(
@@ -30,7 +29,7 @@ export default function ClientLayout({
   return (
     <ThemeProvider
       attribute="class"
-      defaultTheme="system"
+      defaultTheme="dark"
       enableSystem
       disableTransitionOnChange
     >
@@ -38,7 +37,6 @@ export default function ClientLayout({
       <main className={hideHeaderFooter ? "min-h-screen" : "min-h-screen"}>{children}</main>
       {!hideHeaderFooter && (
         <>
-          {showGallery && <Gallery />}
           <Footer />
         </>
       )}

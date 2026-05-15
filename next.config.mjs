@@ -11,6 +11,13 @@ const nextConfig = {
     optimizeCss: true,
   },
 
+  // Disable styled-jsx to prevent conflicts
+  compiler: {
+    styledComponents: false,
+    emotion: false,
+    styledJsx: false,
+  },
+
   // Disable legacy polyfills for modern browsers (saves ~16KB)
   // This removes ES5 transpilation for baseline features
   swcMinify: true,

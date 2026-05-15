@@ -354,10 +354,10 @@ export default function Chatbot() {
         aria-label="Toggle chatbot"
       >
         {isOpen ? (
-          <X className="h-6 w-6" />
+          <X className="h-16 w-16" />
         ) : (
           <div className="relative">
-            <Lottie animationData={aiRobot} loop={true} className="h-6 w-6" />
+            <Lottie animationData={aiRobot} loop={true} className="h-16 w-16" />
             {/* Blinking dot */}
             <div
               className={`absolute -top-1 -right-1 h-3 w-3 rounded-full bg-green-400 transition-opacity duration-500 ${

@@ -549,28 +549,7 @@ export default function TypingTestOnline() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white dark:from-gray-900 dark:to-gray-800" style={{ WebkitTouchCallout: 'none', WebkitUserSelect: 'none' }}>
-      <style jsx>{`
-        @media only screen and (max-width: 768px) {
-          * {
-            -webkit-touch-callout: none;
-            -webkit-user-select: none;
-            user-select: none;
-          }
-          
-          textarea {
-            -webkit-user-select: none;
-            user-select: none;
-          }
-        }
-        
-        @supports (background: blur(10px)) {
-          @media screen and (max-width: 768px) {
-            .sensitive-content {
-              mix-blend-mode: multiply;
-            }
-          }
-        }
-      `}</style>
+
       {/* Typing Challenge Banner - Colorful Informative Poster */}
       <div className="relative overflow-hidden bg-gradient-to-r from-violet-600 via-purple-600 to-pink-500 text-white py-16">
         {/* Animated Background Elements */}
