@@ -1,4 +1,5 @@
 "use client"
+import Head from 'next/head'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -69,7 +70,34 @@ export default function ContactPage() {
     }
   }
   return (
-    <div className="flex flex-col">
+    <>
+      <Head>
+        <title>Contact Proco Technologies in Lucknow - Best IT Courses in Uttar Pradesh</title>
+        <meta name="description" content="Contact Proco Technologies for top IT courses in Lucknow, Uttar Pradesh. Enroll in ADCA, Digital Marketing, Software Development courses. Get in touch today!" />
+        <meta name="keywords" content="contact proco technologies lucknow, IT courses lucknow, ADCA course lucknow, digital marketing course lucknow, software development course lucknow, computer courses uttar pradesh, training institute lucknow" />
+        <meta name="robots" content="index, follow" />
+        <link rel="canonical" href="https://proco.tech/contact" />
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "LocalBusiness",
+            "name": "Proco Technologies",
+            "address": {
+              "@type": "PostalAddress",
+              "streetAddress": "Ground Floor D N Singh Complex, Semra Gauri, Aziz Nagar, Madiyanva",
+              "addressLocality": "Lucknow",
+              "addressRegion": "Uttar Pradesh",
+              "postalCode": "226020",
+              "addressCountry": "IN"
+            },
+            "email": "theprocotech@gmail.com",
+            "url": "https://proco.tech",
+            "description": "Leading IT training institute in Lucknow offering ADCA, Digital Marketing, and Software Development courses.",
+            "openingHours": "Mo-Fr 09:00-18:00, Sa 10:00-16:00"
+          })}
+        </script>
+      </Head>
+      <div className="flex flex-col">
       {/* Hero Section */}
       <section className="bg-gradient-to-br from-red-50 to-green-50 py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
@@ -205,29 +233,7 @@ export default function ContactPage() {
         </div>
       </section>
 
-      {/* Map Section */}
-      <section className="py-20 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">Visit Our Campus</h2>
-            <p className="text-xl text-gray-600">
-              Come visit our modern facilities and see what makes ProcoTech special.
-            </p>
-          </div>
 
-          {/* Map */}
-          <div className="h-[500px] rounded-lg overflow-hidden">
-            <iframe
-              src="https://storage.googleapis.com/maps-solutions-hqsefb7w5c/locator-plus/wfwd/locator-plus.html"
-              width="100%"
-              height="100%"
-              style={{ border: 0 }}
-              loading="lazy"
-              title="Google Maps Locator"
-            ></iframe>
-          </div>
-        </div>
-      </section>
 
       {/* FAQ Section */}
       <section className="py-20 bg-white">
@@ -290,6 +296,89 @@ export default function ContactPage() {
         </div>
       </section>
 
+      {/* Courses in Lucknow Section */}
+      <section className="py-20 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">Best IT Courses in Lucknow, Uttar Pradesh</h2>
+            <p className="text-xl text-gray-600">
+              Discover top-rated computer courses and IT training programs in Lucknow. Join Proco Technologies for career-oriented education in Uttar Pradesh's capital city.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {/* ADCA Course */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-xl">ADCA Course in Lucknow</CardTitle>
+                <CardDescription>Advanced Diploma in Computer Applications</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <p className="text-gray-600 mb-4">
+                  Master essential computer skills with our comprehensive ADCA course in Lucknow. Learn MS Office, Tally, internet applications, and programming basics. Perfect for beginners looking to enter the IT field.
+                </p>
+                <h4 className="font-semibold mb-2">Why Choose ADCA in Lucknow?</h4>
+                <ul className="text-sm text-gray-600 space-y-1">
+                  <li>• High demand for computer literacy skills</li>
+                  <li>• Flexible timing for working professionals</li>
+                  <li>• Industry-recognized certification</li>
+                  <li>• Job placement assistance in Lucknow</li>
+                </ul>
+              </CardContent>
+            </Card>
+
+            {/* Digital Marketing Course */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-xl">Digital Marketing Course in Lucknow</CardTitle>
+                <CardDescription>Master Online Marketing Skills</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <p className="text-gray-600 mb-4">
+                  Learn SEO, social media marketing, Google Ads, and content marketing with our digital marketing course in Lucknow. Become a certified digital marketer and help businesses grow online.
+                </p>
+                <h4 className="font-semibold mb-2">Why Choose Digital Marketing in Lucknow?</h4>
+                <ul className="text-sm text-gray-600 space-y-1">
+                  <li>• Growing demand for digital skills</li>
+                  <li>• Freelance and remote work opportunities</li>
+                  <li>• Practical projects and real campaigns</li>
+                  <li>• Local business networking in Uttar Pradesh</li>
+                </ul>
+              </CardContent>
+            </Card>
+
+            {/* Software Development Course */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-xl">Software Development Course in Lucknow</CardTitle>
+                <CardDescription>Full Stack Development Training</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <p className="text-gray-600 mb-4">
+                  Build websites and applications with our software development course in Lucknow. Learn HTML, CSS, JavaScript, React, Node.js, and database management. Start your coding career today.
+                </p>
+                <h4 className="font-semibold mb-2">Why Choose Software Development in Lucknow?</h4>
+                <ul className="text-sm text-gray-600 space-y-1">
+                  <li>• High-paying tech jobs in Lucknow</li>
+                  <li>• Hands-on coding projects</li>
+                  <li>• Industry-standard tools and technologies</li>
+                  <li>• Career support and internship opportunities</li>
+                </ul>
+              </CardContent>
+            </Card>
+          </div>
+
+          <div className="text-center mt-12">
+            <p className="text-lg text-gray-600 mb-6">
+              Located in the heart of Lucknow, Uttar Pradesh, Proco Technologies offers state-of-the-art computer training facilities with modern classrooms and experienced instructors. Our courses are designed to meet industry standards and prepare you for successful careers in IT.
+            </p>
+            <p className="text-gray-600">
+              Contact us today to enroll in any of our IT courses in Lucknow or learn more about our comprehensive computer education programs in Uttar Pradesh.
+            </p>
+          </div>
+        </div>
+      </section>
+
       {/* Thank You Modal */}
       {showThankYou && (
         <div
@@ -332,5 +421,6 @@ export default function ContactPage() {
         </div>
       )}
     </div>
+    </>
   )
 }

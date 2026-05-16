@@ -1,6 +1,6 @@
 {
   "name": "Proco Technology Website Security Configuration",
-  "description": "Cloudflare security settings for proco.in",
+  "description": "Cloudflare security settings for procotech.in",
   "created": "2026-01-09",
   
   "cloudflare_pages_config": {
@@ -78,7 +78,7 @@
   
   "page_rules": [
     {
-      "url": "proco.in/api/*",
+      "url": "procotech.in/api/*",
       "settings": {
         "cache_level": "bypass",
         "security_level": "high",
@@ -86,7 +86,7 @@
       }
     },
     {
-      "url": "proco.in/admin/*",
+      "url": "procotech.in/admin/*",
       "settings": {
         "cache_level": "bypass",
         "security_level": "high",
@@ -94,7 +94,7 @@
       }
     },
     {
-      "url": "proco.in/*.pdf",
+      "url": "procotech.in/*.pdf",
       "settings": {
         "cache_level": "standard",
         "browser_cache_ttl": 86400
