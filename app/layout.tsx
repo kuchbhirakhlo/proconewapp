@@ -2,10 +2,12 @@
 import type React from "react"
 import type { Metadata } from "next"
 import { Inter } from "next/font/google"
+import { homepageMetadata } from "@/lib/seo-config"
 import Script from "next/script"
 import "./globals.css"
 import ClientLayout from "./ClientLayout"
 import SplashScreen from "@/components/splash-screen"
+import CanonicalTag from "@/components/canonical-tag"
 
 const inter = Inter({
   subsets: ["latin"],
@@ -76,10 +78,13 @@ export const metadata: Metadata = {
       'max-snippet': -1,
     },
   },
+  alternates: {
+    canonical: "https://www.procotech.in",
+  },
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://procotech.in",
+    url: "https://www.procotech.in",
     siteName: "Proco Technologies",
     title: "Proco Technologies - Best Computer Institute & Software Development Company",
     description: "Premier computer institute offering web development, mobile app development, and IT training courses. Build your career with industry-expert instructors.",
@@ -120,9 +125,9 @@ export default function RootLayout({
     "@type": "EducationalOrganization",
     "name": "Proco Technologies",
     "description": "Premier computer institute and software development company offering professional IT training and custom software solutions.",
-    "url": "https://procotech.in",
-    "logo": "https://procotech.in/proco_tech.jpg",
-    "image": "https://procotech.in/proco_tech.jpg",
+    "url": "https://www.procotech.in",
+    "logo": "https://www.procotech.in/proco_tech.jpg",
+    "image": "https://www.procotech.in/proco_tech.jpg",
     "telephone": "+91-8383811977",
     "address": {
       "@type": "PostalAddress",
@@ -131,8 +136,8 @@ export default function RootLayout({
     },
     "areaServed": "Worldwide",
     "sameAs": [
-      "https://www.facebook.com/procotech",
-      "https://www.instagram.com/procotech",
+      "https://www.facebook.com/procotechnologies",
+      "https://www.instagram.com/proco_technologies/",
       "https://www.linkedin.com/company/procotech",
       "https://www.youtube.com/@procotech"
     ],
@@ -237,6 +242,7 @@ export default function RootLayout({
       </head>
       <body className={inter.className}>
         <SplashScreen />
+        <CanonicalTag />
         <ClientLayout>{children}</ClientLayout>
       </body>
     </html>

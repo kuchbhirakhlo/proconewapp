@@ -3,6 +3,23 @@ const nextConfig = {
   // Ensure proper routing
   trailingSlash: false,
 
+  // Redirect non-www to www (301 permanent)
+  async redirects() {
+    return [
+      {
+        source: '/:path*',
+        has: [
+          {
+            type: 'host',
+            value: 'procotech.in',
+          },
+        ],
+        destination: 'https://www.procotech.in/:path*',
+        permanent: true,
+      },
+    ]
+  },
+
   // Enable React strict mode for better development
   reactStrictMode: true,
 
