@@ -132,13 +132,13 @@ export default function InquiriesPage() {
   }
 
   return (
-        <AdminLayout title="Contact Inquiries">
+        <AdminLayout title="Business Enquiry">
     
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">Contact Inquiries</h1>
-          <p className="text-gray-600">Manage and respond to user inquiries from your contact form</p>
+          <h1 className="text-4xl font-bold text-gray-900 mb-2">Business Enquiry</h1>
+          <p className="text-gray-600">Manage business inquiries, consultation requests, and contact form submissions</p>
         </div>
 
         {/* Filter Buttons */}

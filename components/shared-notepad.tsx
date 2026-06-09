@@ -5,17 +5,20 @@ import { subscribeToNotepad, updateNotepadContent, initializeNotepad } from "@/l
 import { Users, Edit3, Loader2 } from "lucide-react"
 
 export default function SharedNotepad() {
-  const [content, setContent] = useState("")
   const [lastEditedBy, setLastEditedBy] = useState("")
   const [editorName, setEditorName] = useState("")
   const [showNameInput, setShowNameInput] = useState(true)
-  const [activeUsers, setActiveUsers] = useState(1)
   const [isInitialized, setIsInitialized] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
+  const [charCount, setCharCount] = useState(0)
+
   const textareaRef = useRef<HTMLTextAreaElement>(null)
-  const isRemoteUpdate = useRef(false)
-  const lastSentContent = useRef("")
-  const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+  const isRemoteUpdateRef = useRef(false)
+  const lastSentRef = useRef("")
+  const isInitialSyncRef = useRef(true)
+  const typingTimerRef = useRef<NodeJS.Timeout | null>(null)
+  const pendingSyncRef = useRef(false)
+  const initialContentSetRef = useRef(false)
 
   // Get or create a persistent anonymous name for this session
   useEffect(() => {
@@ -29,7 +32,7 @@ export default function SharedNotepad() {
     setShowNameInput(false)
   }, [])
 
-  // Initialize the notepad doc and subscribe to real-time updates
+  // Initialize the notepad doc
   useEffect(() => {
     async function init() {
       await initializeNotepad()
@@ -38,70 +41,87 @@ export default function SharedNotepad() {
     init()
   }, [])
 
+  // Sync content to Firestore
+  const syncToFirestore = useCallback(async () => {
+    const textarea = textareaRef.current
+    if (!textarea) return
+
+    const text = textarea.value
+
+    // Don't sync if nothing changed since last sync
+    if (text === lastSentRef.current) return
+
+    pendingSyncRef.current = false
+    setIsSaving(true)
+    try {
+      await updateNotepadContent(text, editorName)
+      lastSentRef.current = text
+    } catch (err) {
+      console.error("Failed to sync:", err)
+    } finally {
+      setIsSaving(false)
+    }
+  }, [editorName])
+
+  // Subscribe to real-time updates from Firestore
   useEffect(() => {
     if (!isInitialized) return
 
     const unsubscribe = subscribeToNotepad((data) => {
-      if (data) {
-        isRemoteUpdate.current = true
-        setContent(data.content || "")
-        setLastEditedBy(data.lastEditedBy || "anonymous")
-        isRemoteUpdate.current = false
+      if (!data) return
+
+      const remoteContent = data.content || ""
+      lastSentRef.current = remoteContent
+
+      const textarea = textareaRef.current
+      if (!textarea) return
+
+      // Save cursor position and selection before modifying
+      const cursorPos = textarea.selectionStart
+      const isFocused = document.activeElement === textarea
+
+      // Apply remote content directly to DOM (bypasses React controlled-value)
+      isRemoteUpdateRef.current = true
+      textarea.value = remoteContent
+      setCharCount(remoteContent.length)
+      setLastEditedBy(data.lastEditedBy || "anonymous")
+
+      // Restore cursor position if user was focused on the textarea
+      if (isFocused && cursorPos !== null) {
+        const safePos = Math.min(cursorPos, remoteContent.length)
+        textarea.setSelectionRange(safePos, safePos)
       }
+
+      // Reset flag after a tick so React doesn't interfere
+      requestAnimationFrame(() => {
+        isRemoteUpdateRef.current = false
+      })
     })
 
     return () => unsubscribe()
   }, [isInitialized])
 
-  // Broadcast active users via localStorage (simple approach)
-  useEffect(() => {
-    if (!isInitialized) return
+  // Handle local typing
+  const handleInput = useCallback(() => {
+    if (isRemoteUpdateRef.current) return
 
-    const channel = new BroadcastChannel("notepad_active_users")
-    const heartbeat = setInterval(() => {
-      channel.postMessage({ type: "ping", id: editorName })
-    }, 2000)
+    const textarea = textareaRef.current
+    if (!textarea) return
 
-    channel.onmessage = (event) => {
-      if (event.data.type === "ping") {
-        // We just track locally - this is a simplified approach
-      }
+    setCharCount(textarea.value.length)
+
+    // Mark that we need to sync
+    pendingSyncRef.current = true
+
+    // Debounce Firestore sync
+    if (typingTimerRef.current) {
+      clearTimeout(typingTimerRef.current)
     }
 
-    return () => {
-      clearInterval(heartbeat)
-      channel.close()
-    }
-  }, [isInitialized, editorName])
-
-  const handleContentChange = useCallback(
-    (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-      const newContent = e.target.value
-      setContent(newContent)
-
-      if (isRemoteUpdate.current) return
-
-      // Debounce firestore writes
-      if (typingTimeoutRef.current) {
-        clearTimeout(typingTimeoutRef.current)
-      }
-
-      typingTimeoutRef.current = setTimeout(async () => {
-        if (newContent !== lastSentContent.current) {
-          setIsSaving(true)
-          try {
-            await updateNotepadContent(newContent, editorName)
-            lastSentContent.current = newContent
-          } catch (err) {
-            console.error("Failed to sync:", err)
-          } finally {
-            setIsSaving(false)
-          }
-        }
-      }, 300)
-    },
-    [editorName]
-  )
+    typingTimerRef.current = setTimeout(() => {
+      syncToFirestore()
+    }, 500)
+  }, [syncToFirestore])
 
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setEditorName(e.target.value)
@@ -168,12 +188,12 @@ export default function SharedNotepad() {
           </div>
         )}
 
-        {/* Notepad Editor */}
+        {/* Notepad Editor - Uncontrolled textarea */}
         <div className="relative">
           <textarea
             ref={textareaRef}
-            value={content}
-            onChange={handleContentChange}
+            defaultValue=""
+            onInput={handleInput}
             placeholder="Start typing here... Everyone viewing this page will see your changes in real-time!"
             className="w-full h-[70vh] p-6 bg-slate-800/50 border border-slate-700 rounded-xl text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 resize-none font-mono text-sm leading-relaxed"
             spellCheck={true}
@@ -188,7 +208,7 @@ export default function SharedNotepad() {
         <div className="mt-4 text-center text-xs text-slate-600">
           <p>
             Shared notepad — anything written here is visible to everyone viewing this page in real-time.
-            Works like codeshare.io or a collaborative pastebin.
+            {charCount > 0 && ` (${charCount} characters)`}
           </p>
         </div>
       </div>

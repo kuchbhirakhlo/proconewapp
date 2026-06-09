@@ -185,6 +185,29 @@ export default function LeadCapturePopup() {
         }
       }
 
+      // Also save Business leads to contact_inquiries for admin visibility
+      if (leadType === "Business" && leadInterest) {
+        try {
+          const inquiriesRef = collection(db, "contact_inquiries")
+          const nameParts = formData.name.trim().split(/\s+/)
+          await addDoc(inquiriesRef, {
+            firstName: nameParts[0] || formData.name.trim(),
+            lastName: nameParts.slice(1).join(" ") || "",
+            email: "",
+            phone: formData.mobile.trim(),
+            subject: leadInterest,
+            message: `Interested in: ${leadInterest}`,
+            inquiryType: "Business",
+            source: "Homepage Popup",
+            createdAt: Timestamp.now(),
+            status: "New",
+            read: false,
+          })
+        } catch (err) {
+          console.error("Error saving to contact_inquiries:", err)
+        }
+      }
+
       setRedirectPath(redirectTo)
       setCountdown(REDIRECT_DELAY_SECONDS)
       setStep("success")

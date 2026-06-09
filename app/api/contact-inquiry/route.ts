@@ -24,25 +24,32 @@ const db = getFirestore(app)
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { firstName, lastName, email, phone, subject, message } = body
+    const { firstName, lastName, name, email, phone, subject, service, message, inquiryType, source } = body
+
+    // Support both contact form (firstName/lastName) and business form (name) formats
+    const contactFirstName = firstName || (name ? name.split(' ')[0] : '')
+    const contactLastName = lastName || (name ? name.split(' ').slice(1).join(' ') : '')
+    const contactSubject = subject || service || 'Business Inquiry'
 
     // Validate required fields
-    if (!firstName || !lastName || !email || !subject || !message) {
+    if (!contactFirstName || !email || !contactSubject || !message) {
       return NextResponse.json(
         { error: 'Missing required fields' },
         { status: 400 }
       )
     }
 
-    // Add to Firestore
-    const inquiriesCollection = collection(db, 'inquiries')
+    // Add to Firestore - use contact_inquiries collection for admin panel visibility
+    const inquiriesCollection = collection(db, 'contact_inquiries')
     const docRef = await addDoc(inquiriesCollection, {
-      firstName,
-      lastName,
+      firstName: contactFirstName,
+      lastName: contactLastName,
       email,
       phone: phone || '',
-      subject,
+      subject: contactSubject,
       message,
+      inquiryType: inquiryType || 'general',
+      source: source || 'contact-form',
       createdAt: serverTimestamp(),
       status: 'pending',
       read: false,

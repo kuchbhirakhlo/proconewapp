@@ -173,7 +173,7 @@ export default function BusinessPage() {
             <div className="relative lg:block">
               <div className="relative h-96 rounded-2xl overflow-hidden shadow-2xl">
                 {/* Mobile hero image */}
-                <Image src="/mobilebusinesshero.png" alt="Business Solutions" fill className="object-cover lg:hidden" />
+                <Image src="/mobilebusinesshero.png" alt="Business Solutions" fill className="object-cover object-left lg:hidden" />
                 {/* Desktop hero image */}
                 <Image src="/businesshero.png" alt="Business Solutions" fill className="object-cover hidden lg:block" />
               </div>

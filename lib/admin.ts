@@ -612,7 +612,7 @@ export interface Inquiry {
 
 export const getInquiries = async (): Promise<Inquiry[]> => {
   try {
-    const inquiriesRef = collection(db, "inquiries")
+    const inquiriesRef = collection(db, "contact_inquiries")
     const q = query(inquiriesRef, orderBy("createdAt", "desc"))
     const snapshot = await getDocs(q)
     return snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() } as Inquiry))
@@ -623,7 +623,7 @@ export const getInquiries = async (): Promise<Inquiry[]> => {
 }
 
 export const updateInquiryStatus = async (inquiryId: string, status: string) => {
-  const inquiryRef = doc(db, "inquiries", inquiryId)
+  const inquiryRef = doc(db, "contact_inquiries", inquiryId)
   return await updateDoc(inquiryRef, {
     status,
     updatedAt: Timestamp.now(),

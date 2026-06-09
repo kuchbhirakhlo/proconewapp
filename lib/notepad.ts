@@ -5,6 +5,7 @@ import {
   getDoc,
   onSnapshot,
   serverTimestamp,
+  Timestamp,
 } from "firebase/firestore"
 
 const NOTEPAD_DOC_ID = "shared-notepad"
@@ -12,7 +13,7 @@ const NOTEPAD_COLLECTION = "shared_notepad"
 
 export interface NotepadData {
   content: string
-  updatedAt: any
+  updatedAt: Timestamp
   lastEditedBy: string
 }
 

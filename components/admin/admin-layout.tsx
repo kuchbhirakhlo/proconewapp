@@ -63,7 +63,7 @@ export default function AdminLayout({ children, title }: AdminLayoutProps) {
     { name: "Students", href: "/admin/students", icon: Users },
     { name: "Fees", href: "/admin/fees", icon: FileText },
     { name: "Portfolio", href: "/admin/portfolio", icon: Briefcase },
-    { name: "Contact Inquiries", href: "/admin/inquiries", icon: MessageSquare },
+    { name: "Business Enquiry", href: "/admin/inquiries", icon: MessageSquare },
     { name: "Course Enrollments", href: "/admin/enrollments", icon: UserCheck },
   ]
 
