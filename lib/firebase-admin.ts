@@ -60,6 +60,10 @@ export const COLLECTIONS = {
   ENROLLMENTS: "enrollments",
   CONTACTS: "contacts",
   ANALYTICS: "analytics",
+  HOMEPAGE_LEADS: "homepage_leads",
+  COURSE_ENROLLMENTS: "course_enrollments",
+  CONTACT_INQUIRIES: "contact_inquiries",
+  COURSE_PDFS: "course_pdfs",
 } as const
 
 // Helper function to check if user is admin

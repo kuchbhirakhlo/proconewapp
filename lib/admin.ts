@@ -630,6 +630,14 @@ export const updateInquiryStatus = async (inquiryId: string, status: string) => 
   })
 }
 
+// Lead Management (delegates to lead-management.ts)
+export const getLeads = async (): Promise<any[]> => {
+  const leadsRef = collection(db, "leads")
+  const q = query(leadsRef, orderBy("createdAt", "desc"))
+  const snapshot = await getDocs(q)
+  return snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }))
+}
+
 // Notification Management
 // Interface for notifications
 export interface Notification {

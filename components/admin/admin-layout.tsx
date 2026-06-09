@@ -60,9 +60,9 @@ export default function AdminLayout({ children, title }: AdminLayoutProps) {
     { name: "Dashboard", href: "/admin/dashboard", icon: LayoutDashboard },
     { name: "Courses", href: "/admin/courses", icon: BookOpen },
     { name: "Course PDFs", href: "/admin/course-pdfs", icon: FileText },
-    { name: "Portfolio", href: "/admin/portfolio", icon: Briefcase },
     { name: "Students", href: "/admin/students", icon: Users },
     { name: "Fees", href: "/admin/fees", icon: FileText },
+    { name: "Portfolio", href: "/admin/portfolio", icon: Briefcase },
     { name: "Contact Inquiries", href: "/admin/inquiries", icon: MessageSquare },
     { name: "Course Enrollments", href: "/admin/enrollments", icon: UserCheck },
   ]
@@ -110,6 +110,7 @@ export default function AdminLayout({ children, title }: AdminLayoutProps) {
             {navigation.map((item) => {
               const Icon = item.icon
               const isActive = pathname === item.href || pathname.startsWith(item.href + '/')
+              
               return (
                 <Link
                   key={item.name}

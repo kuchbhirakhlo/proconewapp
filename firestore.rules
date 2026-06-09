@@ -84,6 +84,19 @@ service cloud.firestore {
       allow read, update, delete: if isAdmin();
     }
 
+    // Homepage Popup Leads collection - public can create from popup, admins can manage
+    match /homepage_leads/{leadId} {
+      allow create: if true; // Anyone can submit lead from homepage popup
+      allow read, update, delete: if isAdmin();
+    }
+
+    // Shared Notepad collection - public can read/write for live collaboration
+    match /shared_notepad/{docId} {
+      allow read: if true; // Anyone can read (real-time viewing)
+      allow write: if true; // Anyone can write (live editing)
+      allow create: if true; // Anyone can create the initial doc
+    }
+
     // Analytics collection - only admins can read/write
     match /analytics/{analyticsId} {
       allow read, write, update, delete: if isAdmin();

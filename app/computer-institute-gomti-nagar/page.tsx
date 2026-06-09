@@ -27,7 +27,7 @@ export default function ComputerInstituteGomtiNagarPage() {
               "postalCode": "226010",
               "addressCountry": "IN"
             },
-            "telephone": "+91-XXXXXXXXXX",
+            "telephone": "+91-8383811977",
             "email": "theprocotech@gmail.com",
             "url": "https://proco.tech/computer-institute-gomti-nagar",
             "description": "Leading computer training institute in Gomti Nagar Lucknow offering ADCA, DCA, CCC, O Level, and Digital Marketing courses"
@@ -290,7 +290,7 @@ export default function ComputerInstituteGomtiNagarPage() {
                   <Phone className="h-8 w-8" />
                 </div>
                 <h3 className="text-xl font-semibold mb-2">Phone</h3>
-                <p>+91-XXXXXXXXXX</p>
+                <p>+91-8383811977</p>
                 <p>Mon-Sat: 9 AM - 6 PM</p>
               </div>
 

@@ -14,12 +14,12 @@ export default function Navbar() {
   const { theme } = useTheme()
 
   const navigation = [
-    { name: "Home", href: "/" },
-    { name: "Blog", href: "/blog" },
-    { name: "Courses", href: "/courses" },
-    { name: "Portfolio", href: "/portfolio" },
-    { name: "Certificate", href: "/verify-certificate" },
-    { name: "Typing Test", href: "/typing-test-online" },
+    { name: "About Us", href: "/about" },
+    { name: "Contact Us", href: "/contact" },
+    { name: "Student Portal", href: "/student" },
+    { name: "Business Solutions", href: "/business" },
+    { name: "Typing Test", href: "/typing-test" },
+    { name: "Live Notepad", href: "/notepad" },
   ]
 
   const logoSrc = theme === "dark" ? "/proco-dark.png" : "/proco-light.png"

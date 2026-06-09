@@ -6,21 +6,6 @@ const nextConfig = {
   // Enable React strict mode for better development
   reactStrictMode: true,
 
-  // Enable CSS optimization
-  experimental: {
-    optimizeCss: true,
-  },
-
-  // Disable styled-jsx to prevent conflicts
-  compiler: {
-    styledComponents: false,
-    emotion: false,
-    styledJsx: false,
-  },
-
-  // Disable legacy polyfills for modern browsers (saves ~16KB)
-  // This removes ES5 transpilation for baseline features
-  swcMinify: true,
 
   // Compression
   compress: true,
@@ -29,7 +14,8 @@ const nextConfig = {
   async headers() {
     return [
       {
-        source: '/:path*',
+        // HTML pages - no caching to ensure fresh content
+        source: '/:path((?!api/|_next/|.*\\.).*)',
         headers: [
           {
             key: 'X-Frame-Options',
@@ -53,19 +39,7 @@ const nextConfig = {
           },
           {
             key: 'Cache-Control',
-            value: 'public, max-age=31536000, immutable',
-          },
-          {
-            key: 'Access-Control-Allow-Origin',
-            value: '*',
-          },
-          {
-            key: 'Access-Control-Allow-Methods',
-            value: 'GET, POST, PUT, DELETE, OPTIONS',
-          },
-          {
-            key: 'Access-Control-Allow-Headers',
-            value: 'X-Requested-With, Content-Type, Accept, Authorization',
+            value: 'no-store, no-cache, must-revalidate, proxy-revalidate',
           },
         ],
       },

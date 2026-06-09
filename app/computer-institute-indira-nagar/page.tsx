@@ -25,7 +25,7 @@ export default function ComputerInstituteIndiraNagarPage() {
               "addressRegion": "Lucknow",
               "addressCountry": "IN"
             },
-            "telephone": "+91-XXXXXXXXXX",
+            "telephone": "+91-8383811977",
             "email": "theprocotech@gmail.com",
             "url": "https://proco.tech/computer-institute-indira-nagar",
             "description": "Professional computer training institute in Indira Nagar Lucknow offering comprehensive IT education"

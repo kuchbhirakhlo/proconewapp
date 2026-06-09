@@ -63,7 +63,7 @@ export default async function Post({ params }: PostPageProps) {
           <h3 className="text-2xl font-semibold mb-4">Ready to Start Your Career in Lucknow?</h3>
           <p className="mb-4">Join Proco Computer Institute today!</p>
           <a
-            href="tel:+91XXXXXXXXXX"
+            href="tel:+918383811977"
             className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors"
           >
             Call Now

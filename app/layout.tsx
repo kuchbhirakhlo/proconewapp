@@ -123,7 +123,7 @@ export default function RootLayout({
     "url": "https://procotech.in",
     "logo": "https://procotech.in/proco_tech.jpg",
     "image": "https://procotech.in/proco_tech.jpg",
-    "telephone": "+91-XXXXXXXXXX",
+    "telephone": "+91-8383811977",
     "address": {
       "@type": "PostalAddress",
       "addressLocality": "India",

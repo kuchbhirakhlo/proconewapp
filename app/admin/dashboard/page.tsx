@@ -9,6 +9,8 @@ import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Users, BookOpen, Briefcase, TrendingUp, Cake, Mail, Phone, Calendar, GraduationCap, Award, Medal } from "lucide-react"
 import { getCourses, getStudents, getPortfolioItems, getEnrollments, getInquiries, sendBirthdayWish, sendCompletionCongratulations, sendCertificateApprovalNotification } from "@/lib/admin"
+import { getHomepageLeadStats } from "@/lib/homepage-leads"
+import HomepageLeadStats from "@/components/admin/homepage-lead-stats"
 import { db } from "@/lib/firebase"
 import { collection, query, orderBy, getDocs } from "firebase/firestore"
 
@@ -216,6 +218,7 @@ export default function AdminDashboard() {
     },
   ]
 
+  // Removed CRM-related quick actions (Leads, Follow Ups)
   const quickActionCards = [
     {
       title: "Manage Courses",
@@ -589,6 +592,9 @@ export default function AdminDashboard() {
             )}
           </CardContent>
         </Card>
+
+        {/* Homepage Popup Lead Stats */}
+        <HomepageLeadStats />
 
         {/* Inquiry Stats */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
