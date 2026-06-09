@@ -3,6 +3,7 @@ import type React from "react"
 import type { Metadata } from "next"
 import { Inter } from "next/font/google"
 import { homepageMetadata } from "@/lib/seo-config"
+import { lucknowBranchJsonLd, jaipurBranchJsonLd } from "@/lib/jsonld"
 import Script from "next/script"
 import "./globals.css"
 import ClientLayout from "./ClientLayout"
@@ -25,45 +26,9 @@ export const metadata: Metadata = {
   generator: 'procotech',
   applicationName: "Proco Technologies",
   manifest: "/manifest.json",
-  keywords: [
-    "computer institute",
-    "computer training institute",
-    "computer learning center",
-    "software development company",
-    "web development course",
-    "web development training",
-    "full stack web development",
-    "mobile app development course",
-    "programming course",
-    "coding classes",
-    "IT training institute",
-    "software training",
-    "learn programming",
-    "computer coding course",
-    "python training",
-    "javascript course",
-    "react js training",
-    "next js course",
-    "node js training",
-    "flutter app development",
-    "android development course",
-    "ios development training",
-    "database management course",
-    "cloud computing training",
-    "diploma in computer application",
-    "ADCA course in lucknow",
-    "DCA course in lucknow",
-    "professional IT courses",
-    "job oriented training",
-    "best computer institute in lucknow",
-    "affordable coding course",
-    "online programming course",
-    "computer certification course in lucknow",
-    "Proco Technologies lucknow",
-    "software solutions provider",
-    "custom software development in lucknow",
-    "business software solutions",
-  ],
+  // Meta keywords tag intentionally omitted — Google ignores it since 2009,
+  // and long keyword lists harm credibility. Keywords are instead used in
+  // page content, headings, image alt text, and JSON-LD structured data.
   authors: [{ name: "Proco Technologies" }],
   creator: "Proco Technologies",
   publisher: "Proco Technologies",
@@ -120,62 +85,6 @@ export default function RootLayout({
 }: {
   children: React.ReactNode
 }) {
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "EducationalOrganization",
-    "name": "Proco Technologies",
-    "description": "Premier computer institute and software development company offering professional IT training and custom software solutions.",
-    "url": "https://www.procotech.in",
-    "logo": "https://www.procotech.in/proco_tech.jpg",
-    "image": "https://www.procotech.in/proco_tech.jpg",
-    "telephone": "+91-8383811977",
-    "address": {
-      "@type": "PostalAddress",
-      "addressLocality": "India",
-      "addressCountry": "IN"
-    },
-    "areaServed": "Worldwide",
-    "sameAs": [
-      "https://www.facebook.com/procotechnologies",
-      "https://www.instagram.com/proco_technologies/",
-      "https://www.linkedin.com/company/procotech",
-      "https://www.youtube.com/@procotech"
-    ],
-    "offers": {
-      "@type": "AggregateOffer",
-      "offers": [
-        {
-          "@type": "Offer",
-          "name": "Full Stack Web Development Course",
-          "description": "Comprehensive web development training from beginner to advanced level",
-          "price": "9999",
-          "priceCurrency": "INR"
-        },
-        {
-          "@type": "Offer",
-          "name": "Mobile App Development Course",
-          "description": "Cross-platform mobile app development training",
-          "price": "7999",
-          "priceCurrency": "INR"
-        },
-        {
-          "@type": "Offer",
-          "name": "ADCA - Advanced Diploma in Computer Application",
-          "description": "1-year advanced computer application diploma course",
-          "price": "8999",
-          "priceCurrency": "INR"
-        },
-        {
-          "@type": "Offer",
-          "name": "DCA - Diploma in Computer Application",
-          "description": "6-month computer application diploma course",
-          "price": "3999",
-          "priceCurrency": "INR"
-        }
-      ]
-    }
-  }
-
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
@@ -234,10 +143,15 @@ export default function RootLayout({
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8434537394521880"
           crossOrigin="anonymous"
         />
-        {/* JSON-LD Structured Data */}
+        {/* JSON-LD Structured Data — Lucknow Branch */}
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+          dangerouslySetInnerHTML={lucknowBranchJsonLd()}
+        />
+        {/* JSON-LD Structured Data — Jaipur Branch */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={jaipurBranchJsonLd()}
         />
       </head>
       <body className={inter.className}>
