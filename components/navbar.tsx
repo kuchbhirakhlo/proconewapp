@@ -18,7 +18,7 @@ export default function Navbar() {
     { name: "Contact Us", href: "/contact" },
     { name: "Student Portal", href: "/student" },
     { name: "Business Solutions", href: "/business" },
-    { name: "Typing Test", href: "/typing-test" },
+    { name: "Typing Test", href: "/typing-test-online" },
     { name: "Live Notepad", href: "/notepad" },
   ]
 
