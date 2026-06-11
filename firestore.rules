@@ -91,10 +91,11 @@ service cloud.firestore {
     }
 
     // Shared Notepad collection - public can read/write for live collaboration
+    // Each notepad is stored as a separate document (topic-based)
     match /shared_notepad/{docId} {
       allow read: if true; // Anyone can read (real-time viewing)
       allow write: if true; // Anyone can write (live editing)
-      allow create: if true; // Anyone can create the initial doc
+      allow create: if true; // Anyone can create new topic notepads
     }
 
     // Analytics collection - only admins can read/write
