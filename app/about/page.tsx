@@ -90,7 +90,7 @@ export default function AboutPage() {
             </div>
             <div>
               <Image
-                src="https://media.licdn.com/dms/image/v2/D5612AQFcXS62quCplg/article-cover_image-shrink_720_1280/article-cover_image-shrink_720_1280/0/1661871992258?e=2147483647&v=beta&t=sbulnK_83orJfAaVLNdGkIrmNDTSvhgPTN11OHrf5ck"
+                src="/office.png"
                 alt="Proco Technologies Office"
                 width={500}
                 height={400}
@@ -119,38 +119,6 @@ export default function AboutPage() {
                 </CardHeader>
                 <CardContent>
                   <CardDescription>{value.description}</CardDescription>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Team Section */}
-      <section className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">Meet Our Team</h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Our experienced team of educators and developers are passionate about helping you succeed.
-            </p>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {team.map((member, index) => (
-              <Card key={index} className="text-center hover:shadow-lg transition-shadow">
-                <CardHeader>
-                  <Image
-                    src={member.image || "/placeholder.svg"}
-                    alt={member.name}
-                    width={300}
-                    height={300}
-                    className="rounded-full mx-auto mb-4 w-32 h-32 object-cover"
-                  />
-                  <CardTitle className="text-xl">{member.name}</CardTitle>
-                  <CardDescription className="text-blue-600 font-medium">{member.role}</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-gray-600 text-sm">{member.bio}</p>
                 </CardContent>
               </Card>
             ))}

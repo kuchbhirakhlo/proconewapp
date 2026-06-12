@@ -7,7 +7,6 @@ import { lucknowBranchJsonLd, jaipurBranchJsonLd } from "@/lib/jsonld"
 import Script from "next/script"
 import "./globals.css"
 import ClientLayout from "./ClientLayout"
-import SplashScreen from "@/components/splash-screen"
 import CanonicalTag from "@/components/canonical-tag"
 
 const inter = Inter({
@@ -184,7 +183,6 @@ export default function RootLayout({
         />
       </head>
       <body className={inter.className}>
-        <SplashScreen />
         <CanonicalTag />
         <ClientLayout>{children}</ClientLayout>
       </body>
