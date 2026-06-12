@@ -1,8 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { useRouter } from "next/navigation"
-import { useState, useRef } from "react"
+import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { Menu } from "lucide-react"
@@ -10,40 +9,25 @@ import Image from "next/image"
 import { ThemeToggle } from "@/components/ui/theme-toggle"
 import { useTheme } from "next-themes"
 
-export default function Navbar() {
-  const router = useRouter()
+export default function HomeNavbar() {
   const [isOpen, setIsOpen] = useState(false)
-  const pendingNavigation = useRef<string | null>(null)
   const { theme } = useTheme()
+
+  const logoSrc = theme === "dark" ? "/proco-dark.png" : "/proco-light.png"
 
   const navigation = [
     { name: "About Us", href: "/about" },
     { name: "Contact Us", href: "/contact" },
     { name: "Student Portal", href: "/student" },
     { name: "Business Solutions", href: "/business" },
-    { name: "Typing Test", href: "/typing-test-online" },
-    { name: "Live Notepad", href: "/notepad" },
   ]
 
-  const logoSrc = theme === "dark" ? "/proco-dark.png" : "/proco-light.png"
-
   const handleNavClick = (href: string) => {
-    pendingNavigation.current = href
     setIsOpen(false)
   }
 
-  const handleOpenChange = (open: boolean) => {
-    setIsOpen(open)
-    // Sheet transition finished closing - navigate
-    if (!open && pendingNavigation.current) {
-      const href = pendingNavigation.current
-      pendingNavigation.current = null
-      router.push(href)
-    }
-  }
-
   return (
-    <nav className="border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 shadow-sm sticky top-0 z-50">
+    <nav className="border-b border-gray-200 dark:border-gray-800 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md shadow-sm sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           <Link href="/" className="flex items-center">
@@ -75,7 +59,7 @@ export default function Navbar() {
           </div>
 
           {/* Mobile Navigation */}
-          <Sheet open={isOpen} onOpenChange={handleOpenChange}>
+          <Sheet open={isOpen} onOpenChange={setIsOpen}>
             <SheetTrigger asChild className="md:hidden">
               <Button variant="ghost" size="icon" className="text-gray-700 dark:text-gray-200">
                 <Menu className="h-6 w-6" />
@@ -87,23 +71,25 @@ export default function Navbar() {
             >
               <div className="flex flex-col space-y-1 mt-8">
                 {navigation.map((item) => (
-                  <button
+                  <Link
                     key={item.name}
-                    onClick={() => handleNavClick(item.href)}
+                    href={item.href}
+                    onClick={() => setIsOpen(false)}
                     className="text-gray-700 dark:text-gray-200 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/20 px-4 py-3 text-base font-medium transition-all duration-200 rounded-lg text-left w-full"
                   >
                     {item.name}
-                  </button>
+                  </Link>
                 ))}
                 <div className="border-t border-gray-200 dark:border-gray-700 mt-6 pt-6">
                   <div className="flex items-center gap-3">
                     <ThemeToggle />
-                    <button
-                      onClick={() => handleNavClick("/login")}
+                    <Link
+                      href="/login"
+                      onClick={() => setIsOpen(false)}
                       className="flex-1 bg-red-600 hover:bg-red-700 text-white inline-flex items-center justify-center rounded-md text-sm font-medium h-9 px-4 py-2"
                     >
                       Student Login
-                    </button>
+                    </Link>
                   </div>
                 </div>
               </div>

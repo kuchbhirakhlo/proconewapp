@@ -115,7 +115,7 @@ export function Step1({ formData, setFormData, errors, nameInputRef }: Step1Prop
             ref={nameInputRef}
             value={formData.name}
             onChange={(e) => setFormData((p) => ({ ...p, name: e.target.value }))}
-            placeholder="John Doe"
+            placeholder="Priya Singh"
             className={cn(
               "h-11 border-gray-300 bg-white/70 pl-9 text-gray-900 placeholder:text-gray-400 focus-visible:ring-blue-500 dark:border-gray-700 dark:bg-white/5 dark:text-white",
               errors.name && "border-red-500 focus-visible:ring-red-500"

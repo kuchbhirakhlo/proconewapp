@@ -4,6 +4,9 @@ import type React from "react"
 import { usePathname } from "next/navigation"
 import dynamic from "next/dynamic"
 import Navbar from "@/components/navbar"
+import HomeNavbar from "@/components/home-navbar"
+import StudentNavbar from "@/components/student-navbar"
+import BusinessNavbar from "@/components/business-navbar"
 import Footer from "@/components/footer"
 import Chatbot from "@/components/chatbot"
 import { LeadPopupProvider } from "@/contexts/LeadPopupContext"
@@ -22,11 +25,20 @@ export default function ClientLayout({
   const pathname = usePathname()
 
   const isAdminRoute = pathname?.startsWith("/admin")
-  const isStudentRoute = pathname?.startsWith("/student") && pathname !== "/student"
+  const isStudentSubRoute = pathname?.startsWith("/student") && pathname !== "/student"
   const isLoginRoute = pathname === "/login"
+  const isHomePage = pathname === "/"
+  const isStudentLanding = pathname === "/student"
+  const isBusinessLanding = pathname === "/business"
 
-  const hideHeaderFooter = isAdminRoute || isStudentRoute || isLoginRoute
-  const showGallery = pathname === "/" && !hideHeaderFooter
+  const hideHeaderFooter = isAdminRoute || isStudentSubRoute || isLoginRoute
+
+  const renderNavbar = () => {
+    if (isStudentLanding) return <StudentNavbar />
+    if (isBusinessLanding) return <BusinessNavbar />
+    if (isHomePage) return <HomeNavbar />
+    return <Navbar />
+  }
 
   return (
     <ThemeProvider
@@ -36,7 +48,7 @@ export default function ClientLayout({
       disableTransitionOnChange
     >
       <LeadPopupProvider>
-        {!hideHeaderFooter && <Navbar />}
+        {!hideHeaderFooter && renderNavbar()}
         <main className={hideHeaderFooter ? "min-h-screen" : "min-h-screen"}>{children}</main>
         {!hideHeaderFooter && (
           <>
@@ -45,7 +57,7 @@ export default function ClientLayout({
         )}
         <Chatbot />
         {/* Global lead capture popup - rendered on all non-admin/student routes */}
-        {!isAdminRoute && !isStudentRoute && <LeadCapturePopup />}
+        {!isAdminRoute && !isStudentSubRoute && <LeadCapturePopup />}
       </LeadPopupProvider>
     </ThemeProvider>
   )
